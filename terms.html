@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Use — CryptoMath Academy</title>
+<meta name="description" content="The terms for using CryptoMath: educational purpose, acceptable use, accuracy, and liability. Plain-language terms of use.">
+<meta name="theme-color" content="#1A1714">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Terms of Use — CryptoMath Academy">
+<meta property="og:description" content="The terms for using CryptoMath Academy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cm-pages.css">
+<link rel="stylesheet" href="cm-enhance.css">
+<style id="storm-bg-css">
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+</style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="brand">CryptoMath</a>
+  <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Open menu"><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+    <a href="concepts.html" data-en="Learn" data-ar="تعلم">Learn</a>
+    <a href="path.html" data-en="Path" data-ar="المسار">Path</a>
+    <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+    <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+    <a href="quantum.html" data-en="Quantum" data-ar="الكم">Quantum</a>
+    <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+    <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+    <a href="about.html" data-en="About" data-ar="عن">About</a>
+    <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+    <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+    <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+    <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0" aria-label="Switch language">
+      <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+    </div>
+    <a href="login.html" class="nav-menu-auth nav-menu-login">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta">Get Started</a>
+  </div>
+  <div class="nav-actions"><a href="login.html" class="nav-login">Log In</a><a href="signup.html" class="nav-cta">Get Started</a></div>
+</nav>
+
+<header class="page-hero">
+  <div class="eyebrow">Terms</div>
+  <h1>Terms of Use</h1>
+  <p class="cm-muted">Last updated: June 2026</p>
+</header>
+
+<main class="cm-container">
+  <div class="cm-card">
+    <p class="cm-muted" style="font-size:.85rem">A clear-language template — adapt it to your jurisdiction before relying on it legally.</p>
+  </div>
+  <section><h2 class="cm-h">Educational purpose</h2>
+    <p>CryptoMath is provided for learning. The interactive tools are teaching aids and simplifications — they are not intended for producing or securing real-world keys, secrets, or transactions.</p>
+  </section>
+  <section><h2 class="cm-h">Acceptable use</h2>
+    <ul><li>Use the site lawfully and don't attempt to disrupt or abuse it.</li><li>Don't misrepresent the content as professional security advice.</li><li>You may share and link to lessons for educational purposes.</li></ul>
+  </section>
+  <section><h2 class="cm-h">Accuracy &amp; no warranty</h2>
+    <p>We strive for correctness and cite our <a href="about.html#sources">sources</a>, but the content is provided “as is” without warranty. Always verify against authoritative references for academic or production use.</p>
+  </section>
+  <section><h2 class="cm-h">Accounts</h2>
+    <p>You're responsible for activity under your account. We use Firebase Authentication; see our <a href="privacy.html">Privacy Policy</a> for data handling.</p>
+  </section>
+  <section><h2 class="cm-h">Changes</h2>
+    <p>We may update these terms; the “last updated” date above reflects the latest revision.</p>
+  </section>
+  <section><h2 class="cm-h">Contact</h2>
+    <p>Questions? Email <a href="mailto:feedback@cryptomath.org">feedback@cryptomath.org</a>.</p>
+  </section>
+</main>
+
+<script>
+function toggleMobileNav(){var n=document.getElementById('navLinks');if(n)n.classList.toggle('open');}
+function toggleLanguage(){var ar=document.documentElement.getAttribute('dir')==='rtl';var to=ar?'en':'ar';document.documentElement.setAttribute('dir',to==='ar'?'rtl':'ltr');document.documentElement.setAttribute('lang',to);document.querySelectorAll('[data-en]').forEach(function(el){var t=el.getAttribute('data-'+to);if(t)el.textContent=t;});var en=document.getElementById('lang-en'),arx=document.getElementById('lang-ar');if(en&&arx){en.classList.toggle('active',to==='en');arx.classList.toggle('active',to==='ar');}try{localStorage.setItem('cryptomath_lang',to);}catch(e){}}
+try{if(localStorage.getItem('cryptomath_lang')==='ar')toggleLanguage();}catch(e){}
+</script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.143.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/" } }
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+</body>
+</html>

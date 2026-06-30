@@ -1,0 +1,2882 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Understand quantum computing’s impact on cryptography and the math behind post-quantum security.">
+    <meta name="theme-color" content="#131009">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Quantum vs Classical - CryptoMath Academy">
+    <meta property="og:description" content="Understand quantum computing’s impact on cryptography and the math behind post-quantum security.">
+    <title>Quantum vs Classical - CryptoMath Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+        :root {
+            --black: #0a0a0a;
+            --white: #1A1714;
+            --gray: #888;
+            --gray-light: #e5e5e5;
+            --accent: #C9A24B;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        ::selection { background: var(--accent); color: var(--white); }
+
+        /* Added animated background orbs */
+        .bg-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #C9A24B22, #C9A24B11);
+            top: 20%;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #4d4dff22, #4d4dff11);
+            bottom: 10%;
+            left: -100px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.05); }
+        }
+
+        /* Added glassmorphism navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--black);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--black);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after { width: 100%; }
+
+        .page-hero {
+            padding: 12rem 3rem 6rem;
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Added moving grid to hero */
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .page-hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 6rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Added scroll reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Added glassmorphism concept cards */
+        .concept-section {
+            margin-bottom: 8rem;
+            scroll-margin-top: 100px;
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .concept-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .concept-title h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .concept-title p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .concept-content {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .concept-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .concept-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .concept-content h3 .icon {
+            width: 30px;
+            height: 30px;
+            background: var(--black);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 0.8rem;
+        }
+
+        .concept-content p {
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .concept-content ul {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .concept-content li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .concept-content li::before {
+            content: '→';
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .formula-box {
+            background: var(--black);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .interactive-demo {
+            background: linear-gradient(135deg, #15120D 0%, #1A1714 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .interactive-demo h4 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            color: var(--gray);
+        }
+
+        .demo-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .demo-input {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .demo-input label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-input input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .demo-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .demo-result {
+            background: var(--black);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .blockchain-box {
+            background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+        }
+
+        .blockchain-box h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .blockchain-box p {
+            color: rgba(255,255,255,0.05);
+            line-height: 1.7;
+        }
+
+        footer {
+            padding: 4rem 3rem;
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer p {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 1rem 1.5rem; }
+            .nav-links { display: none; }
+            .container { padding: 4rem 1.5rem; }
+            .concept-header { flex-direction: column; gap: 1rem; }
+            .concept-number { font-size: 2.5rem; }
+            .concept-title h2 { font-size: 1.8rem; }
+            .concept-content { padding: 2rem; }
+        }
+    </style>
+
+<style id="aesthetic-upgrade">
+/* =========================================================
+   CRYPTOMATH ACADEMY — AESTHETIC UPGRADE LAYER
+   Pure CSS, loaded last so it refines the existing design.
+   ========================================================= */
+:root{
+  --accent:#C9A24B;
+  --accent-2:#E3C77A;
+  --accent-secondary:#C9A24B;
+  --accent-3:#A9823A;
+  --grad-warm:linear-gradient(135deg,#C9A24B 0%,#E3C77A 100%);
+  --grad-cool:linear-gradient(135deg,#C9A24B 0%,#A9823A 100%);
+  --grad-mix:linear-gradient(120deg,#C9A24B 0%,#A9823A 100%);
+  --shadow-soft:0 18px 50px -20px rgba(10,10,10,.35);
+  --shadow-glow:0 0 40px -8px rgba(255,77,77,.45);
+  --radius:20px;
+}
+html{scroll-behavior:smooth;}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+::selection{background:var(--accent);color:#fff;}
+
+/* ---------- Animated colour wash on light sections ---------- */
+.topics-section,.features-section,.info-section,.simulator-section,
+.concept-section,.progress-section,.stats-grid,.container{position:relative;}
+.topics-section::after,.features-section::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(60% 50% at 12% 0%,rgba(255,77,77,.07),transparent 60%),
+    radial-gradient(55% 45% at 92% 18%,rgba(93,93,255,.08),transparent 60%);
+}
+.topics-section>*,.features-section>*{position:relative;z-index:1;}
+
+/* ---------- Hero glow ---------- */
+.hero::after,.page-hero::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(40% 40% at 20% 30%,rgba(255,77,77,.18),transparent 70%),
+    radial-gradient(45% 45% at 82% 70%,rgba(93,93,255,.18),transparent 70%);
+  mix-blend-mode:screen;animation:heroGlow 12s ease-in-out infinite alternate;
+}
+@keyframes heroGlow{0%{opacity:.65;transform:scale(1)}100%{opacity:1;transform:scale(1.08)}}
+.hero-content,.page-hero>*{position:relative;z-index:3;}
+.hero h1 .accent{
+  background:var(--grad-warm);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+}
+
+/* ---------- Navbar: floating glass pill ---------- */
+.navbar{
+  top:14px;left:50%;right:auto;transform:translateX(-50%);
+  width:min(1180px,calc(100% - 28px));
+  padding:.85rem 1.6rem;border-radius:999px;
+  background:rgba(16,16,20,.55)!important;
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 10px 40px -16px rgba(0,0,0,.6);
+  backdrop-filter:blur(22px) saturate(160%);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+}
+.navbar.scrolled{background:rgba(10,10,12,.82)!important;}
+.nav-links a{transition:color .25s ease,opacity .25s ease;}
+.nav-links a:hover{color:#fff;}
+.nav-links a::after{height:2px;border-radius:2px;background:var(--grad-warm);}
+
+/* ---------- Buttons everywhere ---------- */
+.btn,.submit-btn,.login-btn,.btn-logout,.controls button,.reset,
+.card-answer button,.demo-input-group button,.answer-form button{
+  border-radius:999px!important;
+  font-weight:700;letter-spacing:.06em;
+  transition:transform .3s cubic-bezier(.16,.84,.44,1),box-shadow .3s ease,filter .3s ease;
+  position:relative;overflow:hidden;border:none;cursor:pointer;
+}
+.btn-primary,.submit-btn,.login-btn,.card-answer button,
+.demo-input-group button,.answer-form button,.controls button:first-child{
+  background:var(--grad-warm)!important;color:#fff!important;
+  box-shadow:0 10px 26px -10px rgba(255,77,77,.7);
+}
+.btn-primary:hover,.submit-btn:hover,.login-btn:hover,.card-answer button:hover,
+.demo-input-group button:hover,.answer-form button:hover{
+  transform:translateY(-3px);filter:brightness(1.06);
+  box-shadow:0 16px 34px -10px rgba(255,77,77,.8);
+}
+.btn-outline{
+  border:1px solid rgba(255,255,255,0.05)!important;border-radius:999px!important;
+  background:rgba(255,255,255,0.04)!important;color:#fff!important;
+}
+.btn-outline:hover{
+  background:#1A1714!important;color:#0a0a0a!important;transform:translateY(-3px);
+  box-shadow:0 14px 30px -12px rgba(255,255,255,0.05);
+}
+.btn-logout,.reset{background:rgba(255,77,77,.12)!important;color:var(--accent)!important;border:1px solid rgba(255,77,77,.35)!important;}
+.btn-logout:hover,.reset:hover{background:var(--accent)!important;color:#fff!important;transform:translateY(-2px);}
+/* subtle shine sweep */
+.btn::before,.submit-btn::before{
+  content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.05),transparent);
+  transform:skewX(-20deg);transition:left .6s ease;
+}
+.btn:hover::before,.submit-btn:hover::before{left:130%;}
+
+/* ---------- Generic card polish ---------- */
+.topic-card,.feature-card,.challenge-card,.stat-card,.concept-section,
+.interactive-demo,.block,.daily-challenge,.profile-header,.progress-section{
+  border-radius:var(--radius)!important;
+}
+.topics-grid{background:transparent!important;gap:24px!important;}
+.topic-card{
+  background:#1A1714!important;box-shadow:var(--shadow-soft);
+  border:1px solid rgba(10,10,10,.06);
+  transition:transform .45s cubic-bezier(.16,.84,.44,1),box-shadow .45s ease;
+}
+.topic-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px -22px rgba(10,10,10,.5);}
+.topic-card::before{border-radius:var(--radius);background:linear-gradient(160deg,#141414,#0a0a0a);}
+.topic-number{font-weight:700;}
+
+.feature-card{
+  border:1px solid rgba(10,10,10,.07);box-shadow:var(--shadow-soft);
+  transition:transform .4s ease,box-shadow .4s ease;
+}
+.feature-card:hover{transform:translateY(-6px);box-shadow:0 26px 52px -22px rgba(10,10,10,.45);}
+
+/* ---------- Challenge cards ---------- */
+.challenge-card{
+  background:#1A1714!important;border:1px solid rgba(10,10,10,.07)!important;
+  box-shadow:var(--shadow-soft);
+  transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease;
+}
+.challenge-card::after{
+  content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:var(--grad-mix);opacity:0;transition:opacity .4s ease;
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.challenge-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px -24px rgba(10,10,10,.5);border-color:rgba(255,77,77,.25)!important;}
+.challenge-card:hover::after{opacity:1;}
+.card-xp{
+  background:var(--grad-warm);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;font-weight:700;
+}
+
+/* ---------- Daily challenge hero card ---------- */
+.daily-challenge{
+  position:relative;
+  background:linear-gradient(160deg,#15151b 0%,#0b0b10 100%)!important;
+  border:1px solid rgba(255,255,255,0.1)!important;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.8);overflow:hidden;
+}
+.daily-challenge::before{
+  content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:var(--grad-mix);opacity:.5;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+.daily-challenge::after{
+  content:"";position:absolute;top:-50%;left:-30%;width:60%;height:200%;
+  background:radial-gradient(closest-side,rgba(255,77,77,.18),transparent);
+  animation:sheen 9s ease-in-out infinite alternate;pointer-events:none;
+}
+@keyframes sheen{0%{transform:translateX(0)}100%{transform:translateX(220%)}}
+.daily-challenge>*{position:relative;z-index:1;}
+.challenge-badge{background:var(--grad-warm)!important;color:#fff!important;border:none!important;box-shadow:0 8px 20px -8px rgba(255,77,77,.7);}
+.challenge-timer{font-family:'Space Mono',monospace;color:#cfcfe0!important;}
+.formula-display,.formula-box,.card-formula{
+  font-family:'Space Mono',monospace!important;
+  background:rgba(255,255,255,0.04)!important;
+  border:1px solid rgba(255,255,255,0.1)!important;
+  border-left:3px solid var(--accent)!important;border-radius:12px!important;
+}
+.card-formula{background:rgba(10,10,10,.04)!important;border:1px solid rgba(10,10,10,.08)!important;border-left:3px solid var(--accent)!important;color:#0a0a0a;}
+
+/* ---------- Inputs ---------- */
+input[type="number"],input[type="text"],.answer-input,.demo-input{
+  border-radius:12px!important;
+  transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
+}
+input[type="number"]:focus,input[type="text"]:focus,.answer-input:focus,.demo-input:focus{
+  outline:none;border-color:var(--accent)!important;
+  box-shadow:0 0 0 4px rgba(255,77,77,.16)!important;
+}
+.challenge-result.correct,.card-result.correct,.demo-result.correct{
+  border-radius:12px;
+}
+
+/* ---------- Profile ---------- */
+.profile-avatar{background:var(--grad-mix)!important;box-shadow:0 16px 40px -14px rgba(157,77,255,.6);}
+.stat-card{background:#1A1714!important;border:1px solid rgba(10,10,10,.07)!important;box-shadow:var(--shadow-soft);transition:transform .35s ease,box-shadow .35s ease;}
+.stat-card:hover{transform:translateY(-6px);box-shadow:0 26px 52px -22px rgba(10,10,10,.45);}
+.progress-bar{border-radius:999px!important;overflow:hidden;background:rgba(10,10,10,.08)!important;}
+.progress-fill,.xp-bar>*{background:var(--grad-mix)!important;border-radius:999px!important;}
+
+/* ---------- Blockchain blocks ---------- */
+.block{
+  background:#1A1714!important;border:1px solid rgba(10,10,10,.08)!important;
+  box-shadow:var(--shadow-soft);transition:transform .35s ease,box-shadow .35s ease;
+}
+.block:hover{transform:translateY(-5px);box-shadow:0 26px 54px -24px rgba(10,10,10,.5);}
+.hash{font-family:'Space Mono',monospace!important;color:var(--accent-secondary);word-break:break-all;}
+
+/* ---------- Concepts ---------- */
+.concept-section{background:#1A1714!important;border:1px solid rgba(10,10,10,.07)!important;box-shadow:var(--shadow-soft);}
+.concept-number{color:var(--accent);font-weight:700;}
+.interactive-demo{background:linear-gradient(160deg,#15151b,#0b0b10)!important;border:1px solid rgba(255,255,255,0.1)!important;color:#fff;}
+.demo-result{border-radius:12px!important;}
+
+/* ---------- Reveal animation ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.16,.84,.44,1),transform .8s cubic-bezier(.16,.84,.44,1);}
+.reveal.active{opacity:1;transform:none;}
+
+/* ---------- Footer ---------- */
+footer{border-top:1px solid rgba(255,255,255,0.08);}
+footer a{color:var(--accent);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+/* ---------- Scrollbar ---------- */
+*::-webkit-scrollbar{width:11px;height:11px;}
+*::-webkit-scrollbar-thumb{background:linear-gradient(var(--accent),var(--accent-3));border-radius:999px;border:3px solid transparent;background-clip:padding-box;}
+*::-webkit-scrollbar-track{background:transparent;}
+
+/* ---------- Mobile niceties ---------- */
+@media(max-width:768px){
+  .navbar{top:8px;width:calc(100% - 16px);padding:.7rem 1rem;}
+  .topics-grid{gap:16px!important;}
+}
+</style>
+<style id="page-extras">
+.lead{font-size:1.15rem;color:var(--gray);line-height:1.85;max-width:820px;}
+.section-tag{font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem;display:block;}
+.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:2rem 0;}
+.fact{background:#1A1714;border:1px solid rgba(10,10,10,.07);border-radius:18px;padding:1.4rem;box-shadow:var(--shadow-soft);}
+.fact .num{font-family:'Space Mono',monospace;font-size:1.9rem;font-weight:700;background:var(--grad-mix);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.fact .lbl{font-size:.8rem;color:var(--gray);margin-top:.3rem;}
+/* Versus two-column */
+.vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:1.2rem;align-items:stretch;margin:2rem 0;}
+.vs-card{border-radius:20px;padding:1.8rem;border:1px solid rgba(10,10,10,.08);box-shadow:var(--shadow-soft);}
+.vs-card.classic{background:linear-gradient(160deg,#241F19,#15120D);}
+.vs-card.quantum{background:linear-gradient(160deg,#0f0f16,#0b0b12);color:#eee;border-color:rgba(255,255,255,0.12);}
+.vs-card h3{font-size:1.25rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
+.vs-card.quantum .muted,.vs-card .muted{color:var(--gray);font-size:.9rem;}
+.vs-card.quantum .muted{color:#a9a9c0;}
+.vs-card ul{list-style:none;margin:.8rem 0 0;padding:0;}
+.vs-card li{padding:.45rem 0;border-bottom:1px dashed rgba(128,128,128,.25);font-size:.95rem;}
+.vs-mid{display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:700;color:var(--accent);font-size:1.3rem;}
+@media(max-width:760px){.vs-grid{grid-template-columns:1fr;}.vs-mid{padding:.4rem;}}
+/* Comparison table */
+.cmp-wrap{overflow-x:auto;border-radius:18px;border:1px solid rgba(10,10,10,.08);box-shadow:var(--shadow-soft);margin:2rem 0;}
+table.cmp{width:100%;border-collapse:collapse;min-width:640px;background:#1A1714;}
+table.cmp th,table.cmp td{padding:1rem 1.1rem;text-align:left;border-bottom:1px solid rgba(10,10,10,.07);font-size:.92rem;}
+table.cmp th{background:#0f0f14;color:#fff;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem;}
+table.cmp tr:last-child td{border-bottom:none;}
+.tag-broken{color:#c62828;font-weight:700;}
+.tag-safe{color:#1b7a3d;font-weight:700;}
+.pill{display:inline-block;font-family:'Space Mono',monospace;font-size:.72rem;padding:.2rem .6rem;border-radius:999px;background:rgba(255,77,77,.1);color:var(--accent);border:1px solid rgba(255,77,77,.25);}
+/* Bar chart */
+.bars{margin:2rem 0;display:flex;flex-direction:column;gap:1rem;}
+.bar-row{display:grid;grid-template-columns:170px 1fr;gap:1rem;align-items:center;}
+.bar-row .name{font-size:.85rem;font-weight:600;}
+.bar-track{background:rgba(10,10,10,.06);border-radius:999px;height:26px;position:relative;overflow:hidden;}
+.bar-fill{height:100%;border-radius:999px;display:flex;align-items:center;justify-content:flex-end;padding-right:.7rem;color:#fff;font-family:'Space Mono',monospace;font-size:.72rem;white-space:nowrap;width:0;transition:width 1.4s cubic-bezier(.16,.84,.44,1);}
+.bar-fill.warm{background:var(--grad-warm);}
+.bar-fill.cool{background:var(--grad-cool);}
+.bar-fill.dark{background:linear-gradient(135deg,#16161f,#2a2a3d);}
+@media(max-width:600px){.bar-row{grid-template-columns:110px 1fr;}}
+/* Math block */
+.math{background:#0d0d13;color:#f3f3f7;border-radius:14px;padding:1.4rem 1.6rem;font-family:'Space Mono',monospace;font-size:1rem;line-height:1.9;margin:1.2rem 0;border-left:3px solid var(--accent);overflow-x:auto;}
+.math .c{color:#ff8a8a;}.math .v{color:#8ab4ff;}.math .g{color:#8ee6a8;}.math .dim{color:#9a9ab0;}
+.note{font-size:.85rem;color:var(--gray);font-style:italic;margin-top:.4rem;}
+/* Timeline */
+.timeline{position:relative;margin:2rem 0;padding-left:28px;}
+.timeline::before{content:'';position:absolute;left:9px;top:4px;bottom:4px;width:2px;background:var(--grad-mix);}
+.tl{position:relative;margin-bottom:1.6rem;}
+.tl::before{content:'';position:absolute;left:-24px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(255,77,77,.18);}
+.tl .yr{font-family:'Space Mono',monospace;font-weight:700;color:var(--accent);}
+/* Diagram chips */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:1.4rem 0;font-family:'Space Mono',monospace;font-size:.85rem;}
+.flow .step{background:#1A1714;border:1px solid rgba(10,10,10,.1);border-radius:12px;padding:.7rem 1rem;box-shadow:var(--shadow-soft);}
+.flow .arrow{color:var(--accent);font-weight:700;}
+.flow .step.dark{background:#0f0f16;color:#fff;border-color:rgba(255,255,255,0.12);}
+/* Journal */
+.filter-bar{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.5rem 0 2.5rem;}
+.filter-btn{font-family:'Space Mono',monospace;font-size:.75rem;padding:.5rem 1rem;border-radius:999px;border:1px solid rgba(10,10,10,.15);background:#1A1714;cursor:pointer;transition:all .25s ease;}
+.filter-btn.active{background:var(--grad-warm);color:#fff;border-color:transparent;}
+.journal-card{background:#1A1714;border:1px solid rgba(10,10,10,.07);border-radius:20px;padding:2rem;margin-bottom:1.5rem;box-shadow:var(--shadow-soft);transition:transform .35s ease,box-shadow .35s ease;}
+.journal-card:hover{transform:translateY(-5px);box-shadow:0 26px 52px -22px rgba(10,10,10,.45);}
+.journal-meta{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;font-family:'Space Mono',monospace;font-size:.72rem;color:var(--gray);margin-bottom:.8rem;}
+.journal-card h3{font-size:1.5rem;font-weight:800;margin-bottom:.6rem;letter-spacing:-.01em;}
+.journal-card .tags{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.4rem;}
+.jtag{font-size:.68rem;padding:.2rem .6rem;border-radius:999px;background:rgba(93,93,255,.1);color:var(--accent-secondary);border:1px solid rgba(93,93,255,.2);font-family:'Space Mono',monospace;}
+.journal-card details summary{cursor:pointer;color:var(--accent);font-weight:700;margin-top:1rem;font-size:.9rem;list-style:none;}
+.journal-card details summary::-webkit-details-marker{display:none;}
+.journal-card details[open] summary{margin-bottom:.8rem;}
+.journal-card details p{color:var(--gray);line-height:1.85;margin-bottom:.8rem;}
+/* SVG card */
+.gfx{background:linear-gradient(160deg,#0f0f16,#0b0b12);border-radius:20px;padding:2rem;margin:2rem 0;border:1px solid rgba(255,255,255,0.1);}
+.gfx svg{width:100%;height:auto;display:block;}
+.gfx .cap{color:#a9a9c0;font-size:.82rem;text-align:center;margin-top:1rem;font-family:'Space Mono',monospace;}
+.callout-box{background:linear-gradient(135deg,rgba(255,77,77,.08),rgba(157,77,255,.08));border:1px solid rgba(255,77,77,.2);border-radius:18px;padding:1.6rem 1.8rem;margin:2rem 0;}
+.callout-box h4{margin-bottom:.5rem;font-size:1.05rem;}
+.demo-btn{margin-top:1rem;padding:.9rem 1.5rem;border:none;border-radius:999px;background:var(--grad-warm);color:#fff;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.05em;cursor:pointer;}
+.hash-out{margin-top:1rem;background:#0d0d13;color:#8ee6a8;border-radius:12px;padding:1rem;font-family:'Space Mono',monospace;font-size:.8rem;word-break:break-all;border:1px solid rgba(255,255,255,0.1);}
+</style>
+<style id="nav-tweaks">.nav-links{gap:1.3rem;}.nav-links a{font-size:.78rem;white-space:nowrap;}.nav-links a.active{color:var(--accent);}@media(max-width:1120px){.navbar{padding:.75rem 1rem;}.nav-links{gap:.95rem;}}</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    
+    <style id="neumorph-theme">
+:root{
+  --bg:#1A1714;--fg:#3D4852;--muted:#6B7280;--accent:#C9A24B;--accent-light:#E3C77A;--accent-2:#A9823A;
+  --ex:9px 9px 16px rgba(0,0,0,0.6),-9px -9px 16px rgba(255,255,255,0.05);
+  --ex-hover:12px 12px 20px rgba(0,0,0,0.7),-12px -12px 20px rgba(255,255,255,0.05);
+  --ex-sm:5px 5px 10px rgba(0,0,0,0.6),-5px -5px 10px rgba(255,255,255,0.05);
+  --in:inset 6px 6px 10px rgba(0,0,0,0.6),inset -6px -6px 10px rgba(255,255,255,0.05);
+  --in-deep:inset 10px 10px 20px rgba(0,0,0,0.7),inset -10px -10px 20px rgba(255,255,255,0.05);
+  --in-sm:inset 3px 3px 6px rgba(0,0,0,0.6),inset -3px -3px 6px rgba(255,255,255,0.05);
+}
+html,body{background:#1A1714 !important;color:var(--fg) !important;font-family:'DM Sans',system-ui,sans-serif !important;scroll-behavior:smooth;scroll-padding-top:96px;}
+h1,h2,h3,h4,h5,.logo,.font-display{font-family:'Plus Jakarta Sans','DM Sans',sans-serif !important;letter-spacing:-0.02em;color:var(--fg) !important;}
+a{text-decoration:none;}
+::selection{background:rgba(201,162,75,.25);}
+/* decorative floating tiles instead of colour orbs */
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{display:none !important;}
+.bg-orbs::before,.bg-orbs::after{content:"";position:absolute;border-radius:50%;background:#1A1714;box-shadow:var(--ex);opacity:.55;animation:nfloat 7s ease-in-out infinite;}
+.bg-orbs::before{width:200px;height:200px;top:16%;left:5%;}
+.bg-orbs::after{width:130px;height:130px;bottom:14%;right:7%;animation-delay:2.5s;}
+@keyframes nfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-24px)}}
+/* NAVBAR */
+.navbar{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:auto !important;transform:none !important;z-index:1000;display:flex !important;flex-direction:row !important;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1.6rem !important;margin:0 !important;width:auto !important;max-width:none !important;border-radius:0 !important;background:#1A1714 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border:none !important;box-shadow:0 8px 18px rgba(0,0,0,0.55) !important;}
+.navbar.scrolled{box-shadow:0 10px 24px rgba(0,0,0,0.72) !important;}
+.logo{font-weight:800 !important;font-size:1.25rem !important;color:var(--fg) !important;background:none !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links{display:flex !important;align-items:center;gap:1rem !important;}
+.nav-links a{color:var(--fg) !important;font-weight:600 !important;font-size:.8rem !important;padding:.4rem .25rem;white-space:nowrap;transition:color .3s ease,transform .3s ease;background:none !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links a:hover{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;transform:translateY(-1px);}
+.nav-links a.active{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;}
+.lang-toggle{display:flex !important;align-items:center;gap:.45rem;padding:.4rem .75rem;border-radius:9999px;background:#1A1714;box-shadow:var(--in-sm);cursor:pointer;}
+.lang-toggle span{font-size:.72rem;font-weight:700;color:var(--muted);}
+.lang-toggle span.active{color:var(--accent);}
+.lang-toggle .divider{width:1px;height:12px;background:rgba(61,72,82,.25);}
+.nav-burger{display:none;width:44px;height:44px;border:none;border-radius:14px;background:#1A1714;box-shadow:var(--ex-sm);cursor:pointer;position:relative;flex:0 0 auto;}
+.nav-burger span,.nav-burger::before,.nav-burger::after{content:"";position:absolute;left:11px;right:11px;height:2px;background:var(--fg);border-radius:2px;transition:.3s;}
+.nav-burger span{top:21px;}
+.nav-burger::before{top:15px;}
+.nav-burger::after{top:27px;}
+#authButton{display:flex;align-items:center;}
+#authButton a,#authButton button{color:var(--accent) !important;font-weight:700 !important;}
+@media(max-width:900px){
+  .nav-burger{display:block;}
+  .nav-links{position:absolute;top:62px;left:1rem;right:1rem;flex-direction:column !important;align-items:stretch;gap:.3rem;padding:0 1rem;background:#1A1714;border-radius:24px;box-shadow:var(--ex);max-height:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-height .35s ease,opacity .3s ease,padding .3s ease;}
+  .nav-links.open{max-height:85vh;opacity:1;pointer-events:auto;padding:1rem;}
+  .nav-links a{padding:.7rem .4rem;font-size:.95rem !important;}
+  .lang-toggle{justify-content:center;margin-top:.4rem;}
+}
+/* HERO */
+.hero,.page-hero{background:#1A1714 !important;color:var(--fg) !important;position:relative;overflow:hidden;}
+.hero::before,.page-hero::before,.hero::after{display:none !important;background:none !important;}
+.page-hero{padding:9rem 1.5rem 4rem !important;text-align:center;}
+.page-hero::after{display:block !important;content:"" !important;position:absolute;width:240px;height:240px;border-radius:50%;right:-70px;top:18%;background:#1A1714;box-shadow:var(--ex);opacity:.5;animation:nfloat 8s ease-in-out infinite;pointer-events:none;}
+.page-hero h1,.hero h1{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;background:none !important;font-weight:800 !important;}
+.page-hero p,.hero p,.hero-subtitle,.subtitle{color:var(--muted) !important;}
+.hero-content,.page-hero>*{position:relative;z-index:3;}
+/* CONTAINERS */
+.container{position:relative;z-index:1;max-width:1120px;margin:0 auto;}
+section{position:relative;z-index:1;}
+/* CARDS */
+.topic-card,.feature-card,.stat-card,.challenge-card,.daily-challenge,.concept-section,.interactive-demo,.vs-card,.vs-card.classic,.vs-card.quantum,.journal-card,.callout-box,.progress-item,.progress-section,.profile-header,.fact,.cmp-wrap,.blockchain-box,.card,.info-card,.benefit-card,.demo-card{background:#1A1714 !important;border:none !important;border-radius:28px !important;box-shadow:var(--ex) !important;color:var(--fg) !important;}
+.topic-card:hover,.feature-card:hover,.journal-card:hover,.fact:hover,.stat-card:hover,.challenge-card:hover,.card:hover{transform:translateY(-3px);box-shadow:var(--ex-hover) !important;}
+.vs-card.quantum .muted,.vs-card .muted{color:var(--muted) !important;}
+.vs-card li{border-bottom:1px solid rgba(0,0,0,.4) !important;}
+.vs-mid{color:var(--accent) !important;}
+.section-tag,.eyebrow,.badge-label{color:var(--accent) !important;}
+.lead,.note,.muted,.dim{color:var(--muted) !important;}
+/* dark display screens (code + svg graphics) kept as raised dark tiles */
+.math,.gfx{background:#2a2f3a !important;border:none !important;border-radius:20px !important;box-shadow:var(--ex) !important;color:#e8ebf2 !important;}
+.math .c{color:#9aa0ad !important;}
+.gfx .cap{color:#aeb6c4 !important;}
+.flow .step{background:#1A1714 !important;box-shadow:var(--ex-sm) !important;border:none !important;border-radius:14px !important;color:var(--fg) !important;}
+.flow .step.dark{background:var(--accent) !important;color:#fff !important;}
+.flow .arrow{color:var(--accent) !important;}
+/* output wells */
+.demo-result,.hash-out,.formula-box,.formula-display,.card-formula,.formula{background:#1A1714 !important;color:var(--fg) !important;box-shadow:var(--in) !important;border:none !important;border-radius:16px !important;}
+/* BUTTONS */
+.btn,.btn-primary,.btn-outline,.btn-secondary,.demo-btn,.quick-btn,.filter-btn,.btn-logout,.cta-button,.start-btn,.check-btn,.submit-btn{font-family:'Plus Jakarta Sans',sans-serif !important;border:none !important;border-radius:16px !important;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease,background .3s ease;background:#1A1714 !important;color:var(--fg) !important;box-shadow:var(--ex) !important;}
+.btn:hover,.btn-primary:hover,.btn-outline:hover,.btn-secondary:hover,.demo-btn:hover,.quick-btn:hover,.filter-btn:hover,.btn-logout:hover,.cta-button:hover,.start-btn:hover,.check-btn:hover,.submit-btn:hover{transform:translateY(-1px);box-shadow:var(--ex-hover) !important;}
+.btn:active,.btn-primary:active,.btn-outline:active,.demo-btn:active,.quick-btn:active,.filter-btn:active,.btn-logout:active,.cta-button:active,.check-btn:active,.submit-btn:active{transform:translateY(.5px);box-shadow:var(--in-sm) !important;}
+.btn-primary,.demo-btn,.cta-button,.start-btn,.check-btn,.submit-btn,.filter-btn.active{background:var(--accent) !important;color:#fff !important;}
+.btn-primary:active,.demo-btn:active,.cta-button:active,.filter-btn.active:active{box-shadow:inset 4px 4px 8px rgba(201,162,75,.45),inset -4px -4px 8px rgba(255,255,255,0.05) !important;}
+.quick-btn,.filter-btn{font-size:.78rem !important;padding:.5rem 1.05rem !important;border-radius:9999px !important;box-shadow:var(--ex-sm) !important;}
+/* INPUTS */
+.demo-input,#aiChatInput,input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{background:#1A1714 !important;border:none !important;border-radius:16px !important;color:var(--fg) !important;box-shadow:var(--in) !important;padding:.85rem 1rem !important;font-family:'DM Sans',sans-serif !important;}
+.demo-input:focus,#aiChatInput:focus,input:focus,select:focus,textarea:focus{outline:none !important;box-shadow:var(--in-deep) !important;}
+::placeholder{color:#A0AEC0 !important;}
+.demo-input-group{gap:.8rem !important;}
+/* PROGRESS / XP */
+.progress-bar,.xp-bar .progress-bar,.xp-track,.progress-track{background:#1A1714 !important;box-shadow:var(--in-sm) !important;border-radius:9999px !important;overflow:hidden;border:none !important;}
+.progress-fill,#xpFill,.xp-fill{background:linear-gradient(90deg,var(--accent),var(--accent-light)) !important;}
+.profile-avatar{border:none !important;box-shadow:var(--ex) !important;background:#1A1714 !important;color:var(--accent) !important;}
+.stat-card .num,.fact .num,.stat-number,.stat-value,.big-number{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;background:none !important;}
+.concept-section{background:none !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:0 0 4.5rem 0 !important;}
+.concept-header{display:flex !important;align-items:center;gap:1.4rem;margin-bottom:1.8rem !important;}
+.concept-number{font-family:'Plus Jakarta Sans',sans-serif !important;font-size:1.5rem !important;font-weight:800 !important;line-height:1 !important;background:var(--accent) !important;color:#fff !important;-webkit-text-fill-color:#fff !important;box-shadow:var(--ex-sm) !important;border:none !important;padding:.7rem 1rem !important;border-radius:16px !important;min-width:3.4rem;text-align:center;flex:0 0 auto;}
+.concept-title{display:flex;flex-direction:column;justify-content:center;}
+.concept-title h2{font-size:1.9rem !important;font-weight:800 !important;margin:0 0 .25rem 0 !important;color:var(--fg) !important;line-height:1.15;}
+.concept-title p,.concept-sub{color:var(--muted) !important;font-size:.78rem !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:.12em;margin:0 !important;}
+.concept-content{background:#1A1714 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border:none !important;border-radius:28px !important;box-shadow:var(--ex) !important;padding:2.4rem !important;margin-bottom:1.6rem !important;color:var(--fg) !important;}
+.concept-content:hover{transform:none !important;box-shadow:var(--ex) !important;}
+/* TABLES */
+table.cmp,.cmp{background:#1A1714 !important;border-radius:18px;overflow:hidden;}
+table.cmp th{background:var(--accent) !important;color:#fff !important;}
+table.cmp td{border-bottom:1px solid rgba(0,0,0,.35) !important;color:var(--fg) !important;}
+.tag-broken{color:#c0392b !important;font-weight:700;}
+.tag-safe{color:#1e7a46 !important;font-weight:700;}
+.pill,.jtag{background:#1A1714 !important;box-shadow:var(--in-sm) !important;color:var(--accent) !important;border:none !important;}
+/* BARS CHART */
+.bar-track{background:#1A1714 !important;box-shadow:var(--in) !important;border:none !important;}
+.bar-fill.warm{background:linear-gradient(90deg,var(--accent),var(--accent-light)) !important;}
+.bar-fill.cool{background:linear-gradient(90deg,var(--accent-2),#E3C77A) !important;}
+.bar-fill.dark{background:linear-gradient(90deg,#6B7280,#9aa4b2) !important;}
+/* TIMELINE */
+.timeline::before{background:linear-gradient(var(--accent),var(--accent-2)) !important;}
+.tl::before{background:var(--accent) !important;box-shadow:0 0 0 4px rgba(201,162,75,.18) !important;}
+.tl .yr,.timeline .yr{color:var(--accent) !important;}
+.journal-meta{color:var(--muted) !important;}
+.journal-card details summary{color:var(--accent) !important;cursor:pointer;}
+/* FOOTER */
+footer{background:#1A1714 !important;color:var(--muted) !important;border:none !important;box-shadow:0 -8px 18px rgba(0,0,0,.4) !important;}
+footer a{color:var(--accent) !important;}
+/* CURSOR */
+.cursor{background:rgba(201,162,75,.22) !important;mix-blend-mode:normal !important;border:2px solid var(--accent) !important;}
+.cursor.hover,.cursor.active{background:rgba(201,162,75,.12) !important;}
+@media(max-width:900px){.cursor{display:none !important;}}
+/* CHATBOT */
+#aiChatToggle,.ai-chat-toggle{background:var(--accent) !important;color:#fff !important;box-shadow:var(--ex) !important;border:none !important;}
+#aiChatWindow,.ai-chat-window{background:#1A1714 !important;box-shadow:var(--ex-hover) !important;border:none !important;border-radius:28px !important;}
+.ai-chat-header,#aiChatWindow .ai-chat-header{background:var(--accent) !important;color:#fff !important;border:none !important;}
+#aiChatMessages>*{border-radius:16px !important;}
+#aiSendBtn,.ai-send-btn{background:var(--accent) !important;color:#fff !important;box-shadow:var(--ex-sm) !important;border:none !important;border-radius:14px !important;}
+#aiQuickQuestions{display:flex;flex-wrap:wrap;gap:.5rem;}
+/* focus accessibility */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,.lang-toggle:focus-visible{outline:2px solid var(--accent) !important;outline-offset:2px;}
+/* reduce motion pref */
+body.reduce-motion *{animation:none !important;}
+</style>
+<style id="chatbot-css">
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ai-chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff6b6b 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 77, 77, 0.4), 0 0 40px rgba(255, 77, 77, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .ai-chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(255, 77, 77, 0.5), 0 0 60px rgba(255, 77, 77, 0.3);
+        }
+
+        .ai-chat-toggle svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .ai-chat-toggle .close-icon {
+            position: absolute;
+            opacity: 0;
+            transform: rotate(-90deg);
+        }
+
+        .ai-chat-widget.open .ai-chat-toggle .chat-icon {
+            opacity: 0;
+            transform: rotate(90deg);
+        }
+
+        .ai-chat-widget.open .ai-chat-toggle .close-icon {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
+            background: #00d4aa;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .ai-chat-widget.open .chat-badge,
+        .chat-badge.hidden {
+            opacity: 0;
+        }
+
+        .ai-chat-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            max-width: calc(100vw - 48px);
+            height: 550px;
+            max-height: calc(100vh - 150px);
+            background: rgba(20, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 77, 77, 0.1);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .ai-chat-widget.open .ai-chat-window {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .ai-chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(255, 77, 77, 0.15) 0%, rgba(255, 107, 107, 0.1) 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff6b6b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ai-avatar svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .ai-header-info {
+            flex: 1;
+        }
+
+        .ai-header-info h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .ai-status {
+            font-size: 12px;
+            color: #00d4aa;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #00d4aa;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ai-chat-minimize {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .ai-chat-minimize:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .ai-chat-minimize svg {
+            width: 18px;
+            height: 18px;
+            color: rgba(255,255,255,0.05);
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ai-chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ai-chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ai-chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+        }
+
+        .ai-message {
+            display: flex;
+            gap: 10px;
+            max-width: 95%;
+            animation: messageIn 0.3s ease;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-message.user {
+            flex-direction: row-reverse;
+            align-self: flex-end;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff6b6b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .message-avatar svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .ai-message.user .message-avatar {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        }
+
+        .message-content {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            border-top-left-radius: 4px;
+            padding: 12px 16px;
+            color: rgba(255,255,255,0.05);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .ai-message.user .message-content {
+            background: linear-gradient(135deg, var(--accent) 0%, #ff6b6b 100%);
+            border-radius: 16px;
+            border-top-right-radius: 4px;
+            color: white;
+        }
+
+        .message-content p {
+            margin: 0 0 8px 0;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-content ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .message-content li {
+            margin: 4px 0;
+            color: rgba(255,255,255,0.05);
+        }
+
+        .message-content code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        .message-content pre {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+
+        .message-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .ai-quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 20px 12px 20px;
+        }
+
+        .quick-btn {
+            padding: 8px 14px;
+            background: rgba(255, 77, 77, 0.15);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.05);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 77, 77, 0.25);
+            border-color: rgba(255, 77, 77, 0.5);
+            color: white;
+        }
+
+        .ai-chat-input-container {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-chat-input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 10px 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+        }
+
+        .ai-chat-input-wrapper:focus-within {
+            border-color: rgba(255, 77, 77, 0.5);
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.1);
+        }
+
+        #aiChatInput {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            max-height: 100px;
+            line-height: 1.5;
+        }
+
+        #aiChatInput::placeholder {
+            color: rgba(255,255,255,0.05);
+        }
+
+        .ai-send-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff6b6b 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .ai-send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.4);
+        }
+
+        .ai-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .ai-send-btn svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .ai-disclaimer {
+            margin: 10px 0 0 0;
+            font-size: 11px;
+            color: rgba(255,255,255,0.05);
+            text-align: center;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        /* RTL Support */
+        [dir="rtl"] .ai-chat-widget {
+            right: auto;
+            left: 24px;
+        }
+
+        [dir="rtl"] .ai-chat-window {
+            right: auto;
+            left: 0;
+        }
+
+        [dir="rtl"] .ai-message.user {
+            flex-direction: row;
+        }
+
+        [dir="rtl"] .message-content {
+            border-top-left-radius: 16px;
+            border-top-right-radius: 4px;
+        }
+
+        [dir="rtl"] .ai-message.user .message-content {
+            border-top-right-radius: 16px;
+            border-top-left-radius: 4px;
+        }
+</style>
+
+<style id="gamify-css">
+.gmf-chip{position:fixed;left:18px;bottom:18px;z-index:9990;display:flex;align-items:center;gap:.55rem;padding:.6rem .95rem;border-radius:999px;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,6px 6px 12px #bec3c9,-6px -6px 12px #fff);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--fg,#3D4852);border:none;transition:transform .2s,box-shadow .2s;user-select:none;}
+.gmf-chip:hover{transform:translateY(-2px);}
+.gmf-chip:active{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.gmf-chip .gmf-fire{font-size:1.05rem;}
+.gmf-chip .gmf-sep{width:1px;height:16px;background:rgba(0,0,0,.12);}
+.gmf-chip .gmf-lv{color:var(--accent,#C9A24B);}
+@media(max-width:600px){.gmf-chip{left:12px;bottom:12px;padding:.5rem .8rem;font-size:.85rem;}}
+.gmf-overlay{position:fixed;inset:0;background:rgba(30,34,40,.35);backdrop-filter:blur(3px);z-index:9995;opacity:0;pointer-events:none;transition:opacity .25s;}
+.gmf-overlay.open{opacity:1;pointer-events:auto;}
+.gmf-panel{position:fixed;z-index:9996;top:50%;left:50%;transform:translate(-50%,-46%) scale(.96);width:min(440px,92vw);max-height:88vh;overflow-y:auto;background:var(--bg,#1A1714);border-radius:30px;box-shadow:10px 10px 30px #b8bcc2,-10px -10px 30px #fff;padding:1.6rem 1.5rem 1.8rem;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;font-family:'DM Sans',sans-serif;color:var(--fg,#3D4852);}
+.gmf-panel.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+.gmf-panel h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;margin:0 0 .15rem;text-align:center;}
+.gmf-panel .gmf-cta{text-align:center;color:var(--muted,#6B7280);font-size:.82rem;margin:.1rem 0 .2rem;}
+.gmf-close{position:absolute;top:14px;right:16px;width:34px;height:34px;border:none;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,5px 5px 10px #bec3c9,-5px -5px 10px #fff);cursor:pointer;color:var(--fg,#3D4852);font-size:1rem;}
+.gmf-close:active{box-shadow:var(--in-sm,inset 3px 3px 6px #bec3c9,inset -3px -3px 6px #fff);}
+.gmf-ring{width:130px;height:130px;border-radius:50%;margin:.9rem auto 1rem;display:flex;align-items:center;justify-content:center;box-shadow:9px 9px 18px #bec3c9,-9px -9px 18px #fff;}
+.gmf-ring-inner{width:98px;height:98px;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--in,inset 5px 5px 10px #bec3c9,inset -5px -5px 10px #fff);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.gmf-lvnum{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.9rem;font-weight:800;color:var(--accent,#C9A24B);line-height:1;}
+.gmf-lvlbl{font-size:.66rem;color:var(--muted,#6B7280);text-transform:uppercase;letter-spacing:.08em;}
+.gmf-stat-row{display:flex;gap:.7rem;margin:.2rem 0 1rem;}
+.gmf-stat{flex:1;text-align:center;padding:.8rem .3rem;border-radius:18px;background:var(--bg,#1A1714);box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.gmf-stat b{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;color:var(--fg,#3D4852);}
+.gmf-stat span{font-size:.66rem;color:var(--muted,#6B7280);}
+.gmf-barlbl{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted,#6B7280);margin:.2rem 0 .35rem;}
+.gmf-track{height:14px;border-radius:999px;background:var(--bg,#1A1714);box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);overflow:hidden;}
+.gmf-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#C9A24B,#E3C77A);transition:width .5s;width:0;}
+.gmf-fill.goal{background:linear-gradient(90deg,#A9823A,#C9A24B);}
+.gmf-sec-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;margin:1.3rem 0 .7rem;font-size:1rem;}
+.gmf-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:.7rem;}
+.gmf-badge{text-align:center;padding:.7rem .15rem;border-radius:18px;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,5px 5px 10px #bec3c9,-5px -5px 10px #fff);}
+.gmf-badge .gmf-be{font-size:1.5rem;filter:grayscale(1);opacity:.3;}
+.gmf-badge.un .gmf-be{filter:none;opacity:1;}
+.gmf-badge small{display:block;margin-top:.25rem;font-size:.58rem;color:var(--muted,#6B7280);line-height:1.2;}
+.gmf-toasts{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:10000;display:flex;flex-direction:column;gap:.5rem;align-items:center;pointer-events:none;}
+.gmf-toast{background:var(--bg,#1A1714);box-shadow:6px 6px 14px #bec3c9,-6px -6px 14px #fff;border-radius:16px;padding:.7rem 1.1rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--fg,#3D4852);display:flex;align-items:center;gap:.5rem;opacity:0;transform:translateY(-12px);transition:opacity .3s,transform .3s;font-size:.9rem;}
+.gmf-toast.show{opacity:1;transform:none;}
+.gmf-toast .gmf-tx{color:var(--accent,#C9A24B);}
+.gmf-toast .gmf-be{font-size:1.3rem;}
+</style>
+<style id="edu-css">
+.edu-skip{position:fixed;top:-60px;left:12px;z-index:10070;background:var(--accent,#C9A24B);color:#fff;padding:.7rem 1.1rem;border-radius:0 0 14px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;text-decoration:none;transition:top .2s;}
+.edu-skip:focus{top:0;outline:3px solid #fff;}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent,#C9A24B)!important;outline-offset:2px!important;border-radius:6px;}
+.edu-fab{position:fixed;left:18px;bottom:74px;z-index:9985;width:48px;height:48px;border:none;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,6px 6px 12px #bec3c9,-6px -6px 12px #fff);color:var(--fg,#3D4852);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;}
+.edu-fab:hover{transform:translateY(-2px);}
+.edu-fab:active{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.edu-top{position:fixed;right:20px;bottom:92px;z-index:9985;width:46px;height:46px;border:none;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,6px 6px 12px #bec3c9,-6px -6px 12px #fff);color:var(--accent,#C9A24B);font-size:1.3rem;font-weight:800;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s,transform .25s;}
+.edu-top.show{opacity:1;pointer-events:auto;transform:none;}
+.edu-top:active{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.edu-ov{position:fixed;inset:0;background:rgba(30,34,40,.4);backdrop-filter:blur(4px);z-index:10060;display:flex;align-items:flex-start;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding-top:12vh;}
+.edu-ov.open{opacity:1;pointer-events:auto;}
+.edu-search{width:min(560px,92vw);background:var(--bg,#1A1714);border-radius:24px;box-shadow:10px 10px 30px #b3b8be,-10px -10px 30px #fff;padding:1rem;font-family:'DM Sans',sans-serif;transform:translateY(-12px) scale(.98);transition:transform .2s;}
+.edu-ov.open .edu-search{transform:none;}
+.edu-shead{margin-bottom:.7rem;}
+.edu-sinput{width:100%;box-sizing:border-box;border:none;border-radius:16px;padding:.95rem 1.1rem;font-size:1.05rem;font-family:'DM Sans',sans-serif;background:var(--bg,#1A1714);color:var(--fg,#3D4852);box-shadow:var(--in,inset 5px 5px 10px #bec3c9,inset -5px -5px 10px #fff);}
+.edu-sinput::placeholder{color:var(--muted,#6B7280);}
+.edu-slist{max-height:46vh;overflow-y:auto;display:flex;flex-direction:column;gap:.45rem;}
+.edu-sitem{display:flex;align-items:center;gap:.8rem;width:100%;text-align:start;border:none;cursor:pointer;border-radius:16px;padding:.7rem .85rem;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,5px 5px 10px #bec3c9,-5px -5px 10px #fff);color:var(--fg,#3D4852);font-family:'DM Sans',sans-serif;transition:box-shadow .15s;}
+.edu-sitem.sel{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.edu-sic{font-size:1.3rem;flex:0 0 auto;width:30px;text-align:center;}
+.edu-stext{display:flex;flex-direction:column;line-height:1.25;flex:1;}
+.edu-stext b{font-family:'Plus Jakarta Sans',sans-serif;font-size:.98rem;}
+.edu-stext small{color:var(--muted,#6B7280);font-size:.78rem;}
+.edu-skind{font-size:.68rem;color:var(--accent,#C9A24B);font-weight:700;text-transform:uppercase;letter-spacing:.05em;flex:0 0 auto;}
+.edu-empty{text-align:center;color:var(--muted,#6B7280);padding:1.4rem;font-size:.92rem;}
+.edu-shint{margin-top:.7rem;text-align:center;color:var(--muted,#6B7280);font-size:.72rem;}
+@media(max-width:600px){.edu-fab{left:12px;bottom:66px;width:44px;height:44px;}.edu-top{right:14px;bottom:84px;}.edu-shint{display:none;}}
+</style>
+<style id="topbar-skin">
+.navbar{background:transparent !important;box-shadow:none !important;border-radius:0 !important;padding:14px 20px !important;gap:14px;}
+.navbar.scrolled{box-shadow:none !important;}
+.logo{display:flex !important;align-items:center;gap:.55rem;padding:.45rem .95rem .45rem .5rem;border-radius:9999px;background:var(--bg,#1A1714) !important;box-shadow:var(--ex-sm) !important;transition:transform .3s ease;}
+.logo:hover{transform:translateY(-1px);}
+.logo-mark{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:transparent;box-shadow:none;flex:0 0 auto;}
+.logo-text{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;letter-spacing:-.02em;}
+.nav-actions{display:flex;align-items:center;gap:.55rem;flex:0 0 auto;}
+.nav-login,.nav-cta{display:inline-flex;align-items:center;justify-content:center;border-radius:9999px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.82rem;text-decoration:none;transition:transform .3s ease,box-shadow .3s ease,filter .3s ease;cursor:pointer;}
+.nav-login{padding:.62rem 1.05rem;color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;background:var(--bg,#1A1714);box-shadow:var(--ex-sm);}
+.nav-login:hover{transform:translateY(-1px);box-shadow:var(--ex);}
+.nav-login:active{transform:translateY(1px);box-shadow:var(--in-sm);}
+.nav-cta{padding:.64rem 1.2rem;color:#fff !important;-webkit-text-fill-color:#fff !important;background:linear-gradient(135deg,var(--accent-light,#E3C77A),var(--accent,#C9A24B));box-shadow:5px 5px 12px rgba(201,162,75,.4),-4px -4px 10px rgba(255,255,255,0.05);}
+.nav-cta:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:7px 7px 16px rgba(201,162,75,.5),-5px -5px 12px rgba(255,255,255,0.05);}
+.nav-cta:active{transform:translateY(1px);box-shadow:inset 4px 4px 8px rgba(201,162,75,.55),inset -4px -4px 8px rgba(201,162,75,.4);}
+#authButton{display:flex;align-items:center;gap:.5rem;}
+.nav-user{display:flex;align-items:center;gap:.5rem;padding:.38rem .85rem .38rem .42rem;border-radius:9999px;background:var(--bg,#1A1714);box-shadow:var(--ex-sm);text-decoration:none;color:var(--fg) !important;font-weight:700;font-size:.8rem;}
+.nav-user-img{width:28px;height:28px;border-radius:50%;object-fit:cover;}
+.nav-logout{padding:.5rem .8rem;border-radius:9999px;border:none;cursor:pointer;background:var(--bg,#1A1714);box-shadow:var(--ex-sm);color:var(--accent,#C9A24B) !important;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.76rem;transition:transform .3s ease,box-shadow .3s ease;}
+.nav-logout:hover{transform:translateY(-1px);}
+.nav-logout:active{box-shadow:var(--in-sm);}
+.nav-menu-auth{display:none;}
+@media(min-width:901px){
+  .nav-links{background:var(--bg,#1A1714) !important;box-shadow:var(--ex-sm) !important;border-radius:9999px !important;padding:.4rem .5rem !important;gap:.1rem !important;}
+  .nav-links a{border-radius:9999px;padding:.5rem .8rem !important;font-size:.8rem !important;font-weight:600 !important;transition:color .25s ease,box-shadow .25s ease !important;}
+  .nav-links a:hover{transform:none !important;color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;box-shadow:var(--in-sm);}
+  .nav-links a.active{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;box-shadow:var(--in-sm) !important;}
+  .lang-toggle{box-shadow:var(--in-sm) !important;margin-left:.25rem;}
+}
+@media(max-width:900px){
+  .navbar{padding:10px 12px !important;}
+  .nav-actions{display:none !important;}
+  .nav-menu-auth{display:block;text-align:center;margin-top:.4rem;border-radius:16px;padding:.75rem !important;font-weight:700;text-decoration:none;}
+  .nav-menu-login{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;box-shadow:var(--ex-sm);}
+  .nav-menu-cta{color:#fff !important;-webkit-text-fill-color:#fff !important;background:linear-gradient(135deg,var(--accent-light,#E3C77A),var(--accent,#C9A24B));}
+}
+@media(max-width:520px){.logo-text{display:none;}}
+</style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%2248%22%20height%3D%2248%22%20role%3D%22img%22%20aria-label%3D%22CryptoMath%20icon%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22badgeGrad%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%234F46E5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2306B6D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%22104%22%20height%3D%22104%22%20rx%3D%2230%22%20fill%3D%22url%28%23badgeGrad%29%22%2F%3E%3Cpath%20d%3D%22M44%2060%20V52%20a16%2016%200%200%201%2032%200%20V60%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%229%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2234%22%20y%3D%2258%22%20width%3D%2252%22%20height%3D%2242%22%20rx%3D%2210%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Cpath%20d%3D%22M70%2067%20L50%2067%20L61%2079%20L50%2091%20L70%2091%22%20fill%3D%22none%22%20stroke%3D%22%234F46E5%22%20stroke-width%3D%226%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<style id="logo-spin-css">
+.logo-mark{transition:transform .8s cubic-bezier(.34,1.56,.64,1);transform-style:preserve-3d;}
+.logo:hover .logo-mark{transform:rotateY(360deg);}
+@media (prefers-reduced-motion:reduce){.logo:hover .logo-mark{transform:none;}}
+body.reduce-motion .logo:hover .logo-mark{transform:none;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<style id="editorial-theme">
+:root{
+  --bg:#131009;--surface:#1B1712;--surface-2:#0F0C07;--fg:#ECE5D6;--muted:#A39A8C;
+  --accent:#C9A24B;--accent-light:#E3C77A;--accent-2:#C9A24B;--line:rgba(236,229,214,.12);
+  --ex:0 1px 0 rgba(236,229,214,.04),0 18px 40px -12px rgba(0,0,0,.7);
+  --ex-hover:0 1px 0 rgba(236,229,214,.06),0 28px 60px -14px rgba(0,0,0,.78);
+  --ex-sm:0 1px 0 rgba(236,229,214,.04),0 10px 22px -10px rgba(0,0,0,.6);
+  --in:inset 0 0 0 1px rgba(236,229,214,.12);
+  --in-deep:inset 0 0 0 1px rgba(201,162,75,.55);
+  --in-sm:inset 0 0 0 1px rgba(236,229,214,.08);
+}
+html,body{background:var(--bg) !important;color:var(--fg) !important;-webkit-font-smoothing:antialiased;}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 80% at 50% -10%,rgba(201,162,75,.07),transparent 55%),radial-gradient(100% 90% at 50% 120%,rgba(0,0,0,.55),transparent 60%);}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.045;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='2'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");}
+/* TYPOGRAPHY: editorial serif display + sans body */
+h1,h2,.hero h1,.page-hero h1,.logo-text,.font-display,.section-header h2,.concept-title h2,.stat-card .num,.fact .num,.stat-number,.stat-value,.big-number,.concept-number{font-family:'Fraunces','Plus Jakarta Sans',Georgia,serif !important;}
+h1,h2,.section-header h2,.concept-title h2{font-weight:600 !important;letter-spacing:-.015em !important;color:var(--fg) !important;}
+.hero h1,.page-hero h1{font-weight:600 !important;letter-spacing:-.025em !important;line-height:1.03 !important;font-size:clamp(2.7rem,7vw,5.4rem) !important;}
+.section-header h2,h2{font-size:clamp(1.9rem,3.6vw,2.9rem) !important;}
+.logo-text{font-weight:600 !important;letter-spacing:0 !important;color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;}
+.hero-label,.section-tag,.eyebrow,.badge-label,.concept-sub,.concept-title p{font-family:'DM Sans',sans-serif !important;text-transform:uppercase !important;letter-spacing:.28em !important;font-size:.7rem !important;font-weight:700 !important;color:var(--accent) !important;}
+.hero h1 .accent{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;font-style:italic;}
+.hero h1 .outline{color:transparent !important;-webkit-text-fill-color:transparent !important;-webkit-text-stroke:1px var(--fg);}
+p,li,td{color:var(--fg);}
+.muted,.dim,.lead,.note,.hero p,.page-hero p,.hero-description,.subtitle,.hero-subtitle,.journal-meta{color:var(--muted) !important;}
+::selection{background:rgba(201,162,75,.3);color:#16120A;}
+/* SURFACES */
+.topic-card,.feature-card,.stat-card,.challenge-card,.daily-challenge,.interactive-demo,.vs-card,.vs-card.classic,.vs-card.quantum,.journal-card,.callout-box,.progress-item,.progress-section,.profile-header,.fact,.cmp-wrap,.blockchain-box,.card,.info-card,.benefit-card,.demo-card,.concept-content{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:var(--ex) !important;border-radius:20px !important;color:var(--fg) !important;}
+.topic-card:hover,.feature-card:hover,.journal-card:hover,.fact:hover,.stat-card:hover,.challenge-card:hover,.card:hover{box-shadow:var(--ex-hover) !important;}
+.math,.gfx{background:#15120D !important;border:1px solid var(--line) !important;box-shadow:var(--ex) !important;}
+.demo-result,.hash-out,.formula-box,.formula-display,.card-formula,.formula{background:var(--surface-2) !important;border:1px solid var(--line) !important;box-shadow:inset 0 0 0 1px var(--line) !important;color:var(--fg) !important;}
+/* NAV */
+.navbar{background:transparent !important;}
+.logo,.nav-login,.nav-user,.nav-logout,.nav-burger,.lang-toggle{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:var(--ex-sm) !important;}
+.nav-login{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links a{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;}
+.nav-burger span,.nav-burger::before,.nav-burger::after{background:var(--fg) !important;}
+.lang-toggle .divider{background:var(--line) !important;}
+.lang-toggle span{color:var(--muted) !important;}
+.lang-toggle span.active{color:var(--accent) !important;}
+@media(min-width:901px){.nav-links{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:var(--ex-sm) !important;}}
+.nav-cta,.nav-menu-cta{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;color:#16120A !important;-webkit-text-fill-color:#16120A !important;border:none !important;box-shadow:0 12px 26px -10px rgba(201,162,75,.5) !important;}
+.nav-cta:hover{filter:brightness(1.05);}
+/* BUTTONS */
+.btn,.btn-outline,.btn-secondary,.quick-btn,.filter-btn,.btn-logout{background:var(--surface) !important;color:var(--fg) !important;border:1px solid var(--line) !important;box-shadow:var(--ex-sm) !important;}
+.btn-primary,.demo-btn,.cta-button,.start-btn,.check-btn,.submit-btn,.filter-btn.active,.flow .step.dark{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;color:#16120A !important;-webkit-text-fill-color:#16120A !important;border:none !important;box-shadow:0 12px 26px -10px rgba(201,162,75,.5) !important;}
+.btn-primary:hover,.demo-btn:hover,.cta-button:hover,.start-btn:hover,.check-btn:hover,.submit-btn:hover{filter:brightness(1.05);}
+.btn-primary:active,.demo-btn:active,.cta-button:active,.filter-btn.active:active{box-shadow:inset 0 0 0 1px rgba(0,0,0,.3) !important;}
+/* INPUTS */
+.demo-input,#aiChatInput,input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{background:var(--surface-2) !important;color:var(--fg) !important;border:1px solid var(--line) !important;box-shadow:none !important;}
+.demo-input:focus,#aiChatInput:focus,input:focus,select:focus,textarea:focus{box-shadow:var(--in-deep) !important;border-color:rgba(201,162,75,.55) !important;}
+::placeholder{color:#7C7568 !important;}
+/* ACCENTS */
+.section-tag,.eyebrow,.badge-label,.vs-mid,.flow .arrow,.tl .yr,.timeline .yr,.pill,.jtag,footer a,.journal-card details summary{color:var(--accent) !important;}
+.pill,.jtag{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:none !important;}
+.stat-card .num,.fact .num,.stat-number,.stat-value,.big-number{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;font-weight:500 !important;}
+.concept-number{background:transparent !important;color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;font-weight:500 !important;font-size:2rem !important;box-shadow:none !important;border:1px solid var(--line) !important;border-radius:12px !important;}
+.progress-bar,.xp-bar .progress-bar,.xp-track,.progress-track,.bar-track{background:var(--surface-2) !important;border:1px solid var(--line) !important;box-shadow:none !important;}
+.progress-fill,#xpFill,.xp-fill,.bar-fill.warm,.bar-fill.cool{background:linear-gradient(90deg,var(--accent),var(--accent-light)) !important;}
+.bar-fill.dark{background:linear-gradient(90deg,#6B6256,#9a8f7e) !important;}
+.profile-avatar{background:var(--surface) !important;border:1px solid var(--line) !important;color:var(--accent) !important;}
+.vs-card li{border-bottom:1px solid var(--line) !important;}
+table.cmp,.cmp{background:var(--surface) !important;border:1px solid var(--line) !important;}
+table.cmp th{background:var(--accent) !important;color:#16120A !important;}
+table.cmp td{border-bottom:1px solid var(--line) !important;color:var(--fg) !important;}
+.tag-broken{color:#E58B7F !important;}
+.tag-safe{color:#79C99A !important;}
+.tl::before{box-shadow:0 0 0 4px rgba(201,162,75,.18) !important;}
+.cursor{background:rgba(201,162,75,.16) !important;border:2px solid var(--accent) !important;}
+.cursor.hover,.cursor.active{background:rgba(201,162,75,.1) !important;}
+/* FOOTER */
+footer{background:var(--surface) !important;border-top:1px solid var(--line) !important;box-shadow:none !important;color:var(--muted) !important;}
+/* CHATBOT */
+#aiChatToggle,.ai-chat-toggle,.ai-chat-header,#aiChatWindow .ai-chat-header,#aiSendBtn,.ai-send-btn{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;color:#16120A !important;border:none !important;}
+#aiChatWindow,.ai-chat-window{background:var(--surface) !important;border:1px solid var(--line) !important;}
+/* SPINNING COIN */
+.coin3d__face{background:var(--surface) !important;border:1px solid var(--line);box-shadow:0 18px 40px -12px rgba(0,0,0,.7) !important;}
+.coin3d__sigma{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;-webkit-background-clip:text !important;background-clip:text !important;color:transparent !important;}
+/* FOCUS (a11y) */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,.lang-toggle:focus-visible,.nav-links a:focus-visible{outline:2px solid var(--accent) !important;outline-offset:3px;}
+/* MOBILE: designed, not shrunk */
+@media(max-width:600px){
+  .hero h1,.page-hero h1{font-size:clamp(2.1rem,11vw,3.1rem) !important;line-height:1.06 !important;}
+  .section-header h2,h2{font-size:clamp(1.6rem,7vw,2.1rem) !important;}
+  .concept-number{font-size:1.5rem !important;}
+  .coin3d{width:90px !important;height:90px !important;}
+}
+</style>
+<style id="trionn-css">
+/* ---- masked text reveal (trionn signature) ---- */
+.tr-line{display:block;overflow:hidden;}
+.tr-line-i{display:block;will-change:transform;}
+.tr-mask .tr-line-i{transform:translateY(118%);}
+.tr-mask.tr-in .tr-line-i{transform:translateY(0);transition:transform 1.05s cubic-bezier(.16,.84,.44,1);}
+/* ---- scroll progress ---- */
+.tr-progress{position:fixed;top:0;left:0;width:100%;height:3px;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,var(--accent,#C9A24B),var(--accent-light,#E3C77A));z-index:100001;pointer-events:none;}
+/* ---- one-time load reveal ---- */
+.tr-intro{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:#0F0C07;pointer-events:none;}
+.tr-intro-logo{display:flex;align-items:center;gap:.7rem;font-family:'Fraunces','Plus Jakarta Sans',serif;font-weight:600;font-size:clamp(1.6rem,5vw,2.7rem);color:var(--fg,#ECE5D6);opacity:0;letter-spacing:-.02em;}
+.tr-intro-logo .tr-sig{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border-radius:16px;background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;font-size:.95em;}
+.tr-intro--play{display:flex;animation:trIntroOut 1.15s .35s cubic-bezier(.76,0,.24,1) forwards;}
+.tr-intro--play .tr-intro-logo{animation:trIntroLogo .55s .05s ease forwards;}
+@keyframes trIntroOut{0%,52%{transform:translateY(0);}100%{transform:translateY(-101%);}}
+@keyframes trIntroLogo{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+/* ---- magnetic buttons easing ---- */
+.btn-primary,.nav-cta,.cta-button,.btn-outline,.start-btn,.nav-menu-cta{transition:transform .25s cubic-bezier(.16,.84,.44,1),filter .25s,box-shadow .25s;}
+/* ---- animated nav underline ---- */
+.nav-links a{position:relative;}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:1px;background:var(--accent,#C9A24B);transform:scaleX(0);transform-origin:0 50%;transition:transform .4s cubic-bezier(.16,.84,.44,1);}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);}
+/* ---- refined card lift ---- */
+.topic-card,.feature-card,.journal-card,.fact,.card,.info-card,.benefit-card{transition:transform .5s cubic-bezier(.16,.84,.44,1),box-shadow .5s,border-color .5s;}
+.topic-card:hover,.feature-card:hover,.journal-card:hover,.fact:hover{transform:translateY(-6px);}
+/* ---- trailing cursor grow ---- */
+.cursor{transition:width .25s,height .25s,background .25s,border-color .25s;}
+.cursor.hover{width:54px;height:54px;}
+.scroll-indicator{transition:opacity .3s;}
+@media(max-width:900px){.tr-progress{height:2px;}}
+/* ---- reduced motion ---- */
+body.reduce-motion .tr-mask .tr-line-i{transform:none !important;}
+body.reduce-motion .tr-intro{display:none !important;}
+body.reduce-motion .tr-progress{display:none !important;}
+@media(prefers-reduced-motion: reduce){
+  .tr-mask .tr-line-i{transform:none !important;}
+  .tr-intro{display:none !important;}
+  .nav-links a::after{transition:none !important;}
+}
+</style>
+<style id="cinematic-skin">
+@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@1,500&display=swap');
+:root{
+  --bg:#050505 !important;
+  --background:#050505 !important;
+  --surface:#0e0b07 !important;
+  --surface-2:#15110a !important;
+  --card:#0e0b07 !important;
+  --fg:#f3ece0 !important;
+  --text:#f3ece0 !important;
+  --muted:#a99c88 !important;
+  --accent:#c9a24b !important;
+  --accent-light:#e3c77a !important;
+  --accent-2:#e3c77a !important;
+  --border:rgba(201,162,75,0.18) !important;
+}
+html,body{
+  background-color:#050505 !important;
+  color:#f3ece0 !important;
+  font-family:'Outfit',sans-serif !important;
+  -ms-overflow-style:none; scrollbar-width:none;
+}
+::-webkit-scrollbar{ width:0; height:0; display:none; }
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(201,162,75,0.16), transparent 42%),
+    radial-gradient(circle at 82% 88%, rgba(40,72,128,0.20), transparent 46%),
+    linear-gradient(135deg, #150d05 0%, #060509 55%, #03040a 100%);
+  background-size:160% 160%, 160% 160%, 100% 100%;
+  animation:cmWave 26s ease-in-out infinite alternate;
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(circle at 50% 42%, transparent 55%, rgba(0,0,0,0.55) 100%);
+}
+@keyframes cmWave{
+  0%{ background-position:0% 0%, 100% 100%, 0 0; }
+  100%{ background-position:100% 100%, 0% 0%, 0 0; }
+}
+h1,h2,h3,.hero-title,.page-title,.section-title,.logo-text,.brand,.display{
+  font-family:'Italiana',serif !important;
+  letter-spacing:0.5px !important;
+}
+.hero-title,h1{ color:#fff6ed !important; }
+a{ color:var(--accent-light) !important; }
+.navbar,.nav,header.navbar{
+  background:rgba(8,6,3,0.72) !important;
+  border-bottom:1px solid rgba(201,162,75,0.16) !important;
+  backdrop-filter:blur(14px) saturate(120%) !important;
+}
+.btn-primary,.cta,.primary,button.primary,.nav-cta,#navCta{
+  background:linear-gradient(135deg,#c9a24b,#e3c77a) !important;
+  color:#16120a !important;
+  border:none !important;
+}
+.card,.panel,.tile,.surface,.box,.feature,.feature-card{
+  background:rgba(20,16,10,0.66) !important;
+  border:1px solid rgba(201,162,75,0.16) !important;
+  backdrop-filter:blur(8px) !important;
+}
+@media (pointer:fine){
+  html,body{ cursor:none; }
+  a,button,input,textarea,select,label,.btn,[role="button"]{ cursor:none !important; }
+}
+.cm-cursor-inner{
+  position:fixed; top:0; left:0; width:6px; height:6px;
+  border:2px solid rgba(255,255,255,0.95); border-radius:50%;
+  transform:translate(-50%,-50%); pointer-events:none; z-index:99999;
+}
+.cm-cursor-outer{
+  position:fixed; top:0; left:0; width:40px; height:40px;
+  border:1.5px solid rgba(201,162,75,0.7); border-radius:50%;
+  transform:translate(-50%,-50%); pointer-events:none; z-index:99998;
+  transition:width .3s, height .3s, background .3s, border-color .3s;
+}
+@media (prefers-reduced-motion: reduce){
+  body::before{ animation:none !important; }
+}
+</style>
+<style id="storm-bg-css">
+  /* CryptoMath shared 3D storm background — reveal the fixed canvas behind content */
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  .bg-orbs { display: none !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+</style>
+    <link rel="stylesheet" href="cm-enhance.css">
+</head>
+<body>
+<div class="tr-intro" aria-hidden="true"><div class="tr-intro-logo"><span class="tr-sig">&#931;</span><span>CryptoMath</span></div></div><div class="tr-progress" aria-hidden="true"></div>
+    <div class="cursor" id="cursor"></div>
+    <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="logo"><span class="logo-mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="30" height="30" role="img" aria-label="CryptoMath icon"><defs><linearGradient id="cmBadge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4F46E5"/><stop offset="1" stop-color="#06B6D4"/></linearGradient></defs><rect x="8" y="8" width="104" height="104" rx="30" fill="url(#cmBadge)"/><path d="M44 60 V52 a16 16 0 0 1 32 0 V60" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/><rect x="34" y="58" width="52" height="42" rx="10" fill="#FFFFFF"/><path d="M70 67 L50 67 L61 79 L50 91 L70 91" fill="none" stroke="#4F46E5" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></svg></span><span class="logo-text">CryptoMath</span></a>
+        <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Menu"><span></span></button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a href="concepts.html" data-en="Learn" data-ar="تعلم">Learn</a>
+            <a href="path.html" data-en="Path" data-ar="المسار">Path</a>
+            <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+            <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+            <a href="quantum.html" class="active" data-en="Quantum" data-ar="الكم">Quantum</a>
+            <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+            <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+            <a href="about.html" data-en="About" data-ar="عن">About</a>
+            <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+            <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+            <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+            <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0">
+                <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+            </div>
+            <a href="login.html" class="nav-menu-auth nav-menu-login" data-en="Log In" data-ar="تسجيل الدخول">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta" data-en="Get Started" data-ar="ابدأ الآن">Get Started</a></div><div class="nav-actions"><a href="login.html" id="navLogin" class="nav-login" data-en="Log In" data-ar="تسجيل الدخول">Log In</a><a href="signup.html" id="navCta" class="nav-cta" data-en="Get Started" data-ar="ابدأ الآن">Get Started</a><div id="authButton"></div></div></nav>
+
+    <section class="page-hero">
+        <h1 data-en="Classical vs Post-Quantum" data-ar="الكلاسيكي مقابل ما بعد الكم">Classical vs Post-Quantum</h1>
+        <p data-en="The math that secures today's internet — and the new math built to survive quantum computers." data-ar="الرياضيات التي تؤمّن الإنترنت اليوم — والرياضيات الجديدة التي تصمد أمام الحواسيب الكمية.">The math that secures today's internet — and the new math built to survive quantum computers.</p>
+    </section>
+
+    <div class="container">
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">01</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:1rem;">Why should a teenager care about quantum computers? 🤔</h2><p class="concept-sub">The Big Idea</p></div></div>
+            <p class="lead">Almost everything secret on the internet — your messages, passwords, bank logins, and every cryptocurrency wallet — is locked with math problems that are <strong>easy to check but practically impossible to reverse</strong> on a normal computer. A large <em>quantum computer</em> changes the rules: it can run brand-new algorithms that crack some of these locks in hours instead of trillions of years. <strong>Post-quantum cryptography (PQC)</strong> is the new math we are switching to so our locks stay shut.</p>
+            <div class="fact-grid">
+                <div class="fact"><div class="num">10<sup>30</sup>+</div><div class="lbl">years for a classical PC to break RSA-2048</div></div>
+                <div class="fact"><div class="num">~8 hrs</div><div class="lbl">for an ideal quantum computer (Shor's algorithm)</div></div>
+                <div class="fact"><div class="num">2024</div><div class="lbl">NIST published the first PQC standards</div></div>
+                <div class="fact"><div class="num">2<sup>256</sup></div><div class="lbl">keys a wallet hides behind — for now</div></div>
+            </div>
+        </section>
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">02</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:.4rem;">Classical math vs Post-Quantum math</h2><p class="concept-sub">Head to Head</p></div></div>
+            <p class="lead">Two completely different families of hard problems.</p>
+            <div class="vs-grid">
+                <div class="vs-card classic">
+                    <h3>🔐 Classical Cryptography</h3>
+                    <p class="muted">Security rests on number theory that is hard <em>for ordinary computers</em>.</p>
+                    <ul>
+                        <li><strong>RSA</strong> — factoring a huge number n = p·q</li>
+                        <li><strong>Diffie–Hellman</strong> — the discrete logarithm</li>
+                        <li><strong>ECC</strong> — the elliptic-curve discrete log</li>
+                        <li>Weakness: <span class="tag-broken">Shor's algorithm solves all three</span></li>
+                    </ul>
+                </div>
+                <div class="vs-mid">VS</div>
+                <div class="vs-card quantum">
+                    <h3>🛡️ Post-Quantum Cryptography</h3>
+                    <p class="muted">Security rests on problems hard even <em>for quantum computers</em>.</p>
+                    <ul>
+                        <li><strong>Lattices</strong> — shortest vector / Learning With Errors</li>
+                        <li><strong>Hashes</strong> — SPHINCS+ signatures</li>
+                        <li><strong>Codes</strong> — error-correcting code decoding</li>
+                        <li>Strength: <span class="tag-safe">no known fast quantum attack</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">03</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:1rem;">Two quantum algorithms that change everything</h2><p class="concept-sub">The Threat</p></div></div>
+            <div class="concept-content">
+                <h3 style="margin-top:0;">① Shor's Algorithm — the lock-picker 🗝️</h3>
+                <p>Shor's algorithm (1994) finds the hidden <em>period</em> of a function using a quantum Fourier transform. That single trick lets it factor big numbers and solve discrete logs in <strong>polynomial time</strong> — demolishing RSA, Diffie–Hellman and ECC.</p>
+                <div class="math">
+                    <span class="dim"># Factoring a number with b bits</span><br>
+                    Classical (best known, GNFS): <span class="c">exp[  (64/9)<sup>1/3</sup> · b<sup>1/3</sup> · (ln b)<sup>2/3</sup>  ]</span> &nbsp;<span class="dim">(sub-exponential)</span><br>
+                    Quantum (Shor):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="g">O( b<sup>2</sup> · log b · log log b )</span> &nbsp;<span class="dim">(polynomial ✅)</span>
+                </div>
+                <h3>② Grover's Algorithm — the speed-searcher 🔍</h3>
+                <p>Grover's algorithm (1996) searches an unsorted space of N items in only √N steps. It does <strong>not</strong> break symmetric crypto — it just <em>halves the security level</em>, so we respond by doubling key sizes.</p>
+                <div class="math">
+                    Brute-forcing an n-bit key:<br>
+                    Classical: <span class="c">O(2<sup>n</sup>)</span> &nbsp;&rarr;&nbsp; Quantum (Grover): <span class="g">O(2<sup>n/2</sup>)</span><br>
+                    <span class="dim">So AES-128 → only 2<sup>64</sup> effective. Fix: use AES-256 → back to 2<sup>128</sup>.</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">04</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:1rem;">What breaks, and what replaces it</h2><p class="concept-sub">At a Glance</p></div></div>
+            <div class="cmp-wrap">
+                <table class="cmp">
+                    <thead><tr><th>Today's algorithm</th><th>Job</th><th>Quantum attack</th><th>Status</th><th>Post-quantum replacement</th></tr></thead>
+                    <tbody>
+                        <tr><td>RSA-2048</td><td>Key exchange / signatures</td><td>Shor</td><td><span class="tag-broken">Broken</span></td><td>ML-KEM (Kyber), ML-DSA (Dilithium)</td></tr>
+                        <tr><td>ECC P-256</td><td>Signatures (incl. Bitcoin)</td><td>Shor</td><td><span class="tag-broken">Broken</span></td><td>ML-DSA (Dilithium), Falcon, SPHINCS+</td></tr>
+                        <tr><td>Diffie–Hellman</td><td>Key exchange</td><td>Shor</td><td><span class="tag-broken">Broken</span></td><td>ML-KEM (Kyber)</td></tr>
+                        <tr><td>AES-128</td><td>Encrypt data</td><td>Grover</td><td><span class="tag-broken">Weakened</span></td><td>AES-256</td></tr>
+                        <tr><td>SHA-256</td><td>Hashing / mining</td><td>Grover</td><td><span class="tag-safe">Mostly safe</span></td><td>SHA-384 / SHA3-512</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="note">Names like ML-KEM and ML-DSA are the official NIST standard names (FIPS 203 & 204) for the algorithms first known as Kyber and Dilithium.</p>
+        </section>
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">05</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:1rem;">Time to break a key 🏁</h2><p class="concept-sub">Fun Graphic</p></div></div>
+            <p class="lead">Longer bar = safer. Watch how a quantum computer flattens the classical bars.</p>
+            <div class="bars">
+                <div class="bar-row"><div class="name">RSA-2048 vs classical PC</div><div class="bar-track"><div class="bar-fill warm" data-w="100%">trillions of years</div></div></div>
+                <div class="bar-row"><div class="name">RSA-2048 vs quantum</div><div class="bar-track"><div class="bar-fill dark" data-w="6%">~hours</div></div></div>
+                <div class="bar-row"><div class="name">AES-128 vs quantum</div><div class="bar-track"><div class="bar-fill dark" data-w="40%">2<sup>64</sup> steps</div></div></div>
+                <div class="bar-row"><div class="name">AES-256 vs quantum</div><div class="bar-track"><div class="bar-fill cool" data-w="96%">2<sup>128</sup> steps</div></div></div>
+                <div class="bar-row"><div class="name">Kyber / Dilithium vs quantum</div><div class="bar-track"><div class="bar-fill cool" data-w="98%">no fast attack</div></div></div>
+            </div>
+        </section>
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">06</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:1rem;">Notation, decoded 📐</h2><p class="concept-sub">The Detailed Math</p></div></div>
+            <div class="concept-content">
+                <h3 style="margin-top:0;">RSA — factoring</h3>
+                <p>Pick two large primes p and q. The public modulus is their product:</p>
+                <div class="math">n = <span class="v">p</span> · <span class="v">q</span> &nbsp;&nbsp; φ(n) = (p−1)(q−1)<br>public key (n, e) &nbsp; private key d with &nbsp; <span class="g">e·d ≡ 1 (mod φ(n))</span><br>encrypt: c ≡ m<sup>e</sup> (mod n) &nbsp;&nbsp; decrypt: m ≡ c<sup>d</sup> (mod n)</div>
+                <p>To break it you must recover p and q from n. Shor turns factoring into <em>period finding</em>: find the smallest r with a<sup>r</sup> ≡ 1 (mod n), which a quantum computer does efficiently.</p>
+
+                <h3>Elliptic Curves — the discrete log</h3>
+                <p>Points live on the curve y<sup>2</sup> = x<sup>3</sup> + ax + b (mod p). “Multiplying” a base point G by a secret k is easy; reversing it is the hard <strong>ECDLP</strong>:</p>
+                <div class="math">Q = <span class="v">k</span> · G &nbsp;&nbsp;<span class="dim">(easy forward)</span><br>given Q and G, find k &nbsp;&nbsp;<span class="c">(hard backward)</span><br>Classical best (Pollard's ρ): <span class="c">O(√n) ≈ 2<sup>128</sup></span> for a 256-bit curve<br>Quantum (Shor): <span class="g">polynomial → broken</span></div>
+                <p class="note">Bitcoin and Ethereum sign every transaction with ECC (secp256k1). This is exactly why people ask whether quantum computers could one day steal coins.</p>
+
+                <h3>Lattices &amp; Learning With Errors (the PQC hero) 🧩</h3>
+                <p>A lattice is a grid of points stretching through high-dimensional space. Finding the shortest vector is brutally hard — even for quantum machines. <strong>Learning With Errors (LWE)</strong> hides a secret with a little random noise:</p>
+                <div class="math"><span class="v">b</span> = A · <span class="v">s</span> + <span class="c">e</span> &nbsp;(mod q)<br><span class="dim">A = public matrix &nbsp; s = secret vector &nbsp; e = tiny random error</span><br>Recovering s reduces to worst-case lattice problems (GapSVP) — <span class="g">believed quantum-hard</span></div>
+                <p>Kyber (encryption) and Dilithium (signatures) are both built on this idea. The noise e is what makes the system impossible to “solve like a normal equation.”</p>
+
+                <h3>Hash-based signatures — SPHINCS+ 🌲</h3>
+                <p>These trust <em>only</em> a hash function. If your hash is secure, your signature is secure — no number theory for Shor to attack. They build a giant tree of one-time keys (a Merkle tree) so one master public key can sign many messages.</p>
+            </div>
+        </section>
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">07</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:1rem;">Security-level calculator 🧮</h2><p class="concept-sub">Try It</p></div></div>
+            <p class="lead">Pick an algorithm and see how a quantum computer changes its real security.</p>
+            <div class="interactive-demo">
+                <div class="demo-input-group">
+                    <select id="algo" class="demo-input">
+                        <option value="aes128|128|grover">AES-128 (symmetric)</option>
+                        <option value="aes256|256|grover">AES-256 (symmetric)</option>
+                        <option value="sha256|256|grover">SHA-256 (hash, preimage)</option>
+                        <option value="rsa|112|shor">RSA-2048 (≈112-bit)</option>
+                        <option value="ecc|128|shor">ECC P-256 (≈128-bit)</option>
+                        <option value="kyber|128|none">Kyber-512 (post-quantum)</option>
+                    </select>
+                    <button class="demo-btn" onclick="calcSecurity()">Compute</button>
+                </div>
+                <div class="demo-result" id="secResult">Choose an algorithm and press Compute.</div>
+            </div>
+        </section>
+
+        <section class="concept-section reveal">
+            <div class="concept-header"><div class="concept-number">08</div><div class="concept-title"><h2 style="font-size:2rem;margin-bottom:1rem;">Migration timeline 🗓️</h2><p class="concept-sub">The Road Ahead</p></div></div>
+            <div class="timeline">
+                <div class="tl"><span class="yr">1994–1996</span><br>Shor and Grover publish the algorithms that start the whole race.</div>
+                <div class="tl"><span class="yr">2016</span><br>NIST opens a worldwide competition to design post-quantum algorithms.</div>
+                <div class="tl"><span class="yr">2022</span><br>Kyber, Dilithium, Falcon and SPHINCS+ are selected as winners.</div>
+                <div class="tl"><span class="yr">2024</span><br>NIST publishes FIPS 203/204/205 — the first official PQC standards.</div>
+                <div class="tl"><span class="yr">Now → 2030s</span><br>Browsers, messaging apps and blockchains begin upgrading. <strong>“Harvest now, decrypt later”</strong> means data stolen today could be cracked once quantum computers mature — so the switch starts early.</div>
+            </div>
+            <div class="callout-box">
+                <h4>💡 Key takeaway</h4>
+                <p>Classical crypto isn't “wrong” — it's just built on problems a quantum computer can shortcut. Post-quantum crypto swaps in problems (lattices, hashes, codes) that <em>both</em> classical and quantum computers find hard. Same goal, tougher math.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p data-en="CryptoMath Academy — learn the math behind the future of money." data-ar="أكاديمية كريبتوماث — تعلم الرياضيات خلف مستقبل المال.">CryptoMath Academy — learn the math behind the future of money.</p>
+        <p style="margin-top:.6rem"><a href="mailto:feedback@cryptomath.com">feedback@cryptomath.com</a></p>
+    </footer>
+    <script>
+        let currentLang = localStorage.getItem('cryptomath_lang') || 'en';
+        function toggleLanguage(){currentLang = currentLang==="en"?"ar":"en";localStorage.setItem("cryptomath_lang",currentLang);applyLanguage();}
+        function applyLanguage(){
+            const html=document.documentElement;
+            html.dir = currentLang==="ar"?"rtl":"ltr"; html.lang=currentLang;
+            const en=document.getElementById("lang-en"), ar=document.getElementById("lang-ar");
+            if(en&&ar){en.classList.toggle("active",currentLang==="en");ar.classList.toggle("active",currentLang==="ar");}
+            document.querySelectorAll("[data-en][data-ar]").forEach(el=>{const t=el.getAttribute("data-"+currentLang);if(t)el.innerHTML=t;});
+        }
+        applyLanguage();
+        const cursor=document.getElementById("cursor");
+        if(cursor){document.addEventListener("mousemove",e=>{cursor.style.left=e.clientX+"px";cursor.style.top=e.clientY+"px";});
+        document.querySelectorAll("a,button,.vs-card,.journal-card,.fact").forEach(el=>{el.addEventListener("mouseenter",()=>cursor.classList.add("hover"));el.addEventListener("mouseleave",()=>cursor.classList.remove("hover"));});}
+        const navbar=document.querySelector(".navbar");
+        window.addEventListener("scroll",()=>{if(navbar)navbar.classList.toggle("scrolled",window.scrollY>30);});
+        function revealOnScroll(){const r=document.querySelectorAll(".reveal");const h=window.innerHeight;r.forEach((el,i)=>{if(el.getBoundingClientRect().top<h-80){setTimeout(()=>el.classList.add("active"),i*60);}});}
+        window.addEventListener("scroll",revealOnScroll);window.addEventListener("load",revealOnScroll);revealOnScroll();
+        function animateBars(){document.querySelectorAll(".bar-fill[data-w]").forEach(b=>{b.style.width=b.getAttribute("data-w");});}
+        window.addEventListener("load",()=>setTimeout(animateBars,300));
+
+        function calcSecurity(){
+            const v=document.getElementById('algo').value.split('|');
+            const name=document.getElementById('algo').selectedOptions[0].text;
+            const bits=parseInt(v[1]); const attack=v[2];
+            let q=bits, msg='';
+            if(attack==='grover'){q=Math.round(bits/2);msg='Grover\u2019s search halves the bits.';}
+            else if(attack==='shor'){q=0;msg='Shor\u2019s algorithm breaks this completely.';}
+            else{q=bits;msg='No known efficient quantum attack \u2014 stays strong.';}
+            const verdict = q===0?'<span style="color:#ff6b6b;font-weight:700;">BROKEN \u274c</span>':(q>=112?'<span style="color:#4ade80;font-weight:700;">SAFE \u2705</span>':'<span style="color:#fbbf24;font-weight:700;">WEAKENED \u26a0\ufe0f</span>');
+            document.getElementById('secResult').innerHTML =
+                '<strong>'+name+'</strong><br>Classical security: <b>'+bits+' bits</b> (2<sup>'+bits+'</sup> work)<br>'+
+                'After a quantum computer: <b>'+(q===0?'~0':q+' bits')+'</b><br>'+
+                verdict+' &mdash; '+msg;
+        }
+    </script>
+
+
+<script id="ui-universal">
+(function(){
+  window.toggleMobileNav=function(){var n=document.getElementById("navLinks");if(n)n.classList.toggle("open");};
+  if(typeof window.toggleLanguage!=="function"){
+    window.currentLang=localStorage.getItem("cryptomath_lang")||"en";
+    window.applyLanguage=window.applyLanguage||function(){var l=window.currentLang;document.documentElement.dir=l==="ar"?"rtl":"ltr";document.documentElement.lang=l;var en=document.getElementById("lang-en"),ar=document.getElementById("lang-ar");if(en&&ar){en.classList.toggle("active",l==="en");ar.classList.toggle("active",l==="ar");}document.querySelectorAll("[data-en][data-ar]").forEach(function(el){var t=el.getAttribute("data-"+l);if(t)el.innerHTML=t;});};
+    window.toggleLanguage=function(){window.currentLang=window.currentLang==="en"?"ar":"en";localStorage.setItem("cryptomath_lang",window.currentLang);window.applyLanguage();};
+    window.addEventListener("load",window.applyLanguage);
+  }
+  if(localStorage.getItem("cryptomath_reduce_motion")==="1"){document.addEventListener("DOMContentLoaded",function(){document.body.classList.add("reduce-motion");});}
+  document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest(".nav-links a");if(a){var n=document.getElementById("navLinks");if(n)n.classList.remove("open");}});
+  window.addEventListener("scroll",function(){var nb=document.getElementById("navbar");if(nb)nb.classList.toggle("scrolled",window.scrollY>20);});
+})();
+</script>
+<!-- CHATBOT-START -->
+    <!-- AI Helper Chat Widget -->
+    <div class="ai-chat-widget" id="aiChatWidget">
+        <!-- Chat Toggle Button -->
+        <button class="ai-chat-toggle" id="aiChatToggle" onclick="toggleAIChat()">
+            <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+            <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span class="chat-badge" id="chatBadge">1</span>
+        </button>
+
+        <!-- Chat Window -->
+        <div class="ai-chat-window" id="aiChatWindow">
+            <div class="ai-chat-header">
+                <div class="ai-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5A2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5z"/>
+                    </svg>
+                </div>
+                <div class="ai-header-info">
+                    <h4 data-en="CryptoMath AI" data-ar="مساعد كريبتوماث">CryptoMath AI</h4>
+                    <span class="ai-status" data-en="Online • Ready to help" data-ar="متصل • جاهز للمساعدة">Online • Ready to help</span>
+                </div>
+                <button class="ai-chat-minimize" onclick="toggleAIChat()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="ai-chat-messages" id="aiChatMessages">
+                <!-- Welcome Message -->
+                <div class="ai-message bot">
+                    <div class="message-avatar">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5A2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5z"/>
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        <p data-en="Hi! I'm CryptoMath AI, your personal assistant for cryptography and blockchain mathematics. Ask me anything about:" data-ar="مرحباً! أنا مساعد كريبتوماث، مساعدك الشخصي للتشفير ورياضيات البلوكتشين. اسألني عن:">Hi! I'm CryptoMath AI, your personal assistant for cryptography and blockchain mathematics. Ask me anything about:</p>
+                        <ul>
+                            <li data-en="Modular arithmetic & prime numbers" data-ar="الحساب المعياري والأعداد الأولية">Modular arithmetic & prime numbers</li>
+                            <li data-en="RSA, SHA-256, ECDSA encryption" data-ar="تشفير RSA و SHA-256 و ECDSA">RSA, SHA-256, ECDSA encryption</li>
+                            <li data-en="Blockchain & cryptocurrency concepts" data-ar="مفاهيم البلوكتشين والعملات المشفرة">Blockchain & cryptocurrency concepts</li>
+                            <li data-en="Solving math problems step-by-step" data-ar="حل المسائل الرياضية خطوة بخطوة">Solving math problems step-by-step</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Questions -->
+            <div class="ai-quick-questions" id="aiQuickQuestions">
+                <button class="quick-btn" onclick="askQuickQuestion('What is modular arithmetic?')" data-en="What is modular arithmetic?" data-ar="ما هو الحساب المعياري؟">What is modular arithmetic?</button>
+                <button class="quick-btn" onclick="askQuickQuestion('How does RSA encryption work?')" data-en="How does RSA work?" data-ar="كيف يعمل RSA؟">How does RSA work?</button>
+                <button class="quick-btn" onclick="askQuickQuestion('Explain elliptic curves')" data-en="Explain elliptic curves" data-ar="اشرح المنحنيات الإهليلجية">Explain elliptic curves</button>
+                            <button class="quick-btn" onclick="askQuickQuestion('What is post-quantum cryptography?')" data-en="What is post-quantum cryptography?" data-ar="ما هو تشفير ما بعد الكم؟">What is post-quantum cryptography?</button>
+                <button class="quick-btn" onclick="askQuickQuestion('How does Bitcoin use cryptography?')" data-en="How does Bitcoin use cryptography?" data-ar="كيف يستخدم البيتكوين التشفير؟">How does Bitcoin use cryptography?</button>
+            </div>
+
+            <div class="ai-chat-input-container">
+                <div class="ai-chat-input-wrapper">
+                    <textarea 
+                        id="aiChatInput" 
+                        placeholder="Ask me anything about crypto math..." 
+                        data-en-placeholder="Ask me anything about crypto math..."
+                        data-ar-placeholder="اسألني أي شيء عن رياضيات التشفير..."
+                        rows="1"
+                        onkeydown="handleChatKeydown(event)"
+                    ></textarea>
+                    <button class="ai-send-btn" id="aiSendBtn" onclick="sendAIMessage()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <p class="ai-disclaimer" data-en="AI can make mistakes. Verify important information." data-ar="يمكن للذكاء الاصطناعي أن يخطئ. تحقق من المعلومات المهمة.">AI can make mistakes. Verify important information.</p>
+            </div>
+        </div>
+    </div>
+<script id="chatbot-js">
+        // AI Chat Widget Functions
+        let aiChatOpen = false;
+        let conversationHistory = [];
+
+        function toggleAIChat() {
+            aiChatOpen = !aiChatOpen;
+            const widget = document.getElementById('aiChatWidget');
+            widget.classList.toggle('open', aiChatOpen);
+            
+            if (aiChatOpen) {
+                document.getElementById('chatBadge').classList.add('hidden');
+                document.getElementById('aiChatInput').focus();
+            }
+        }
+
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendAIMessage();
+            }
+        }
+
+        function askQuickQuestion(question) {
+            document.getElementById('aiChatInput').value = question;
+            sendAIMessage();
+        }
+
+        async function sendAIMessage() {
+            const input = document.getElementById('aiChatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Clear input
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Hide quick questions after first message
+            document.getElementById('aiQuickQuestions').style.display = 'none';
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            
+            // Add to conversation history
+            conversationHistory.push({ role: 'user', content: message });
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Call AI API
+                const response = await getAIResponse(message);
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Add AI response to chat
+                addMessageToChat(response, 'bot');
+                
+                // Add to conversation history
+                conversationHistory.push({ role: 'assistant', content: response });
+                
+            } catch (error) {
+                removeTypingIndicator();
+                const errorMsg = currentLang === 'ar' 
+                    ? 'عذراً، حدث خطأ. يرجى المحاولة مرة أخرى.'
+                    : 'Sorry, an error occurred. Please try again.';
+                addMessageToChat(errorMsg, 'bot');
+            }
+        }
+
+        function addMessageToChat(message, type) {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${type}`;
+            
+            const avatarSvg = type === 'bot' 
+                ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5A2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5z"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+            
+            // Format message with markdown-like syntax
+            const formattedMessage = formatMessage(message);
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatarSvg}</div>
+                <div class="message-content">${formattedMessage}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function formatMessage(text) {
+            // Convert **bold** to <strong>
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Convert `code` to <code>
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            // Convert \`\`\`code blocks\`\`\` to <pre><code>
+            text = text.replace(/\`\`\`([\s\S]*?)\`\`\`/g, '<pre><code>$1</code></pre>');
+            // Convert newlines to <br> (but not inside pre blocks)
+            text = text.replace(/\n/g, '<br>');
+            // Wrap in paragraph if not already formatted
+            if (!text.startsWith('<')) {
+                text = `<p>${text}</p>`;
+            }
+            return text;
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('aiChatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-message bot typing';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5A2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5z"/></svg>
+                </div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // AI Response using built-in knowledge base
+        async function getAIResponse(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            // Knowledge base for cryptography and math topics
+            const knowledgeBase = {
+                'modular': {
+                    en: `**Modular Arithmetic** is like clock math - numbers wrap around after reaching a certain value (the modulus).
+
+**Key concept:** a mod n gives the remainder when a is divided by n.
+
+**Example:** 17 mod 5 = 2 (because 17 = 3×5 + 2)
+
+**In cryptography:** RSA uses modular exponentiation: c = m^e mod n
+
+This is fundamental because:
+• It creates "one-way" functions
+• Results stay within a fixed range
+• Perfect for encryption algorithms`,
+                    ar: `**الحساب المعياري** مثل رياضيات الساعة - الأرقام تلتف بعد الوصول إلى قيمة معينة (المعامل).
+
+**المفهوم الأساسي:** a mod n يعطي الباقي عند قسمة a على n.
+
+**مثال:** 17 mod 5 = 2 (لأن 17 = 3×5 + 2)
+
+**في التشفير:** RSA يستخدم الأس المعياري: c = m^e mod n`
+                },
+                'rsa': {
+                    en: `**RSA Encryption** is a public-key cryptosystem based on the difficulty of factoring large prime numbers.
+
+**How it works:**
+1. Choose two large primes p and q
+2. Compute n = p × q
+3. Compute φ(n) = (p-1)(q-1)
+4. Choose public exponent e (commonly 65537)
+5. Compute private key d where e×d ≡ 1 (mod φ(n))
+
+**Encryption:** c = m^e mod n
+**Decryption:** m = c^d mod n
+
+**Security:** Based on the fact that factoring n back into p and q is computationally infeasible for large primes.`,
+                    ar: `**تشفير RSA** هو نظام تشفير بالمفتاح العام يعتمد على صعوبة تحليل الأعداد الأولية الكبيرة.
+
+**كيف يعمل:**
+1. اختر عددين أوليين كبيرين p و q
+2. احسب n = p × q
+3. احسب φ(n) = (p-1)(q-1)
+4. اختر الأس العام e
+5. احسب المفتاح الخاص d
+
+**التشفير:** c = m^e mod n
+**فك التشفير:** m = c^d mod n`
+                },
+                'prime': {
+                    en: `**Prime Numbers** are the building blocks of cryptography - numbers only divisible by 1 and themselves.
+
+**Why they matter in crypto:**
+• RSA relies on multiplying large primes
+• Factoring their product is extremely hard
+• Used in key generation
+
+**Important concepts:**
+• **Primality testing** - Miller-Rabin test
+• **Prime factorization** - breaking numbers into prime components
+• **Coprime** - numbers with GCD of 1
+
+**Example:** 2, 3, 5, 7, 11, 13, 17, 19, 23, 29...
+
+RSA typically uses primes with 1024+ bits for security.`,
+                    ar: `**الأعداد الأولية** هي اللبنات الأساسية للتشفير - أرقام قابلة للقسمة فقط على 1 وعلى نفسها.
+
+**لماذا تهم في التشفير:**
+• RSA يعتمد على ضرب أعداد أولية كبيرة
+• تحليل ناتجها صعب للغاية
+• تستخدم في توليد المفاتيح`
+                },
+                'elliptic': {
+                    en: `**Elliptic Curve Cryptography (ECC)** powers Bitcoin and Ethereum signatures using the curve equation:
+
+**y² = x³ + ax + b**
+
+**Why ECC is powerful:**
+• Smaller keys than RSA (256-bit vs 3072-bit)
+• Faster computations
+• Same security level
+
+**Key operations:**
+• **Point addition:** P + Q = R
+• **Scalar multiplication:** k × P (repeated addition)
+
+**In Bitcoin:** Uses secp256k1 curve
+• Private key: random 256-bit number (k)
+• Public key: k × G (where G is generator point)
+
+The security comes from the **discrete logarithm problem** - given P and k×P, finding k is nearly impossible.`,
+                    ar: `**تشفير المنحنيات الإهليلجية (ECC)** يشغل توقيعات البيتكوين والإيثيريوم باستخدام معادلة المنحنى:
+
+**y² = x³ + ax + b**
+
+**لماذا ECC قوي:**
+• مفاتيح أصغر من RSA
+• حسابات أسرع
+• نفس مستوى الأمان`
+                },
+                'hash': {
+                    en: `**SHA-256** (Secure Hash Algorithm) is a cryptographic hash function used in Bitcoin.
+
+**Properties:**
+• **Deterministic** - same input = same output
+• **One-way** - cannot reverse the hash
+• **Collision-resistant** - hard to find two inputs with same hash
+• **Avalanche effect** - small change = completely different hash
+
+**Output:** 256-bit (64 hex characters)
+
+**Example:**
+\`SHA256("hello") = 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\`
+
+**In Bitcoin:** Used for mining (proof-of-work), transaction IDs, and Merkle trees.`,
+                    ar: `**SHA-256** هي دالة تجزئة تشفيرية تستخدم في البيتكوين.
+
+**الخصائص:**
+• **حتمية** - نفس المدخل = نفس المخرج
+• **أحادية الاتجاه** - لا يمكن عكس التجزئة
+• **مقاومة التصادم** - صعب إيجاد مدخلين بنفس التجزئة`
+                },
+                'discrete': {
+                    en: `**Discrete Logarithms** are the foundation of Diffie-Hellman key exchange and many cryptographic protocols.
+
+**The problem:** Given g, p, and g^x mod p, find x.
+
+**Example:**
+• g = 5, p = 23
+• If 5^x mod 23 = 8, what is x?
+• Answer: x = 3 (because 5³ = 125 = 5×23 + 10... wait, let me recalculate: 5³ mod 23 = 125 mod 23 = 10)
+
+**Why it's hard:** For large numbers, no efficient algorithm exists to find x.
+
+**Diffie-Hellman:**
+1. Alice and Bob agree on g and p
+2. Alice picks secret a, sends g^a mod p
+3. Bob picks secret b, sends g^b mod p
+4. Both compute (g^ab mod p) as shared secret`,
+                    ar: `**اللوغاريتمات المتقطعة** هي أساس تبادل مفاتيح ديفي-هيلمان والعديد من بروتوكولات التشفير.
+
+**المشكلة:** بمعلومية g و p و g^x mod p، أوجد x.
+
+**لماذا صعبة:** للأرقام الكبيرة، لا توجد خوارزمية فعالة لإيجاد x.`
+                },
+                'blockchain': {
+                    en: `**Blockchain** is a distributed ledger secured by cryptographic hash functions.
+
+**Key components:**
+• **Block:** Contains transactions + previous hash + nonce
+• **Hash:** SHA-256 links blocks together
+• **Mining:** Finding nonce where hash starts with zeros
+
+**How mining works:**
+1. Gather transactions into a block
+2. Include previous block's hash
+3. Find nonce where SHA256(block) < target
+4. This is the "proof of work"
+
+**Security:**
+• Changing one block changes all subsequent hashes
+• 51% attack requires controlling majority of network
+• Decentralization prevents single point of failure`,
+                    ar: `**البلوكتشين** هو سجل موزع مؤمن بدوال التجزئة التشفيرية.
+
+**المكونات الرئيسية:**
+• **الكتلة:** تحتوي على المعاملات + التجزئة السابقة + الرقم العشوائي
+• **التجزئة:** SHA-256 تربط الكتل معاً
+• **التعدين:** إيجاد رقم عشوائي حيث التجزئة تبدأ بأصفار`
+                },
+                'ecdsa': {
+                    en: `**ECDSA** (Elliptic Curve Digital Signature Algorithm) is used to sign Bitcoin/Ethereum transactions.
+
+**How signing works:**
+1. Hash the message: h = SHA256(message)
+2. Pick random k, compute R = k × G
+3. Compute s = k⁻¹(h + r×privateKey) mod n
+4. Signature is (r, s)
+
+**Verification:**
+1. Compute u1 = h × s⁻¹ mod n
+2. Compute u2 = r × s⁻¹ mod n  
+3. Check if u1×G + u2×PublicKey = R
+
+**In Bitcoin:**
+• Signs transactions to prove ownership
+• Anyone can verify with public key
+• Private key never revealed`,
+                    ar: `**ECDSA** هو خوارزمية التوقيع الرقمي بالمنحنيات الإهليلجية المستخدمة لتوقيع معاملات البيتكوين/الإيثيريوم.
+
+**كيف يعمل التوقيع:**
+1. تجزئة الرسالة
+2. اختيار k عشوائي
+3. حساب التوقيع (r, s)`
+                },
+                "quantum": {
+                    en: "**Quantum computing & cryptography** 🧠\n\nQuantum computers use qubits to run special algorithms that threaten today's crypto:\n• **Shor's algorithm** breaks RSA, Diffie–Hellman and elliptic-curve crypto.\n• **Grover's algorithm** speeds up brute force, so symmetric keys must double (use AES-256).\n\n**Post-quantum cryptography (PQC)** swaps the broken math for problems that stay hard for quantum computers — lattices (Kyber, Dilithium), hashes (SPHINCS+) and codes. NIST standardized the first PQC algorithms in 2024.\n\n👉 Visit the Quantum page for visuals and detailed math!",
+                    ar: "**الحوسبة الكمية والتشفير** 🧠\n\nتهدد الحواسيب الكمية التشفير الحالي عبر خوارزمية شور (تكسر RSA و ECC) وجروفر. تشفير ما بعد الكم يستخدم الشبكات (Kyber، Dilithium) ليبقى آمنًا."
+                },
+                "shor": {
+                    en: "**Shor's Algorithm** ⚡\n\nA quantum algorithm (1994) that finds the hidden period of a function with the quantum Fourier transform.\n• Factors big numbers in **polynomial time**\n• Solves the discrete logarithm problem\n• This **breaks RSA, Diffie–Hellman and ECC**\n\nClassical factoring is sub-exponential; Shor runs in about O(n²·log n·log log n).",
+                    ar: "**خوارزمية شور** ⚡\nخوارزمية كمية تحلل الأعداد الكبيرة بسرعة وتكسر RSA والمنحنيات الإهليلجية."
+                },
+                "grover": {
+                    en: "**Grover's Algorithm** 🔍\n\nA quantum search that finds an item among N in about √N steps.\n• Turns 2^n brute force into 2^(n/2)\n• Does NOT break symmetric crypto — it just halves security\n• Fix: double the key size (AES-128 → AES-256)\n\nIt only mildly affects hashing and Bitcoin mining.",
+                    ar: "**خوارزمية جروفر** 🔍\nتبحث في N عنصر بـ √N خطوة، فتخفض أمان المفتاح المتماثل للنصف — الحل: استخدم AES-256."
+                },
+                "lattice": {
+                    en: "**Lattice-based cryptography** 🧩\n\nThe leading post-quantum approach. Security rests on the Shortest Vector Problem in a high-dimensional grid — hard even for quantum computers.\n\n**Learning With Errors (LWE):** b = A·s + e (mod q), where e is tiny random noise. Without the noise you could solve for s; with it, it becomes a brutal lattice search.\n\nKyber (encryption) and Dilithium (signatures) are built on this.",
+                    ar: "**تشفير الشبكات** 🧩\nيعتمد على صعوبة إيجاد أقصر متجه في شبكة عالية الأبعاد. معادلة LWE: b = A·s + e. Kyber و Dilithium مبنيان عليه."
+                },
+                "kyber": {
+                    en: "**Kyber (ML-KEM)** 🛡️\n\nA post-quantum key-exchange algorithm based on lattices (LWE). It lets two parties agree on a shared secret safely, even against quantum computers. NIST standardized it as **ML-KEM (FIPS 203)** in 2024.",
+                    ar: "**Kyber (ML-KEM)** 🛡️\nخوارزمية تبادل مفاتيح ما بعد الكم مبنية على الشبكات، اعتمدتها NIST عام 2024."
+                },
+                "dilithium": {
+                    en: "**Dilithium (ML-DSA)** ✍️\n\nA post-quantum digital-signature scheme based on lattices. It can replace ECDSA/RSA signatures and is a strong candidate to protect future cryptocurrency wallets. NIST standardized it as **ML-DSA (FIPS 204)**.",
+                    ar: "**Dilithium (ML-DSA)** ✍️\nنظام توقيع رقمي ما بعد الكم يمكن أن يحل محل ECDSA لحماية المحافظ."
+                },
+                "sphincs": {
+                    en: "**SPHINCS+** 🌲\n\nA post-quantum signature scheme that trusts ONLY a hash function — no number theory for Shor to attack. It builds a big tree of one-time keys (a Merkle tree). Signatures are larger but very conservative.",
+                    ar: "**SPHINCS+** 🌲\nتوقيع ما بعد الكم يعتمد فقط على دالة التجزئة، ويبني شجرة مركل من المفاتيح."
+                },
+                "private key": {
+                    en: "**Private key** 🔑\n\nA huge secret random number that controls your funds. From it you derive your public key by elliptic-curve multiplication: Q = d·G.\n• Never share it — anyone with it controls your coins\n• Used to **sign** transactions\n• Impossible to reverse from the public key (the ECDLP)",
+                    ar: "**المفتاح الخاص** 🔑\nرقم سري عشوائي ضخم يتحكم بأموالك ويوقع المعاملا��. لا تشاركه أبدًا!"
+                },
+                "public key": {
+                    en: "**Public key** 📢\n\nDerived from your private key (Q = d·G). You can share it freely; people use it to **verify** your signatures. Your wallet address is usually a hash of the public key for extra protection.",
+                    ar: "**المفتاح العام** 📢\nيُشتق من المفتاح الخاص ويُشارك بحرية للتحقق من تواقيعك."
+                },
+                "wallet": {
+                    en: "**Crypto wallet** 👛\n\nA wallet is really just a key pair:\n• **Private key** — your secret (signs transactions)\n• **Public key / address** — what you share to receive funds\n\nIt doesn't 'store coins' — it stores the keys that prove you own entries on the blockchain.",
+                    ar: "**المحفظة** 👛\nالمحفظة هي زوج مفاتيح (خاص + عام)، ولا تخزن العملات بل المفاتيح التي تثبت ملكيتك."
+                },
+                "bitcoin": {
+                    en: "**How Bitcoin uses cryptography** ₿\n• **SHA-256 hashing** chains blocks and powers mining\n• **Elliptic-curve keys (secp256k1)** create wallets\n• **ECDSA signatures** authorise spending\n• **Merkle trees** summarise a block's transactions\n\nBecause it relies on ECC, Bitcoin would be vulnerable to a large quantum computer — see the Quantum & Currency pages!",
+                    ar: "**كيف يستخدم البيتكوين التشفير** ₿\nتجزئة SHA-256 لربط الكتل، ومفاتيح ECC للمحافظ، وتواقيع ECDSA للمعاملات."
+                },
+                "cryptocurrency": {
+                    en: "**Cryptocurrency = applied cryptography** 💰\n\nThree tools do the whole job:\n1. **Hash functions** make the ledger tamper-evident\n2. **Key pairs** create ownership\n3. **Digital signatures** authorise transactions\n\nNo bank needed — just math. Check out the new Currency page for a full walkthrough!",
+                    ar: "**العملات المشفرة = تشفير تطبيقي** 💰\nدوال التجزئة + أزواج المفاتيح + التواقيع الرقمية = مال بدون بنك."
+                },
+                "merkle": {
+                    en: "**Merkle tree** 🌳\n\nTransactions are hashed in pairs, over and over, until one **Merkle root** represents them all. Change any single transaction and the root changes — so a tiny 32-byte hash protects the whole block.",
+                    ar: "**شجرة مركل** 🌳\nتُجزأ المعاملات أزواجًا حتى جذر واحد يمثلها جميعًا ويحمي الكتلة."
+                },
+                "mining": {
+                    en: "**Mining & Proof-of-Work** ⛏️\n\nMiners change a **nonce** until a block's double-SHA-256 hash is below the target (enough leading zeros):\nSHA256(SHA256(header+nonce)) < target\n\nThere's no shortcut — just trillions of guesses. That work makes rewriting history practically impossible.",
+                    ar: "**التعدين وإثبات العمل** ⛏️\nيغير المعدّنون قيمة nonce حتى يصبح التجزئة أقل من الهدف — لا اختصار!"
+                },
+                "nonce": {
+                    en: "**Nonce** 🎲\n\n'Number used once.' In mining it's the value miners keep changing to find a block hash below the target. Finding it proves real computational work was done.",
+                    ar: "**Nonce** 🎲\n'رقم يُستخدم مرة واحدة'، تغيّره المعدّنات لإيجاد تجزئة صالحة."
+                },
+                "signature": {
+                    en: "**Digital signature** ✍️\n\nYou sign a message with your private key; anyone verifies with your public key. It guarantees:\n• **Authentication** — only you could sign\n• **Integrity** — the message wasn't changed\n• **Non-repudiation** — you can't deny it\n\nBitcoin/Ethereum use ECDSA for this.",
+                    ar: "**التوقيع الرقمي** ✍️\nتوقّع بمفتاحك الخاص ويتحقق الجميع بالعام — يضمن الهوية والسلامة."
+                },
+                "symmetric": {
+                    en: "**Symmetric vs asymmetric** 🔐\n\n• **Symmetric** (AES): one shared key encrypts & decrypts. Fast, used for bulk data.\n• **Asymmetric** (RSA/ECC): a public/private pair. Slower, used for key exchange & signatures.\n\nQuantum note: Grover only halves symmetric security (use AES-256), but Shor fully breaks today's asymmetric crypto.",
+                    ar: "**متماثل مقابل غير متماثل** 🔐\nالمتماثل (AES) يستخدم مفتاحًا واحدًا؛ غير المتماثل (RSA/ECC) يستخدم زوج مفاتيح."
+                },
+                "aes": {
+                    en: "**AES** 🔒\n\nThe Advanced Encryption Standard — the world's main symmetric cipher. It encrypts data in 128-bit blocks with a shared key (128/192/256-bit).\n\nQuantum tip: Grover halves the strength, so use **AES-256** to keep 128-bit security.",
+                    ar: "**AES** 🔒\nمعيار التشفير المتقدم، أشهر تشفير متماثل. استخدم AES-256 للأمان الكمي."
+                },
+                "diffie": {
+                    en: "**Diffie–Hellman key exchange** 🤝\n\nLets two people create a shared secret over a public channel using modular exponentiation. Its security rests on the **discrete logarithm problem** — which Shor's algorithm breaks, so post-quantum replacements like Kyber are needed.",
+                    ar: "**تبادل مفتاح ديفي-هيلمان** 🤝\nينشئ سرًا مشتركًا عبر قناة عامة، وأمانه على اللوغارتم المتقطع."
+                }
+            };
+
+            // Find matching topic
+            let response = null;
+            const lang = currentLang;
+
+            for (const [key, value] of Object.entries(knowledgeBase)) {
+                if (lowerMessage.includes(key)) {
+                    response = value[lang] || value['en'];
+                    break;
+                }
+            }
+
+            // Generic helpful response if no specific topic matched
+            if (!response) {
+                // Check for greetings
+                if (lowerMessage.match(/^(hi|hello|hey|مرحبا|السلام)/)) {
+                    response = lang === 'ar' 
+                        ? 'مرحباً! كيف يمكنني مساعدتك اليوم؟ يمكنني شرح مفاهيم التشفير والرياضيات مثل RSA، المنحنيات الإهليلجية، الحساب المعياري، والمزيد!'
+                        : 'Hello! How can I help you today? I can explain cryptography and math concepts like RSA, elliptic curves, modular arithmetic, and more!';
+                }
+                // Check for thanks
+                else if (lowerMessage.match(/(thank|thanks|شكرا)/)) {
+                    response = lang === 'ar'
+                        ? 'على الرحب والسعة! هل لديك أسئلة أخرى؟'
+                        : "You're welcome! Do you have any other questions?";
+                }
+                // Check for math problems
+                else if (lowerMessage.match(/(\d+)\s*(mod|%)\s*(\d+)/)) {
+                    const match = lowerMessage.match(/(\d+)\s*(?:mod|%)\s*(\d+)/);
+                    if (match) {
+                        const a = parseInt(match[1]);
+                        const b = parseInt(match[2]);
+                        const result = a % b;
+                        response = lang === 'ar'
+                            ? `**الحساب:** ${a} mod ${b} = ${result}\n\nلأن ${a} = ${Math.floor(a/b)} × ${b} + ${result}`
+                            : `**Calculation:** ${a} mod ${b} = ${result}\n\nBecause ${a} = ${Math.floor(a/b)} × ${b} + ${result}`;
+                    }
+                }
+                // Default response
+                else {
+                    response = lang === 'ar'
+                        ? `سؤال جيد! يمكنني المساعدة في المواضيع التالية:
+
+• **الحساب المعياري** - أساس التشفير
+• **RSA** - تشفير المفتاح العام
+• **الأعداد الأولية** - لبنات البناء
+• **المنحنيات الإهليلجية** - تشفير البيتكوين
+• **SHA-256** - دوال التجزئة
+• **البلوكتشين** - كيف يعمل التعدين
+
+ما الموضوع الذي تريد معرفة المزيد عنه؟`
+                        : `Great question! I can help with the following topics:
+
+• **Modular Arithmetic** - Foundation of cryptography
+• **RSA** - Public key encryption
+• **Prime Numbers** - Building blocks
+• **Elliptic Curves** - Bitcoin's cryptography
+• **SHA-256** - Hash functions
+• **Blockchain** - How mining works
+
+Which topic would you like to learn more about?`;
+                }
+            }
+
+            // Simulate typing delay for more natural feel
+            await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
+            
+            return response;
+        }
+
+        // Auto-resize textarea
+        document.getElementById('aiChatInput')?.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+
+        // Update placeholder on language change
+        const originalApplyLanguage = applyLanguage;
+        applyLanguage = function() {
+            originalApplyLanguage();
+            const input = document.getElementById('aiChatInput');
+            if (input) {
+                const placeholder = currentLang === 'ar' 
+                    ? 'اسألني أي شيء عن رياضيات التشفير...'
+                    : 'Ask me anything about crypto math...';
+                input.placeholder = placeholder;
+            }
+        };
+</script>
+<!-- CHATBOT-END -->
+
+<script id="gamify-js">
+(function(){
+  if(window.__gmfInit) return; window.__gmfInit=true;
+  var KEY='cryptomath_user', GOAL=100, TOPICS_TOTAL=5;
+  var BADGES=[
+    {id:'starter',e:'\u{1F331}',en:'First Steps',ar:'\u0627\u0644\u0628\u062F\u0627\u064A\u0629'},
+    {id:'streak3',e:'\u{1F525}',en:'3-Day Streak',ar:'\u0633\u0644\u0633\u0644\u0629 3 \u0623\u064A\u0627\u0645'},
+    {id:'streak7',e:'\u26A1',en:'7-Day Streak',ar:'\u0633\u0644\u0633\u0644\u0629 7 \u0623\u064A\u0627\u0645'},
+    {id:'streak30',e:'\u{1F3C6}',en:'30-Day Streak',ar:'\u0633\u0644\u0633\u0644\u0629 30 \u064A\u0648\u0645'},
+    {id:'lvl5',e:'\u2B50',en:'Level 5',ar:'\u0627\u0644\u0645\u0633\u062A\u0648\u0649 5'},
+    {id:'lvl10',e:'\u{1F31F}',en:'Level 10',ar:'\u0627\u0644\u0645\u0633\u062A\u0648\u0649 10'},
+    {id:'quiz',e:'\u{1F9E0}',en:'Quiz Ace',ar:'\u0628\u0637\u0644 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631'},
+    {id:'scholar',e:'\u{1F393}',en:'All Topics',ar:'\u0643\u0644 \u0627\u0644\u0645\u0648\u0627\u0636\u064A\u0639'},
+    {id:'calc',e:'\u{1F9EE}',en:'Calculator',ar:'\u0627\u0644\u0622\u0644\u0629 \u0627\u0644\u062D\u0627\u0633\u0628\u0629'},
+    {id:'grind',e:'\u{1F4AA}',en:'10 Challenges',ar:'10 \u062A\u062D\u062F\u064A\u0627\u062A'}
+  ];
+  function lang(){return window.currentLang||localStorage.getItem('cryptomath_lang')||'en';}
+  function GL(en,ar){return lang()==='ar'?ar:en;}
+  function today(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+  function ymd(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+  function load(){try{var s=localStorage.getItem(KEY);var u=s?JSON.parse(s):{};if(!u||typeof u!=='object')u={};return u;}catch(e){return {};}}
+  function save(u){try{localStorage.setItem(KEY,JSON.stringify(u));}catch(e){}}
+  function lvl(xp){return Math.floor((xp||0)/500)+1;}
+  function norm(u){u.xp=u.xp||0;u.level=lvl(u.xp);u.streak=u.streak||0;u.bestStreak=u.bestStreak||0;u.badges=u.badges||[];u.topics=u.topics||[];u.quizScores=u.quizScores||{};u.flags=u.flags||{};u.challengesCompleted=u.challengesCompleted||0;return u;}
+
+  function boot(){
+    var u=norm(load());var t=today();
+    if(u.lastActive!==t){
+      var y=new Date();y.setDate(y.getDate()-1);
+      if(u.lastActive===ymd(y)){u.streak=(u.streak||0)+1;}else{u.streak=1;}
+      if(u.streak>u.bestStreak)u.bestStreak=u.streak;
+      u.lastActive=t;save(u);
+    }
+    if(u.dailyVisitDate!==t){u.dailyVisitDate=t;save(u);addXP(10,GL('Daily visit','\u0632\u064A\u0627\u0631\u0629 \u064A\u0648\u0645\u064A\u0629'));}
+    checkBadges(u);
+  }
+
+  function addXP(n,reason){
+    var u=norm(load());var t=today();
+    if(u.dailyDate!==t){u.dailyXP=0;u.dailyDate=t;}
+    var old=lvl(u.xp);
+    u.xp=(u.xp||0)+n;u.dailyXP=(u.dailyXP||0)+n;u.level=lvl(u.xp);
+    save(u);
+    toastXP(n,reason);
+    if(u.level>old)setTimeout(function(){toast('\u{1F389}',GL('Level '+u.level+'!','\u0627\u0644\u0645\u0633\u062A\u0648\u0649 '+u.level+'!'),'');},450);
+    checkBadges(u);render();
+  }
+  function completeTopic(id){if(!id)return;var u=norm(load());if(u.topics.indexOf(id)<0){u.topics.push(id);save(u);addXP(40,GL('Topic complete','\u0627\u0643\u062A\u0645\u0644 \u0627\u0644\u0645\u0648\u0636\u0648\u0639'));}}
+  function quizDone(topic,score,total){if(topic&&total>0){var uu=norm(load());var pc=Math.round(score/total*100);if(!(uu.quizScores[topic]>=pc)){uu.quizScores[topic]=pc;save(uu);}}if(score>0)addXP(score*20,GL('Quiz +'+(score*20),'\u0627\u062E\u062A\u0628\u0627\u0631 +'+(score*20)));if(score===total){var u=norm(load());u.flags.pquiz=true;save(u);checkBadges(u);}completeTopic(topic);}
+  function markCalc(){var u=norm(load());if(!u.flags.calc){u.flags.calc=true;save(u);addXP(10,GL('Calculator used','\u062A\u0645 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0627\u0644\u0622\u0644\u0629'));}}
+
+  function unlocked(u,id){
+    var b=u.bestStreak||0,L=u.level||1;
+    switch(id){
+      case 'starter':return (u.xp||0)>0;
+      case 'streak3':return b>=3; case 'streak7':return b>=7; case 'streak30':return b>=30;
+      case 'lvl5':return L>=5; case 'lvl10':return L>=10;
+      case 'quiz':return !!(u.flags&&u.flags.pquiz);
+      case 'scholar':return (u.topics||[]).length>=TOPICS_TOTAL;
+      case 'calc':return !!(u.flags&&u.flags.calc);
+      case 'grind':return (u.challengesCompleted||0)>=10;
+    }
+    return false;
+  }
+  function checkBadges(u){u=norm(u||load());var changed=false;for(var i=0;i<BADGES.length;i++){var bd=BADGES[i];if(unlocked(u,bd.id)&&u.badges.indexOf(bd.id)<0){u.badges.push(bd.id);changed=true;setTimeout((function(b){return function(){toast(b.e,GL('Badge: '+b.en,'\u0648\u0633\u0627\u0645: '+b.ar),'badge');};})(bd),300);}}if(changed)save(u);return u;}
+
+  var chip,overlay,panel,toasts;
+  function build(){
+    toasts=document.createElement('div');toasts.className='gmf-toasts';document.body.appendChild(toasts);
+    chip=document.createElement('button');chip.className='gmf-chip';chip.type='button';chip.setAttribute('aria-label','Progress');
+    chip.innerHTML='<span class="gmf-fire">\u{1F525}</span><span id="gmfStreak">0</span><span class="gmf-sep"></span><span class="gmf-lv" id="gmfLv">Lv 1</span>';
+    chip.addEventListener('click',open);document.body.appendChild(chip);
+    overlay=document.createElement('div');overlay.className='gmf-overlay';overlay.addEventListener('click',close);document.body.appendChild(overlay);
+    panel=document.createElement('div');panel.className='gmf-panel';panel.setAttribute('role','dialog');document.body.appendChild(panel);
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  }
+  function open(){render();overlay.classList.add('open');panel.classList.add('open');}
+  function close(){overlay.classList.remove('open');panel.classList.remove('open');}
+
+  function render(){
+    try{
+      var u=norm(load());
+      var into=(u.xp||0)-(u.level-1)*500;var pct=Math.max(0,Math.min(100,into/500*100));
+      if(chip){var st=document.getElementById('gmfStreak');if(st)st.textContent=u.streak||0;var lv=document.getElementById('gmfLv');if(lv)lv.textContent=GL('Lv ','\u0645 ')+u.level;}
+      if(!panel)return;
+      var dxp=(u.dailyDate===today())?(u.dailyXP||0):0;var dpct=Math.max(0,Math.min(100,dxp/GOAL*100));
+      var deg=pct/100*360;
+      var bh='';for(var i=0;i<BADGES.length;i++){var bd=BADGES[i];var on=u.badges.indexOf(bd.id)>=0;bh+='<div class="gmf-badge'+(on?' un':'')+'"><div class="gmf-be">'+bd.e+'</div><small>'+GL(bd.en,bd.ar)+'</small></div>';}
+      panel.innerHTML='<button class="gmf-close" type="button" aria-label="Close">\u2715</button>'
+        +'<h3>'+GL('Your Progress','\u062A\u0642\u062F\u0645\u0643')+'</h3>'
+        +'<p class="gmf-cta">'+GL('Keep your streak alive \u2014 finish a quiz or daily challenge!','\u062D\u0627\u0641\u0638 \u0639\u0644\u0649 \u0633\u0644\u0633\u0644\u062A\u0643 \u2014 \u0623\u0643\u0645\u0644 \u0627\u062E\u062A\u0628\u0627\u0631\u064B\u0627 \u0623\u0648 \u062A\u062D\u062F\u064A\u064B\u0627 \u064A\u0648\u0645\u064A\u064B\u0627!')+'</p>'
+        +'<div class="gmf-ring" style="background:conic-gradient(#C9A24B '+deg+'deg,#2A2520 '+deg+'deg)"><div class="gmf-ring-inner"><span class="gmf-lvnum">'+u.level+'</span><span class="gmf-lvlbl">'+GL('Level','\u0627\u0644\u0645\u0633\u062A\u0648\u0649')+'</span></div></div>'
+        +'<div class="gmf-stat-row"><div class="gmf-stat"><b>\u{1F525} '+(u.streak||0)+'</b><span>'+GL('Streak','\u0627\u0644\u0633\u0644\u0633\u0644\u0629')+'</span></div><div class="gmf-stat"><b>'+(u.bestStreak||0)+'</b><span>'+GL('Best','\u0627\u0644\u0623\u0641\u0636\u0644')+'</span></div><div class="gmf-stat"><b>'+(u.xp||0)+'</b><span>'+GL('Total XP','\u0625\u062C\u0645\u0627\u0644\u064A XP')+'</span></div></div>'
+        +'<div class="gmf-barlbl"><span>'+GL('Level progress','\u062A\u0642\u062F\u0645 \u0627\u0644\u0645\u0633\u062A\u0648\u0649')+'</span><span>'+into+' / 500 XP</span></div><div class="gmf-track"><div class="gmf-fill" style="width:'+pct+'%"></div></div>'
+        +'<div class="gmf-barlbl" style="margin-top:.9rem"><span>'+GL('Daily goal','\u0627\u0644\u0647\u062F\u0641 \u0627\u0644\u064A\u0648\u0645\u064A')+'</span><span>'+dxp+' / '+GOAL+' XP</span></div><div class="gmf-track"><div class="gmf-fill goal" style="width:'+dpct+'%"></div></div>'
+        +'<div class="gmf-sec-title">'+GL('Achievements','\u0627\u0644\u0625\u0646\u062C\u0627\u0632\u0627\u062A')+' ('+u.badges.length+'/'+BADGES.length+')</div>'
+        +'<div class="gmf-badges">'+bh+'</div>';
+      var cb=panel.querySelector('.gmf-close');if(cb)cb.addEventListener('click',close);
+    }catch(e){}
+  }
+
+  function toast(emoji,text,cls){
+    if(!toasts)return;var d=document.createElement('div');d.className='gmf-toast'+(cls?' '+cls:'');
+    d.innerHTML=(emoji?'<span class="gmf-be">'+emoji+'</span>':'')+'<span>'+text+'</span>';
+    toasts.appendChild(d);requestAnimationFrame(function(){d.classList.add('show');});
+    setTimeout(function(){d.classList.remove('show');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},350);},2400);
+  }
+  function toastXP(n,reason){toast('\u2B50','+'+n+' XP'+(reason?'  \u00B7  '+reason:''),'');}
+
+  function wrapLegacy(){
+    if(typeof window.addXP==='function' && !window.addXP.__gmf){
+      var orig=window.addXP;
+      var w=function(n){try{orig(n);}catch(e){}try{toastXP(n,GL('Challenge','\u062A\u062D\u062F\u064A'));checkBadges();render();}catch(e){}};
+      w.__gmf=true;window.addXP=w;
+    }
+  }
+
+  window.Gamify={addXP:addXP,completeTopic:completeTopic,quizDone:quizDone,markCalc:markCalc,checkBadges:checkBadges,refresh:render,toastXP:toastXP,open:open};
+
+  function init(){build();wrapLegacy();boot();render();}
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+<script id="edu-js">
+(function(){
+  if(window.__eduInit) return; window.__eduInit=true;
+  function lang(){return window.currentLang||localStorage.getItem('cryptomath_lang')||'en';}
+  function L(en,ar){return lang()==='ar'?ar:en;}
+
+  var PAGES=[
+    {en:'Home',ar:'الرئيسية',de:'Start exploring cryptography',da:'ابدأ استكشاف التشفير',u:'index.html',ic:'🏠'},
+    {en:'Learn',ar:'تعلم',de:'Lessons, videos & quizzes',da:'دروس وفيديوهات واختبارات',u:'concepts.html',ic:'📘'},
+    {en:'Challenges',ar:'التحديات',de:'Daily challenge & practice',da:'التحدي اليومي والتمارين',u:'challenges.html',ic:'🧩'},
+    {en:'Simulator',ar:'المحاكي',de:'Hands-on blockchain demo',da:'محاكاة البلوكشين العملية',u:'blockchain.html',ic:'⛓️'},
+    {en:'Quantum',ar:'الكم',de:'Quantum vs classical crypto',da:'التشفير الكمي مقابل الكلاسيكي',u:'quantum.html',ic:'⚛️'},
+    {en:'Cryptocurrency',ar:'العملات',de:'How crypto links to coins',da:'كيف يرتبط التشفير بالعملات',u:'cryptocurrency.html',ic:'🪙'},
+    {en:'Journal',ar:'المجلة',de:'Articles on PQC impact',da:'مقالات عن أثر التشفير ما بعد الكمي',u:'journal.html',ic:'📰'},
+    {en:'Profile',ar:'الملف',de:'Your XP, streak & badges',da:'نقاطك وسلسلتك وأوسمتك',u:'profile.html',ic:'👤'},
+    {en:'Settings',ar:'الإعدادات',de:'Language, sound & motion',da:'اللغة والصوت والحركة',u:'settings.html',ic:'⚙️'}
+  ];
+  var TOPICS=[
+    {en:'Modular Arithmetic',ar:'الحساب المعياري',u:'concepts.html#modular',ic:'➗'},
+    {en:'Prime Numbers',ar:'الأعداد الأولية',u:'concepts.html#primes',ic:'🔢'},
+    {en:'Discrete Logarithms',ar:'اللوغاريتمات المتقطعة',u:'concepts.html#discrete',ic:'📈'},
+    {en:'Elliptic Curves',ar:'المنحنيات الإهليلجية',u:'concepts.html#elliptic',ic:'🪐'},
+    {en:'Post-Quantum Cryptography',ar:'التشفير ما بعد الكمي',u:'concepts.html#pqc',ic:'🛡️'},
+    {en:'Scientific Calculator',ar:'الآلة الحاسبة العلمية',u:'concepts.html#sci-calc',ic:'🧮'}
+  ];
+  var INDEX=[];
+  PAGES.forEach(function(p){INDEX.push({te:p.en,ta:p.ar,de:p.de,da:p.da,url:p.u,ic:p.ic,kind:'page'});});
+  TOPICS.forEach(function(t){INDEX.push({te:t.en,ta:t.ar,de:'Learn topic',da:'موضوع تعليمي',url:t.u,ic:t.ic,kind:'topic'});});
+
+  function a11y(){
+    if(!document.querySelector('.edu-skip')){
+      var sk=document.createElement('a');sk.className='edu-skip';sk.href='#';sk.textContent=L('Skip to main content','تخطَّ إلى المحتوى');
+      sk.addEventListener('click',function(e){e.preventDefault();var m=document.querySelector('main, .container, section, h1');if(m){if(!m.id)m.id='eduMain';m.setAttribute('tabindex','-1');try{m.focus();}catch(x){}m.scrollIntoView();}});
+      document.body.insertBefore(sk,document.body.firstChild);
+    }
+    var burger=document.getElementById('navBurger');if(burger&&!burger.getAttribute('aria-label'))burger.setAttribute('aria-label',L('Menu','القائمة'));
+    var en=document.getElementById('lang-en');if(en&&!en.getAttribute('aria-label'))en.setAttribute('aria-label','English');
+    var ar=document.getElementById('lang-ar');if(ar&&!ar.getAttribute('aria-label'))ar.setAttribute('aria-label','العربية');
+    var nav=document.getElementById('navbar');if(nav&&!nav.getAttribute('role'))nav.setAttribute('role','navigation');
+  }
+
+  var overlay,box,input,list,sel=-1,results=[];
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function subseq(q,t){var i=0;for(var j=0;j<t.length&&i<q.length;j++){if(t.charAt(j)===q.charAt(i))i++;}return i===q.length;}
+  function filter(q){
+    q=(q||'').trim().toLowerCase();
+    if(!q)return INDEX.slice();
+    var key=lang()==='ar'?'ta':'te';var out=[];
+    INDEX.forEach(function(it){
+      var blob=(it.te+' '+it.ta+' '+it.de+' '+it.da).toLowerCase();
+      if(blob.indexOf(q)>=0||subseq(q,(it[key]||'').toLowerCase()))out.push(it);
+    });
+    return out;
+  }
+  function render(q){
+    results=filter(q);sel=results.length?0:-1;
+    var kt=lang()==='ar'?'ta':'te';var kd=lang()==='ar'?'da':'de';
+    if(!results.length){list.innerHTML='<div class="edu-empty">'+L('No matches found','لا توجد نتائج')+'</div>';return;}
+    var h='';
+    results.forEach(function(it,i){
+      h+='<button type="button" class="edu-sitem'+(i===0?' sel':'')+'" data-i="'+i+'"><span class="edu-sic">'+it.ic+'</span><span class="edu-stext"><b>'+esc(it[kt])+'</b><small>'+esc(it[kd])+'</small></span><span class="edu-skind">'+(it.kind==='topic'?L('Topic','موضوع'):L('Page','صفحة'))+'</span></button>';
+    });
+    list.innerHTML=h;
+    Array.prototype.forEach.call(list.querySelectorAll('.edu-sitem'),function(el){
+      el.addEventListener('click',function(){go(parseInt(el.getAttribute('data-i'),10));});
+      el.addEventListener('mousemove',function(){setSel(parseInt(el.getAttribute('data-i'),10));});
+    });
+  }
+  function setSel(i){sel=i;Array.prototype.forEach.call(list.querySelectorAll('.edu-sitem'),function(el,j){el.classList.toggle('sel',j===i);});}
+  function scrollSel(){var els=list.querySelectorAll('.edu-sitem');if(els[sel]&&els[sel].scrollIntoView)els[sel].scrollIntoView({block:'nearest'});}
+  function go(i){var it=results[i];if(it){closeS();window.location.href=it.url;}}
+  function onKey(e){
+    if(e.key==='ArrowDown'){e.preventDefault();if(results.length){setSel((sel+1)%results.length);scrollSel();}}
+    else if(e.key==='ArrowUp'){e.preventDefault();if(results.length){setSel((sel-1+results.length)%results.length);scrollSel();}}
+    else if(e.key==='Enter'){e.preventDefault();if(sel>=0)go(sel);}
+    else if(e.key==='Escape'){e.preventDefault();closeS();}
+  }
+  function build(){
+    var fab=document.createElement('button');fab.type='button';fab.className='edu-fab';fab.setAttribute('aria-label',L('Search the site','ابحث في الموقع'));fab.title=L('Search (Ctrl/Cmd+K)','بحث');fab.innerHTML='🔍';fab.addEventListener('click',openS);document.body.appendChild(fab);
+    overlay=document.createElement('div');overlay.className='edu-ov';overlay.addEventListener('click',function(e){if(e.target===overlay)closeS();});
+    box=document.createElement('div');box.className='edu-search';box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label',L('Quick search','بحث سريع'));
+    var head=document.createElement('div');head.className='edu-shead';
+    input=document.createElement('input');input.className='edu-sinput';input.type='text';input.setAttribute('aria-label',L('Search topics and pages','ابحث في المواضيع والصفحات'));input.placeholder=L('Search topics & pages…','ابحث في المواضيع والصفحات…');
+    head.appendChild(input);
+    list=document.createElement('div');list.className='edu-slist';
+    var hint=document.createElement('div');hint.className='edu-shint';hint.innerHTML=L('Up/Down to navigate · Enter to open · Esc to close','للتنقل ↑↓ · Enter للفتح · Esc للإغلاق');
+    box.appendChild(head);box.appendChild(list);box.appendChild(hint);overlay.appendChild(box);document.body.appendChild(overlay);
+    input.addEventListener('input',function(){render(input.value);});
+    input.addEventListener('keydown',onKey);
+  }
+  function openS(){if(!overlay)return;render('');overlay.classList.add('open');setTimeout(function(){input.value='';input.focus();},30);}
+  function closeS(){if(overlay)overlay.classList.remove('open');}
+
+  function buildTop(){
+    var top=document.createElement('button');top.type='button';top.className='edu-top';top.setAttribute('aria-label',L('Back to top','العودة إلى الأعلى'));top.innerHTML='↑';
+    top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});document.body.appendChild(top);
+    window.addEventListener('scroll',function(){if(window.pageYOffset>500)top.classList.add('show');else top.classList.remove('show');});
+  }
+
+  document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();openS();return;}
+    if(e.key==='/'){
+      var a=document.activeElement;
+      if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable))return;
+      if(a&&a.closest&&a.closest('.calc-display,#sci-calc,#aiChatWidget'))return;
+      e.preventDefault();openS();
+    }
+  });
+
+  window.EduSearch={open:openS};
+  function init(){a11y();build();buildTop();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script id="nav-auth">
+(function(){
+  function ar(){return (window.currentLang||localStorage.getItem('cryptomath_lang')||'en')==='ar';}
+  function refreshNavAuth(){
+    var login=document.getElementById('navLogin');
+    var cta=document.getElementById('navCta');
+    var ab=document.getElementById('authButton');
+    var menu=document.querySelectorAll('.nav-menu-auth');
+    var u=null;try{u=JSON.parse(localStorage.getItem('cryptomath_user'));}catch(e){u=null;}
+    var on=!!(u&&(u.name||u.email));
+    if(login)login.style.display=on?'none':'';
+    if(cta)cta.style.display=on?'none':'';
+    Array.prototype.forEach.call(menu,function(el){el.style.display=on?'none':'';});
+    if(ab){
+      if(on){
+        ab.innerHTML='';
+        var a=document.createElement('a');a.href='profile.html';a.className='nav-user';
+        if(u.picture){var img=document.createElement('img');img.className='nav-user-img';img.alt='';img.src=u.picture;a.appendChild(img);}
+        var sp=document.createElement('span');sp.textContent=(u.name||u.email);a.appendChild(sp);
+        var lo=document.createElement('button');lo.type='button';lo.className='nav-logout';lo.textContent=ar()?'خروج':'Log out';lo.setAttribute('aria-label',ar()?'تسجيل الخروج':'Log out');
+        lo.addEventListener('click',function(){try{localStorage.removeItem('cryptomath_user');}catch(e){}try{if(window.firebase&&firebase.auth)firebase.auth().signOut();}catch(e){}refreshNavAuth();});
+        ab.appendChild(a);ab.appendChild(lo);
+      } else { ab.innerHTML=''; }
+    }
+  }
+  window.refreshNavAuth=refreshNavAuth;
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refreshNavAuth);else refreshNavAuth();
+  window.addEventListener('storage',function(e){if(!e.key||e.key==='cryptomath_user'||e.key==='cryptomath_lang')refreshNavAuth();});
+  document.addEventListener('click',function(e){var t=e.target;if(t&&t.closest&&t.closest('.lang-toggle'))setTimeout(refreshNavAuth,60);});
+})();
+</script>
+<script id="trionn-js">
+(function(){
+  "use strict";
+  function ready(fn){ if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);} }
+  var RM=(document.body&&document.body.classList.contains("reduce-motion"))
+    ||(function(){try{return localStorage.getItem("cryptomath_reduce_motion")==="1";}catch(e){return false;}})()
+    ||(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var fine=(!window.matchMedia)||window.matchMedia("(pointer: fine)").matches;
+
+  function intro(){
+    var el=document.querySelector(".tr-intro"); if(!el) return;
+    if(RM){ el.style.display="none"; return; }
+    var shown=false; try{shown=sessionStorage.getItem("tr_introShown")==="1";}catch(e){}
+    if(shown){ el.style.display="none"; return; }
+    try{sessionStorage.setItem("tr_introShown","1");}catch(e){}
+    el.classList.add("tr-intro--play");
+  }
+  function progress(){
+    var bar=document.querySelector(".tr-progress"); if(!bar) return;
+    function upd(){ var h=document.documentElement; var mx=(h.scrollHeight-h.clientHeight)||1; var p=Math.min(1,Math.max(0,(window.scrollY||h.scrollTop||0)/mx)); bar.style.transform="scaleX("+p+")"; }
+    upd(); window.addEventListener("scroll",upd,{passive:true}); window.addEventListener("resize",upd);
+  }
+  function headings(){
+    var sel=".hero h1, .page-hero h1, .section-header h2, .cta-section h2";
+    var nodes=document.querySelectorAll(sel); var list=[];
+    for(var i=0;i<nodes.length;i++){
+      var el=nodes[i];
+      if(el.closest && el.closest(".navbar,.marquee,.tr-intro,footer,.edu-ov")) continue;
+      if(el.getAttribute("data-tr")) continue;
+      el.setAttribute("data-tr","1");
+      el.innerHTML="<span class=\"tr-line\"><span class=\"tr-line-i\">"+el.innerHTML+"</span></span>";
+      el.classList.add("tr-mask"); list.push(el);
+    }
+    function reveal(el){ el.classList.add("tr-in"); }
+    if("IntersectionObserver" in window){
+      var io=new IntersectionObserver(function(ents){ ents.forEach(function(en){ if(en.isIntersecting){ reveal(en.target); io.unobserve(en.target); } }); },{rootMargin:"0px 0px -8% 0px",threshold:0.05});
+      list.forEach(function(el){ io.observe(el); });
+    } else { list.forEach(reveal); }
+    setTimeout(function(){ list.forEach(reveal); },2600);
+  }
+  function magnetic(){
+    var els=document.querySelectorAll(".btn-primary,.nav-cta,.cta-button,.btn-outline,.start-btn,.nav-menu-cta");
+    for(var i=0;i<els.length;i++){ (function(el){
+      var raf=null,tx=0,ty=0,cx=0,cy=0;
+      function loop(){ cx+=(tx-cx)*0.18; cy+=(ty-cy)*0.18; el.style.transform="translate("+cx.toFixed(2)+"px,"+cy.toFixed(2)+"px)"; if(Math.abs(tx-cx)>0.1||Math.abs(ty-cy)>0.1){ raf=requestAnimationFrame(loop); } else { raf=null; el.style.transform=""; } }
+      el.addEventListener("pointermove",function(e){ var r=el.getBoundingClientRect(); tx=(e.clientX-(r.left+r.width/2))*0.25; ty=(e.clientY-(r.top+r.height/2))*0.4; if(!raf) raf=requestAnimationFrame(loop); });
+      el.addEventListener("pointerleave",function(){ tx=0; ty=0; if(!raf) raf=requestAnimationFrame(loop); });
+    })(els[i]); }
+  }
+  function cursorHover(){
+    var cur=document.querySelector(".cursor"); if(!cur) return;
+    var sel="a,button,.topic-card,.feature-card,.btn,.lang-toggle,.journal-card,summary,[role=button]";
+    document.addEventListener("pointerover",function(e){ if(e.target.closest&&e.target.closest(sel)) cur.classList.add("hover"); });
+    document.addEventListener("pointerout",function(e){ if(e.target.closest&&e.target.closest(sel)) cur.classList.remove("hover"); });
+  }
+  function parallax(){
+    var si=document.querySelector(".scroll-indicator");
+    function upd(){ var y=window.scrollY||0; if(si){ si.style.opacity=Math.max(0,1-y/300); } }
+    upd(); window.addEventListener("scroll",upd,{passive:true});
+  }
+  function smoothScroll(){
+    if(window.__trSmooth) return; window.__trSmooth=true;
+    var current=window.scrollY||0, target=current, animating=false;
+    function mx(){ var h=document.documentElement; return (h.scrollHeight-h.clientHeight); }
+    function clamp(v){ return Math.max(0,Math.min(mx(),v)); }
+    function canInside(node,dy){
+      while(node&&node!==document.body&&node!==document.documentElement){
+        if(node.nodeType===1){ var st=getComputedStyle(node); var oy=st.overflowY;
+          if((oy==="auto"||oy==="scroll")&&node.scrollHeight>node.clientHeight+2){
+            if(dy<0&&node.scrollTop>0) return true;
+            if(dy>0&&node.scrollTop+node.clientHeight<node.scrollHeight-1) return true;
+          } }
+        node=node.parentNode;
+      } return false;
+    }
+    function loop(){ current+=(target-current)*0.14; if(Math.abs(target-current)<0.4){ current=target; animating=false; } window.scrollTo(0,current); if(animating) requestAnimationFrame(loop); }
+    window.addEventListener("wheel",function(e){ if(e.ctrlKey) return; var dy=e.deltaY; if(e.deltaMode===1) dy*=16; else if(e.deltaMode===2) dy*=window.innerHeight; if(canInside(e.target,dy)) return; e.preventDefault(); target=clamp(target+dy); if(!animating){ animating=true; requestAnimationFrame(loop); } },{passive:false});
+    window.addEventListener("scroll",function(){ if(animating) return; var sy=window.scrollY||0; if(Math.abs(sy-current)>2){ current=target=sy; } },{passive:true});
+    window.addEventListener("resize",function(){ target=clamp(target); });
+  }
+  function init(){
+    try{ intro(); }catch(e){}
+    try{ progress(); }catch(e){}
+    try{ if(!RM) headings(); }catch(e){}
+    try{ if(!RM&&fine) magnetic(); }catch(e){}
+    try{ if(!RM&&fine) cursorHover(); }catch(e){}
+    try{ if(!RM&&fine&&window.innerWidth>900) smoothScroll(); }catch(e){}
+    try{ if(!RM) parallax(); }catch(e){}
+  }
+  ready(function(){ setTimeout(init,60); });
+})();
+</script>
+<script id="cinematic-skin-js">
+(function(){
+  try{
+    var fine = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
+    if(!fine) return;
+    var rmStored = false;
+    try{ rmStored = localStorage.getItem('cryptomath_reduce_motion') === '1'; }catch(e){}
+    var inner = document.createElement('div'); inner.className = 'cm-cursor-inner';
+    var outer = document.createElement('div'); outer.className = 'cm-cursor-outer';
+    document.body.appendChild(inner); document.body.appendChild(outer);
+    var cx = window.innerWidth/2, cy = window.innerHeight/2;
+    var ox = cx, oy = cy;
+    window.addEventListener('mousemove', function(e){
+      cx = e.clientX; cy = e.clientY;
+      inner.style.left = cx + 'px'; inner.style.top = cy + 'px';
+      if(rmStored){ outer.style.left = cx + 'px'; outer.style.top = cy + 'px'; }
+    });
+    function loop(){
+      ox += (cx - ox) * 0.2; oy += (cy - oy) * 0.2;
+      outer.style.left = ox + 'px'; outer.style.top = oy + 'px';
+      requestAnimationFrame(loop);
+    }
+    if(!rmStored) requestAnimationFrame(loop);
+    document.addEventListener('pointerover', function(e){
+      if(e.target.closest && e.target.closest('a,button,input,textarea,select,[role="button"]')){
+        outer.style.width = '60px'; outer.style.height = '60px';
+        outer.style.background = 'rgba(201,162,75,0.10)';
+        outer.style.borderColor = 'rgba(227,199,122,0.9)';
+      }
+    });
+    document.addEventListener('pointerout', function(e){
+      if(e.target.closest && e.target.closest('a,button,input,textarea,select,[role="button"]')){
+        outer.style.width = '40px'; outer.style.height = '40px';
+        outer.style.background = 'transparent';
+        outer.style.borderColor = 'rgba(201,162,75,0.7)';
+      }
+    });
+  }catch(err){ /* fail silently, keep native cursor */ }
+})();
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.143.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+</body>
+</html>

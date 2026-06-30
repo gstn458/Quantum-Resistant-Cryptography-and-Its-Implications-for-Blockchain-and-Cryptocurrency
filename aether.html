@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aether — Particle Field | CryptoMath</title>
+<meta name="description" content="Aether — an interactive particle field that responds to your hands via webcam." />
+<style>
+:root { --bg:#0a0a0c; --fg:#eceae4; --muted:#8a8a92; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { height:100%; width:100%; overflow:hidden; background:var(--bg); color:var(--fg); }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+#scene { position:fixed; inset:0; display:block; z-index:2; }
+
+/* webcam background */
+#cam {
+  position:fixed; inset:0; width:100%; height:100%;
+  object-fit:cover; transform:scaleX(-1);
+  z-index:1; opacity:0; transition:opacity .5s ease; pointer-events:none;
+  filter:saturate(.7) brightness(.6);
+}
+body.cam-bg #cam { opacity:.55; }
+body.cam-bg #scene { background:transparent; }
+
+/* title */
+#title {
+  position:fixed; top:26px; left:30px; z-index:5; pointer-events:none;
+  font-family: Georgia, "Times New Roman", serif;
+}
+#title h1 { font-size:30px; font-weight:500; letter-spacing:.5px; }
+#title .dot { color:#6da8ff; }
+#title p { font-size:12px; color:var(--muted); margin-top:6px; letter-spacing:.4px;
+  font-family:-apple-system,sans-serif; max-width:240px; line-height:1.5; }
+
+/* controls */
+#ui { position:fixed; bottom:26px; left:30px; z-index:5; display:flex; gap:10px; align-items:center; }
+button, .ui-link {
+  background:rgba(255,255,255,.05); color:var(--fg);
+  border:1px solid rgba(255,255,255,.16); border-radius:999px;
+  padding:9px 16px; font-size:12.5px; letter-spacing:.4px; cursor:pointer;
+  backdrop-filter:blur(8px); transition:all .2s ease;
+  text-decoration:none; display:inline-block;
+}
+button:hover, .ui-link:hover { background:rgba(255,255,255,.12); }
+button.on { background:#6da8ff; border-color:#6da8ff; color:#06121f; }
+
+/* legend */
+#legend {
+  position:fixed; bottom:26px; right:30px; z-index:5; text-align:right;
+  font-size:11px; color:var(--muted); line-height:1.9; letter-spacing:.3px;
+  pointer-events:none;
+}
+#legend b { color:var(--fg); font-weight:500; }
+
+/* hand status */
+#status {
+  position:fixed; top:28px; right:30px; z-index:5; text-align:right;
+  font-size:11px; color:var(--muted); letter-spacing:.4px;
+}
+#status .live { color:#5ddc8a; }
+
+/* loader */
+#loader {
+  position:fixed; inset:0; z-index:10; display:flex; align-items:center;
+  justify-content:center; flex-direction:column; gap:14px; background:var(--bg);
+  transition:opacity .6s ease;
+}
+#loader.hide { opacity:0; pointer-events:none; }
+.ring { width:34px; height:34px; border:2px solid rgba(255,255,255,.12);
+  border-top-color:#6da8ff; border-radius:50%; animation:spin 1s linear infinite; }
+#loader span { font-size:12px; color:var(--muted); letter-spacing:.5px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<video id="cam" autoplay playsinline muted></video>
+<canvas id="scene"></canvas>
+
+<div id="title">
+  <h1>Aether<span class="dot">.</span></h1>
+  <p>A particle field that answers to your hands.</p>
+</div>
+
+<div id="status">camera <span id="statusText">connecting…</span></div>
+
+<div id="ui">
+  <a class="ui-link" href="index.html">← CryptoMath</a>
+  <button id="bgBtn">◍ Webcam background</button>
+</div>
+
+<div id="legend">
+  <div><b>One hand</b> — move &amp; rotate</div>
+  <div><b>Pinch &amp; hold</b> — charge, release to burst</div>
+  <div><b>Two hands</b> — pull apart / together to resize</div>
+  <div><b>Fingers up</b> — change color</div>
+</div>
+
+<div id="loader"><div class="ring"></div><span>Loading hand tracking…</span></div>
+
+<!-- MediaPipe Hands (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin></script>
+
+<script>
+/* ---------------------------------------------------------------
+   CANVAS + 3D SETUP
+----------------------------------------------------------------*/
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+let W, H, DPR;
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W * DPR; canvas.height = H * DPR;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  FOV = H * 1.3;
+}
+window.addEventListener('resize', resize);
+
+// camera/projection constants
+const N = 3000;          // particle count
+const CAM_Z = 6;         // camera distance
+let FOV = window.innerHeight * 1.3;       // focal length in px
+resize();
+
+/* ---------------------------------------------------------------
+   PARTICLES — fibonacci sphere distribution
+----------------------------------------------------------------*/
+const hx = new Float32Array(N), hy = new Float32Array(N), hz = new Float32Array(N); // home (unit dir)
+const dx = new Float32Array(N), dy = new Float32Array(N), dz = new Float32Array(N); // displacement
+const vx = new Float32Array(N), vy = new Float32Array(N), vz = new Float32Array(N); // velocity
+const seed = new Float32Array(N); // per-particle hue jitter
+(function build() {
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N; i++) {
+    const y = 1 - (i / (N - 1)) * 2;
+    const r = Math.sqrt(1 - y * y);
+    const t = golden * i;
+    hx[i] = Math.cos(t) * r;
+    hy[i] = y;
+    hz[i] = Math.sin(t) * r;
+    seed[i] = Math.random();
+  }
+})();
+
+/* ---------------------------------------------------------------
+   INTERACTION STATE (smoothed targets)
+----------------------------------------------------------------*/
+const S = {
+  rotX: 0, rotY: 0, rotXT: 0, rotYT: 0,   // rotation + targets
+  cx: W/2, cy: H/2, cxT: W/2, cyT: H/2,    // sphere center on screen
+  scale: 1, scaleT: 1,                     // world scale (zoom)
+  hue: 200, hueT: 200,                     // color
+  charge: 0,                               // pinch charge 0..1
+  pinching: false,
+  handsSeen: 0,
+  autoSpin: 0
+};
+
+/* ---------------------------------------------------------------
+   EXPLOSION
+----------------------------------------------------------------*/
+function detonate(power) {
+  for (let i = 0; i < N; i++) {
+    const b = power * (1.2 + Math.random() * 1.6);
+    // mostly radial (outward = home dir), plus a little chaos
+    vx[i] = hx[i] * b + (Math.random() - 0.5) * power * 0.8;
+    vy[i] = hy[i] * b + (Math.random() - 0.5) * power * 0.8;
+    vz[i] = hz[i] * b + (Math.random() - 0.5) * power * 0.8;
+  }
+}
+
+const SPRING = 0.018;   // pull displacement back to 0 (reform)
+const DAMP = 0.94;      // velocity damping
+function physics() {
+  for (let i = 0; i < N; i++) {
+    vx[i] += -dx[i] * SPRING; vx[i] *= DAMP; dx[i] += vx[i];
+    vy[i] += -dy[i] * SPRING; vy[i] *= DAMP; dy[i] += vy[i];
+    vz[i] += -dz[i] * SPRING; vz[i] *= DAMP; dz[i] += vz[i];
+  }
+}
+
+/* ---------------------------------------------------------------
+   RENDER
+----------------------------------------------------------------*/
+const camOn = () => document.body.classList.contains('cam-bg');
+
+function render() {
+  // smooth toward targets
+  S.rotX += (S.rotXT - S.rotX) * 0.08;
+  S.rotY += (S.rotYT - S.rotY) * 0.08;
+  S.cx   += (S.cxT - S.cx) * 0.10;
+  S.cy   += (S.cyT - S.cy) * 0.10;
+  S.scale += (S.scaleT - S.scale) * 0.08;
+  S.hue  += (S.hueT - S.hue) * 0.06;
+
+  // idle auto-spin when no hands
+  if (S.handsSeen === 0) { S.autoSpin += 0.0025; S.rotYT += 0.0025; }
+
+  physics();
+
+  // clear
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  if (camOn()) ctx.clearRect(0, 0, W, H);
+  else { ctx.fillStyle = '#0a0a0c'; ctx.fillRect(0, 0, W, H); }
+
+  const cosY = Math.cos(S.rotY), sinY = Math.sin(S.rotY);
+  const cosX = Math.cos(S.rotX), sinX = Math.sin(S.rotX);
+  const ws = S.scale;
+  const hue = S.hue;
+
+  ctx.globalCompositeOperation = 'lighter';
+
+  for (let i = 0; i < N; i++) {
+    let x = (hx[i] + dx[i]) * ws;
+    let y = (hy[i] + dy[i]) * ws;
+    let z = (hz[i] + dz[i]) * ws;
+
+    // rotate Y
+    let x1 = x * cosY + z * sinY;
+    let z1 = -x * sinY + z * cosY;
+    // rotate X
+    let y2 = y * cosX - z1 * sinX;
+    let z2 = y * sinX + z1 * cosX;
+
+    const denom = CAM_Z - z2;
+    if (denom <= 0.1) continue;            // behind camera
+    const sc = FOV / denom;
+    const sx = S.cx + x1 * sc;
+    const sy = S.cy - y2 * sc;
+    if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
+
+    const depth = (z2 + 2) / 4;            // ~0..1 front-ness
+    const size = Math.max(0.5, 1.4 * sc / FOV * 60);
+    const a = Math.min(0.9, 0.25 + depth * 0.7);
+    const light = 55 + depth * 25;
+    const h = (hue + seed[i] * 26 - 13 + 360) % 360;
+
+    ctx.fillStyle = 'hsla(' + h.toFixed(0) + ',80%,' + light.toFixed(0) + '%,' + a.toFixed(2) + ')';
+    ctx.beginPath();
+    ctx.arc(sx, sy, size, 0, 6.2832);
+    ctx.fill();
+  }
+
+  ctx.globalCompositeOperation = 'source-over';
+
+  // charge ring
+  if (S.charge > 0.01) {
+    const cr = 46 + S.charge * 10;
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(255,255,255,.12)';
+    ctx.beginPath(); ctx.arc(S.cx, S.cy, cr, 0, 6.2832); ctx.stroke();
+    ctx.strokeStyle = 'hsla(' + S.hue.toFixed(0) + ',90%,68%,.95)';
+    ctx.beginPath();
+    ctx.arc(S.cx, S.cy, cr, -Math.PI / 2, -Math.PI / 2 + S.charge * 6.2832);
+    ctx.stroke();
+  }
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+/* ---------------------------------------------------------------
+   HAND TRACKING (MediaPipe Hands)
+----------------------------------------------------------------*/
+const video = document.getElementById('cam');
+const statusText = document.getElementById('statusText');
+
+function dist3(a, b) {
+  const x = a.x - b.x, y = a.y - b.y, z = (a.z - b.z);
+  return Math.sqrt(x * x + y * y + z * z);
+}
+// a finger is "up" if its tip is farther from the wrist than its mid joint
+const FINGERS = [[4,3],[8,6],[12,10],[16,14],[20,18]];
+function countFingers(lm) {
+  const wrist = lm[0]; let c = 0;
+  for (const [tip, pip] of FINGERS) {
+    if (dist3(lm[tip], wrist) > dist3(lm[pip], wrist) * 1.08) c++;
+  }
+  return c;
+}
+function handCenter(lm) {
+  // average of palm landmarks for stability
+  const idx = [0, 5, 9, 13, 17];
+  let x = 0, y = 0;
+  for (const i of idx) { x += lm[i].x; y += lm[i].y; }
+  return { x: x / idx.length, y: y / idx.length };
+}
+
+let releaseCooldown = 0;
+
+function onResults(res) {
+  const hands = res.multiHandLandmarks || [];
+  S.handsSeen = hands.length;
+
+  if (hands.length === 0) {
+    statusText.textContent = 'no hands';
+    statusText.className = '';
+    // recenter gently
+    S.cxT += (W / 2 - S.cxT) * 0.04;
+    S.cyT += (H / 2 - S.cyT) * 0.04;
+    // resolve any held pinch
+    if (S.pinching) { S.pinching = false; S.charge = 0; }
+    return;
+  }
+
+  statusText.textContent = hands.length === 2 ? '2 hands live' : '1 hand live';
+  statusText.className = 'live';
+
+  // total fingers across all hands -> hue
+  let totalFingers = 0;
+  for (const lm of hands) totalFingers += countFingers(lm);
+  const maxF = hands.length === 2 ? 10 : 5;
+  S.hueT = (totalFingers / maxF) * 320 + 20;   // ~20..340
+
+  if (hands.length === 2) {
+    // ---- TWO HANDS: distance controls scale, center between them
+    const a = handCenter(hands[0]), b = handCenter(hands[1]);
+    const d = Math.hypot(a.x - b.x, a.y - b.y);     // 0..~1
+    S.scaleT = Math.max(0.5, Math.min(2.6, 0.35 + d * 3.2));
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    S.cxT = (1 - mx) * W;          // mirror X
+    S.cyT = my * H;
+    // light rotation follow
+    S.rotYT += ((1 - mx) - 0.5) * 0.05;
+    // pinch disabled with two hands
+    if (S.pinching) { S.pinching = false; S.charge = 0; }
+
+  } else {
+    // ---- ONE HAND: move + rotate, pinch to charge/burst
+    const lm = hands[0];
+    const c = handCenter(lm);
+    const mx = 1 - c.x;            // mirror X
+    const my = c.y;
+
+    // move sphere toward hand (damped)
+    S.cxT = mx * W;
+    S.cyT = my * H;
+    // rotate from hand position
+    S.rotYT = (mx - 0.5) * 3.4;
+    S.rotXT = (my - 0.5) * -2.2;
+
+    // pinch detection (thumb tip 4 vs index tip 8, normalized by hand size)
+    const palmSize = dist3(lm[0], lm[9]) || 0.0001;
+    const pinchDist = dist3(lm[4], lm[8]) / palmSize;
+    const isPinch = pinchDist < 0.55;
+
+    if (isPinch) {
+      S.pinching = true;
+      S.charge = Math.min(1, S.charge + 0.022);
+    } else if (S.pinching) {
+      // released
+      S.pinching = false;
+      if (S.charge > 0.25 && releaseCooldown <= 0) {
+        detonate(0.9 + S.charge * 2.6);
+        releaseCooldown = 18;
+      }
+      S.charge = 0;
+    }
+  }
+  if (releaseCooldown > 0) releaseCooldown--;
+}
+
+/* ---------------------------------------------------------------
+   INIT MEDIAPIPE
+----------------------------------------------------------------*/
+function startTracking() {
+  const hands = new Hands({
+    locateFile: (f) => 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/' + f
+  });
+  hands.setOptions({
+    maxNumHands: 2,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.6,
+    minTrackingConfidence: 0.6
+  });
+  hands.onResults(onResults);
+
+  const camera = new Camera(video, {
+    onFrame: async () => { await hands.send({ image: video }); },
+    width: 640, height: 480
+  });
+  camera.start()
+    .then(() => { document.getElementById('loader').classList.add('hide'); })
+    .catch((e) => {
+      statusText.textContent = 'blocked';
+      document.querySelector('#loader span').textContent =
+        'Camera blocked. Allow webcam access and reload.';
+    });
+}
+
+if (window.Hands && window.Camera) startTracking();
+else window.addEventListener('load', startTracking);
+
+/* ---------------------------------------------------------------
+   WEBCAM BACKGROUND TOGGLE
+----------------------------------------------------------------*/
+const bgBtn = document.getElementById('bgBtn');
+bgBtn.addEventListener('click', () => {
+  document.body.classList.toggle('cam-bg');
+  bgBtn.classList.toggle('on');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About &amp; Mission — CryptoMath Academy</title>
+<meta name="description" content="Who builds CryptoMath and why: our mission to help anyone understand the mathematics behind cryptography — intuition first, not memorisation. Pedagogy, credentials, learner outcomes and sources.">
+<meta name="theme-color" content="#1A1714">
+<meta property="og:type" content="website">
+<meta property="og:title" content="About &amp; Mission — CryptoMath Academy">
+<meta property="og:description" content="Our mission, pedagogy, and the people behind CryptoMath — understand the math behind cryptography, not memorise it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cm-pages.css">
+<link rel="stylesheet" href="cm-enhance.css">
+<style id="storm-bg-css">
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+</style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="brand">CryptoMath</a>
+  <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Open menu"><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+    <a href="concepts.html" data-en="Learn" data-ar="تعلم">Learn</a>
+    <a href="path.html" data-en="Path" data-ar="المسار">Path</a>
+    <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+    <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+    <a href="quantum.html" data-en="Quantum" data-ar="الكم">Quantum</a>
+    <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+    <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+    <a href="about.html" class="active" data-en="About" data-ar="عن">About</a>
+    <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+    <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+    <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+    <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0" aria-label="Switch language">
+      <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+    </div>
+    <a href="login.html" class="nav-menu-auth nav-menu-login">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta">Get Started</a>
+  </div>
+  <div class="nav-actions"><a href="login.html" class="nav-login">Log In</a><a href="signup.html" class="nav-cta">Get Started</a></div>
+</nav>
+
+<header class="page-hero">
+  <div class="eyebrow">About &amp; Mission</div>
+  <h1>Understand the math behind cryptography</h1>
+  <p>CryptoMath exists to make the beautiful, abstract mathematics that secures the digital world feel intuitive — not something to memorise, but something to <em>see</em>.</p>
+</header>
+
+<main class="cm-container">
+  <section>
+    <h2 class="cm-h">Our mission</h2>
+    <p class="cm-lede">Most people use cryptography every day — every HTTPS padlock, every signed transaction — without ever seeing the elegant number theory underneath. We believe that understanding <em>why</em> these systems work makes them less intimidating and far more memorable than rote formulas.</p>
+    <p>So we teach the mathematics first: modular arithmetic, prime numbers, discrete logarithms, elliptic curves and the post-quantum horizon — each introduced through interactive tools, worked examples, and progressive practice rather than walls of notation.</p>
+  </section>
+
+  <section>
+    <h2 class="cm-h">How we teach — our pedagogy</h2>
+    <div class="cm-grid cols-3">
+      <div class="cm-card"><h3 class="cm-h">🧭 Intuition before notation</h3><p class="cm-muted">Every concept starts with a concrete picture or interactive you can manipulate, then we formalise it.</p></div>
+      <div class="cm-card"><h3 class="cm-h">🧩 Small, active steps</h3><p class="cm-muted">Lessons are broken into bite-sized steps with a quick check-for-understanding after each — learning by doing.</p></div>
+      <div class="cm-card"><h3 class="cm-h">🔗 Connected, not isolated</h3><p class="cm-muted">A sequenced <a href="path.html">learning path</a> with prerequisites, plus a <a href="glossary.html">glossary</a> and cross-links so nothing is a dead end.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="cm-h">Who's behind CryptoMath</h2>
+    <!-- TODO: replace the bracketed details and the avatar initials with the real founder name, credentials, and a real photo. -->
+    <div class="cm-card cm-bio">
+      <div class="cm-avatar" aria-hidden="true">CM</div>
+      <div>
+        <h3 class="cm-h" style="margin-top:0">[Founder name]</h3>
+        <p class="cm-muted" style="margin:2px 0 8px">Founder &amp; lead author, CryptoMath Academy</p>
+        <p>CryptoMath is built by an independent educator who fell in love with the number theory behind modern security and wanted a resource that explained it the way they wished it had been explained to them. <strong>[Add your background here — e.g. degree, field, years teaching or working in security/maths, and why you built this.]</strong></p>
+        <p class="cm-muted" style="font-size:.85rem">Want to add a photo? Replace the “CM” avatar block with an <code>&lt;img&gt;</code> (include explicit width &amp; height to avoid layout shift).</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="cm-h">By the numbers</h2>
+    <p class="cm-muted" style="font-size:.85rem;margin-bottom:14px">Honest, modest figures — update these as the community grows.</p>
+    <div class="cm-grid cols-3">
+      <div class="cm-card cm-stat"><b>6</b><span>core topic tracks</span></div>
+      <div class="cm-card cm-stat"><b>40+</b><span>interactive lessons &amp; challenges</span></div>
+      <div class="cm-card cm-stat"><b>2</b><span>languages (English &amp; Arabic)</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="cm-h">What learners say</h2>
+    <p class="cm-muted" style="font-size:.85rem;margin-bottom:14px">Replace these with real quotes as you collect them — even a handful of genuine testimonials builds trust.</p>
+    <div class="cm-grid cols-2">
+      <blockquote class="cm-card cm-quote">“The modular arithmetic calculator finally made RSA click for me — I could *see* the one-way function instead of just reading about it.”<footer>— Self-taught learner</footer></blockquote>
+      <blockquote class="cm-card cm-quote">“I used the elliptic-curve and quantum sections to prep for a security course. The step-by-step reveals were exactly what I needed.”<footer>— CS student</footer></blockquote>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="cm-h">Rigor &amp; sources</h2>
+    <p>We aim to be mathematically faithful. The material here is grounded in standard references; if you want to go deeper, these are excellent next reads:</p>
+    <ul>
+      <li>Katz &amp; Lindell, <em>Introduction to Modern Cryptography</em> — the standard rigorous text.</li>
+      <li>Hoffstein, Pipher &amp; Silverman, <em>An Introduction to Mathematical Cryptography</em> — number theory to lattices.</li>
+      <li>Menezes, van Oorschot &amp; Vanstone, <em>Handbook of Applied Cryptography</em> — <a href="https://cacr.uwaterloo.ca/hac/" rel="noopener">free online</a>.</li>
+      <li>NIST Post-Quantum Cryptography project — <a href="https://csrc.nist.gov/projects/post-quantum-cryptography" rel="noopener">standards &amp; rationale</a>.</li>
+      <li>Stanford CS255 &amp; MIT OpenCourseWare cryptography materials — free lecture notes.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="cm-card" style="text-align:center">
+      <h2 class="cm-h">Ready to start?</h2>
+      <p class="cm-muted">Follow the structured path from foundations to post-quantum cryptography.</p>
+      <div class="cm-btn-row" style="justify-content:center">
+        <a class="cm-btn" href="path.html">Start learning →</a>
+        <a class="cm-btn ghost" href="glossary.html">Browse the glossary</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function toggleMobileNav(){var n=document.getElementById('navLinks');if(n)n.classList.toggle('open');}
+function toggleLanguage(){
+  var ar=document.documentElement.getAttribute('dir')==='rtl';
+  var to=ar?'en':'ar';
+  document.documentElement.setAttribute('dir',to==='ar'?'rtl':'ltr');
+  document.documentElement.setAttribute('lang',to);
+  document.querySelectorAll('[data-en]').forEach(function(el){var t=el.getAttribute('data-'+to);if(t)el.textContent=t;});
+  var en=document.getElementById('lang-en'),arx=document.getElementById('lang-ar');
+  if(en&&arx){en.classList.toggle('active',to==='en');arx.classList.toggle('active',to==='ar');}
+  try{localStorage.setItem('cryptomath_lang',to);}catch(e){}
+}
+try{if(localStorage.getItem('cryptomath_lang')==='ar')toggleLanguage();}catch(e){}
+</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.143.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+</body>
+</html>

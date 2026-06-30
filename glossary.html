@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glossary — CryptoMath Academy</title>
+<meta name="description" content="Plain-language definitions of the cryptography and number-theory terms used across CryptoMath: modulus, prime, discrete logarithm, elliptic curve, hash, RSA, ECDSA, lattice and more.">
+<meta name="theme-color" content="#1A1714">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Glossary — CryptoMath Academy">
+<meta property="og:description" content="Plain-language definitions of cryptography and number-theory terms, with cross-links into the lessons.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cm-pages.css">
+<link rel="stylesheet" href="cm-enhance.css">
+<style id="storm-bg-css">
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+</style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="brand">CryptoMath</a>
+  <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Open menu"><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+    <a href="concepts.html" data-en="Learn" data-ar="تعلم">Learn</a>
+    <a href="path.html" data-en="Path" data-ar="المسار">Path</a>
+    <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+    <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+    <a href="quantum.html" data-en="Quantum" data-ar="الكم">Quantum</a>
+    <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+    <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+    <a href="about.html" data-en="About" data-ar="عن">About</a>
+    <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+    <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+    <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+    <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0" aria-label="Switch language">
+      <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+    </div>
+    <a href="login.html" class="nav-menu-auth nav-menu-login">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta">Get Started</a>
+  </div>
+  <div class="nav-actions"><a href="login.html" class="nav-login">Log In</a><a href="signup.html" class="nav-cta">Get Started</a></div>
+</nav>
+
+<header class="page-hero">
+  <div class="eyebrow">Glossary</div>
+  <h1>Every term, in plain language</h1>
+  <p>The vocabulary of cryptography, defined simply and cross-linked to the lessons where each idea appears.</p>
+</header>
+
+<main class="cm-container">
+  <input type="search" class="cm-gloss-search" id="glossSearch" placeholder="Filter terms…" aria-label="Filter glossary terms">
+  <dl class="cm-gloss" id="glossList">
+    <dt id="modulus">Modulus (mod)</dt><dd>The number you “wrap around” at in modular arithmetic. <code>17 mod 12 = 5</code>, like a clock. See <a href="concepts.html">Modular Arithmetic</a>.</dd>
+    <dt id="congruence">Congruence</dt><dd>Two numbers are congruent mod n if they leave the same remainder. Written <code>a ≡ b (mod n)</code>.</dd>
+    <dt id="prime">Prime number</dt><dd>A whole number &gt; 1 divisible only by 1 and itself. The “atoms” of multiplication and the basis of <a href="concepts.html">RSA</a>.</dd>
+    <dt id="coprime">Coprime</dt><dd>Two numbers whose greatest common divisor is 1. Key to choosing RSA exponents.</dd>
+    <dt id="one-way">One-way function</dt><dd>Easy to compute, hard to reverse. The heart of every cipher — e.g. multiplying two primes vs. factoring the product.</dd>
+    <dt id="modexp">Modular exponentiation</dt><dd>Computing <code>a^b mod n</code> efficiently by squaring. Worked example on the <a href="path.html#sample">learning path</a>.</dd>
+    <dt id="rsa">RSA</dt><dd>A public-key system whose security rests on the difficulty of factoring large semiprimes. See <a href="concepts.html">Primes &amp; RSA</a>.</dd>
+    <dt id="discrete-log">Discrete logarithm</dt><dd>Given <code>g^x = y (mod p)</code>, finding <code>x</code> is believed hard. Basis of Diffie–Hellman. See <a href="concepts.html">Discrete Logs</a>.</dd>
+    <dt id="dh">Diffie–Hellman</dt><dd>A protocol letting two parties agree a shared secret over a public channel using the discrete-log problem.</dd>
+    <dt id="ecc">Elliptic curve (ECC)</dt><dd>A curve of the form <code>y² = x³ + ax + b</code> whose points form a group; gives strong security with small keys. See <a href="cryptocurrency.html">ECDSA</a>.</dd>
+    <dt id="ecdsa">ECDSA</dt><dd>The elliptic-curve signature scheme that signs Bitcoin and Ethereum transactions.</dd>
+    <dt id="hash">Hash function</dt><dd>A one-way fingerprint of data (e.g. SHA-256). Explore it in the <a href="blockchain.html">Simulator</a>.</dd>
+    <dt id="shor">Shor's algorithm</dt><dd>A quantum algorithm that would break RSA and ECC by factoring / solving discrete logs efficiently. See <a href="quantum.html">Quantum</a>.</dd>
+    <dt id="lattice">Lattice cryptography</dt><dd>Post-quantum schemes whose security rests on hard lattice problems; basis of several NIST standards.</dd>
+    <dt id="pqc">Post-quantum cryptography</dt><dd>Cryptography designed to resist quantum attacks. See <a href="quantum.html">Post-Quantum</a>.</dd>
+  </dl>
+  <p class="cm-muted" id="noMatch" style="display:none">No terms match your filter.</p>
+</main>
+
+<script>
+function toggleMobileNav(){var n=document.getElementById('navLinks');if(n)n.classList.toggle('open');}
+function toggleLanguage(){
+  var ar=document.documentElement.getAttribute('dir')==='rtl';var to=ar?'en':'ar';
+  document.documentElement.setAttribute('dir',to==='ar'?'rtl':'ltr');document.documentElement.setAttribute('lang',to);
+  document.querySelectorAll('[data-en]').forEach(function(el){var t=el.getAttribute('data-'+to);if(t)el.textContent=t;});
+  var en=document.getElementById('lang-en'),arx=document.getElementById('lang-ar');
+  if(en&&arx){en.classList.toggle('active',to==='en');arx.classList.toggle('active',to==='ar');}
+  try{localStorage.setItem('cryptomath_lang',to);}catch(e){}
+}
+try{if(localStorage.getItem('cryptomath_lang')==='ar')toggleLanguage();}catch(e){}
+var gs=document.getElementById('glossSearch');
+gs.addEventListener('input',function(){
+  var q=gs.value.toLowerCase(),dl=document.getElementById('glossList'),any=false;
+  var dts=dl.querySelectorAll('dt');
+  dts.forEach(function(dt){
+    var dd=dt.nextElementSibling;var hit=(dt.textContent+' '+dd.textContent).toLowerCase().indexOf(q)>-1;
+    dt.style.display=hit?'':'none';dd.style.display=hit?'':'none';if(hit)any=true;
+  });
+  document.getElementById('noMatch').style.display=any?'none':'';
+});
+</script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.143.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/" } }
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+</body>
+</html>

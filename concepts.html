@@ -1,0 +1,2350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn core cryptography math — modular arithmetic, primes, discrete logarithms, elliptic curves, and post-quantum cryptography — with videos and quizzes.">
+    <meta name="theme-color" content="#131009">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Learn Concepts - CryptoMath Academy">
+    <meta property="og:description" content="Learn core cryptography math — modular arithmetic, primes, discrete logarithms, elliptic curves, and post-quantum cryptography — with videos and quizzes.">
+    <title>Learn Concepts - CryptoMath Academy</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --white: #1A1714;
+            --gray: #888;
+            --gray-light: #e5e5e5;
+            --accent: #C9A24B;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        ::selection { background: var(--accent); color: var(--white); }
+
+        /* Added animated background orbs */
+        .bg-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #C9A24B22, #C9A24B11);
+            top: 20%;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #4d4dff22, #4d4dff11);
+            bottom: 10%;
+            left: -100px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.05); }
+        }
+
+        /* Added glassmorphism navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--black);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--black);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after { width: 100%; }
+
+        .page-hero {
+            padding: 12rem 3rem 6rem;
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Added moving grid to hero */
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .page-hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 6rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Added scroll reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Added glassmorphism concept cards */
+        .concept-section {
+            margin-bottom: 8rem;
+            scroll-margin-top: 100px;
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .concept-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .concept-title h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .concept-title p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .concept-content {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .concept-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .concept-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .concept-content h3 .icon {
+            width: 30px;
+            height: 30px;
+            background: var(--black);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 0.8rem;
+        }
+
+        .concept-content p {
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .concept-content ul {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .concept-content li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .concept-content li::before {
+            content: '→';
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .formula-box {
+            background: var(--black);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .interactive-demo {
+            background: linear-gradient(135deg, #15120D 0%, #1A1714 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .interactive-demo h4 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            color: var(--gray);
+        }
+
+        .demo-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .demo-input {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .demo-input label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-input input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .demo-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .demo-result {
+            background: var(--black);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .blockchain-box {
+            background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+        }
+
+        .blockchain-box h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .blockchain-box p {
+            color: rgba(255,255,255,0.05);
+            line-height: 1.7;
+        }
+
+        footer {
+            padding: 4rem 3rem;
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer p {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 1rem 1.5rem; }
+            .nav-links { display: none; }
+            .container { padding: 4rem 1.5rem; }
+            .concept-header { flex-direction: column; gap: 1rem; }
+            .concept-number { font-size: 2.5rem; }
+            .concept-title h2 { font-size: 1.8rem; }
+            .concept-content { padding: 2rem; }
+        }
+    </style>
+
+<style id="aesthetic-upgrade">
+/* =========================================================
+   CRYPTOMATH ACADEMY — AESTHETIC UPGRADE LAYER
+   Pure CSS, loaded last so it refines the existing design.
+   ========================================================= */
+:root{
+  --accent:#C9A24B;
+  --accent-2:#E3C77A;
+  --accent-secondary:#C9A24B;
+  --accent-3:#A9823A;
+  --grad-warm:linear-gradient(135deg,#C9A24B 0%,#E3C77A 100%);
+  --grad-cool:linear-gradient(135deg,#C9A24B 0%,#A9823A 100%);
+  --grad-mix:linear-gradient(120deg,#C9A24B 0%,#A9823A 100%);
+  --shadow-soft:0 18px 50px -20px rgba(10,10,10,.35);
+  --shadow-glow:0 0 40px -8px rgba(255,77,77,.45);
+  --radius:20px;
+}
+html{scroll-behavior:smooth;}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+::selection{background:var(--accent);color:#fff;}
+
+/* ---------- Animated colour wash on light sections ---------- */
+.topics-section,.features-section,.info-section,.simulator-section,
+.concept-section,.progress-section,.stats-grid,.container{position:relative;}
+.topics-section::after,.features-section::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(60% 50% at 12% 0%,rgba(255,77,77,.07),transparent 60%),
+    radial-gradient(55% 45% at 92% 18%,rgba(93,93,255,.08),transparent 60%);
+}
+.topics-section>*,.features-section>*{position:relative;z-index:1;}
+
+/* ---------- Hero glow ---------- */
+.hero::after,.page-hero::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(40% 40% at 20% 30%,rgba(255,77,77,.18),transparent 70%),
+    radial-gradient(45% 45% at 82% 70%,rgba(93,93,255,.18),transparent 70%);
+  mix-blend-mode:screen;animation:heroGlow 12s ease-in-out infinite alternate;
+}
+@keyframes heroGlow{0%{opacity:.65;transform:scale(1)}100%{opacity:1;transform:scale(1.08)}}
+.hero-content,.page-hero>*{position:relative;z-index:3;}
+.hero h1 .accent{
+  background:var(--grad-warm);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+}
+
+/* ---------- Navbar: floating glass pill ---------- */
+.navbar{
+  top:14px;left:50%;right:auto;transform:translateX(-50%);
+  width:min(1180px,calc(100% - 28px));
+  padding:.85rem 1.6rem;border-radius:999px;
+  background:rgba(16,16,20,.55)!important;
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 10px 40px -16px rgba(0,0,0,.6);
+  backdrop-filter:blur(22px) saturate(160%);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+}
+.navbar.scrolled{background:rgba(10,10,12,.82)!important;}
+.nav-links a{transition:color .25s ease,opacity .25s ease;}
+.nav-links a:hover{color:#fff;}
+.nav-links a::after{height:2px;border-radius:2px;background:var(--grad-warm);}
+
+/* ---------- Buttons everywhere ---------- */
+.btn,.submit-btn,.login-btn,.btn-logout,.controls button,.reset,
+.card-answer button,.demo-input-group button,.answer-form button{
+  border-radius:999px!important;
+  font-weight:700;letter-spacing:.06em;
+  transition:transform .3s cubic-bezier(.16,.84,.44,1),box-shadow .3s ease,filter .3s ease;
+  position:relative;overflow:hidden;border:none;cursor:pointer;
+}
+.btn-primary,.submit-btn,.login-btn,.card-answer button,
+.demo-input-group button,.answer-form button,.controls button:first-child{
+  background:var(--grad-warm)!important;color:#fff!important;
+  box-shadow:0 10px 26px -10px rgba(255,77,77,.7);
+}
+.btn-primary:hover,.submit-btn:hover,.login-btn:hover,.card-answer button:hover,
+.demo-input-group button:hover,.answer-form button:hover{
+  transform:translateY(-3px);filter:brightness(1.06);
+  box-shadow:0 16px 34px -10px rgba(255,77,77,.8);
+}
+.btn-outline{
+  border:1px solid rgba(255,255,255,0.05)!important;border-radius:999px!important;
+  background:rgba(255,255,255,0.04)!important;color:#fff!important;
+}
+.btn-outline:hover{
+  background:#1A1714!important;color:#0a0a0a!important;transform:translateY(-3px);
+  box-shadow:0 14px 30px -12px rgba(255,255,255,0.05);
+}
+.btn-logout,.reset{background:rgba(255,77,77,.12)!important;color:var(--accent)!important;border:1px solid rgba(255,77,77,.35)!important;}
+.btn-logout:hover,.reset:hover{background:var(--accent)!important;color:#fff!important;transform:translateY(-2px);}
+/* subtle shine sweep */
+.btn::before,.submit-btn::before{
+  content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.05),transparent);
+  transform:skewX(-20deg);transition:left .6s ease;
+}
+.btn:hover::before,.submit-btn:hover::before{left:130%;}
+
+/* ---------- Generic card polish ---------- */
+.topic-card,.feature-card,.challenge-card,.stat-card,.concept-section,
+.interactive-demo,.block,.daily-challenge,.profile-header,.progress-section{
+  border-radius:var(--radius)!important;
+}
+.topics-grid{background:transparent!important;gap:24px!important;}
+.topic-card{
+  background:#1A1714!important;box-shadow:var(--shadow-soft);
+  border:1px solid rgba(10,10,10,.06);
+  transition:transform .45s cubic-bezier(.16,.84,.44,1),box-shadow .45s ease;
+}
+.topic-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px -22px rgba(10,10,10,.5);}
+.topic-card::before{border-radius:var(--radius);background:linear-gradient(160deg,#141414,#0a0a0a);}
+.topic-number{font-weight:700;}
+
+.feature-card{
+  border:1px solid rgba(10,10,10,.07);box-shadow:var(--shadow-soft);
+  transition:transform .4s ease,box-shadow .4s ease;
+}
+.feature-card:hover{transform:translateY(-6px);box-shadow:0 26px 52px -22px rgba(10,10,10,.45);}
+
+/* ---------- Challenge cards ---------- */
+.challenge-card{
+  background:#1A1714!important;border:1px solid rgba(10,10,10,.07)!important;
+  box-shadow:var(--shadow-soft);
+  transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease;
+}
+.challenge-card::after{
+  content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:var(--grad-mix);opacity:0;transition:opacity .4s ease;
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.challenge-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px -24px rgba(10,10,10,.5);border-color:rgba(255,77,77,.25)!important;}
+.challenge-card:hover::after{opacity:1;}
+.card-xp{
+  background:var(--grad-warm);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;font-weight:700;
+}
+
+/* ---------- Daily challenge hero card ---------- */
+.daily-challenge{
+  position:relative;
+  background:linear-gradient(160deg,#15151b 0%,#0b0b10 100%)!important;
+  border:1px solid rgba(255,255,255,0.1)!important;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.8);overflow:hidden;
+}
+.daily-challenge::before{
+  content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:var(--grad-mix);opacity:.5;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+.daily-challenge::after{
+  content:"";position:absolute;top:-50%;left:-30%;width:60%;height:200%;
+  background:radial-gradient(closest-side,rgba(255,77,77,.18),transparent);
+  animation:sheen 9s ease-in-out infinite alternate;pointer-events:none;
+}
+@keyframes sheen{0%{transform:translateX(0)}100%{transform:translateX(220%)}}
+.daily-challenge>*{position:relative;z-index:1;}
+.challenge-badge{background:var(--grad-warm)!important;color:#fff!important;border:none!important;box-shadow:0 8px 20px -8px rgba(255,77,77,.7);}
+.challenge-timer{font-family:'Space Mono',monospace;color:#cfcfe0!important;}
+.formula-display,.formula-box,.card-formula{
+  font-family:'Space Mono',monospace!important;
+  background:rgba(255,255,255,0.04)!important;
+  border:1px solid rgba(255,255,255,0.1)!important;
+  border-left:3px solid var(--accent)!important;border-radius:12px!important;
+}
+.card-formula{background:rgba(10,10,10,.04)!important;border:1px solid rgba(10,10,10,.08)!important;border-left:3px solid var(--accent)!important;color:#0a0a0a;}
+
+/* ---------- Inputs ---------- */
+input[type="number"],input[type="text"],.answer-input,.demo-input{
+  border-radius:12px!important;
+  transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
+}
+input[type="number"]:focus,input[type="text"]:focus,.answer-input:focus,.demo-input:focus{
+  outline:none;border-color:var(--accent)!important;
+  box-shadow:0 0 0 4px rgba(255,77,77,.16)!important;
+}
+.challenge-result.correct,.card-result.correct,.demo-result.correct{
+  border-radius:12px;
+}
+
+/* ---------- Profile ---------- */
+.profile-avatar{background:var(--grad-mix)!important;box-shadow:0 16px 40px -14px rgba(157,77,255,.6);}
+.stat-card{background:#1A1714!important;border:1px solid rgba(10,10,10,.07)!important;box-shadow:var(--shadow-soft);transition:transform .35s ease,box-shadow .35s ease;}
+.stat-card:hover{transform:translateY(-6px);box-shadow:0 26px 52px -22px rgba(10,10,10,.45);}
+.progress-bar{border-radius:999px!important;overflow:hidden;background:rgba(10,10,10,.08)!important;}
+.progress-fill,.xp-bar>*{background:var(--grad-mix)!important;border-radius:999px!important;}
+
+/* ---------- Blockchain blocks ---------- */
+.block{
+  background:#1A1714!important;border:1px solid rgba(10,10,10,.08)!important;
+  box-shadow:var(--shadow-soft);transition:transform .35s ease,box-shadow .35s ease;
+}
+.block:hover{transform:translateY(-5px);box-shadow:0 26px 54px -24px rgba(10,10,10,.5);}
+.hash{font-family:'Space Mono',monospace!important;color:var(--accent-secondary);word-break:break-all;}
+
+/* ---------- Concepts ---------- */
+.concept-section{background:#1A1714!important;border:1px solid rgba(10,10,10,.07)!important;box-shadow:var(--shadow-soft);}
+.concept-number{color:var(--accent);font-weight:700;}
+.interactive-demo{background:linear-gradient(160deg,#15151b,#0b0b10)!important;border:1px solid rgba(255,255,255,0.1)!important;color:#fff;}
+.demo-result{border-radius:12px!important;}
+
+/* ---------- Reveal animation ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.16,.84,.44,1),transform .8s cubic-bezier(.16,.84,.44,1);}
+.reveal.active{opacity:1;transform:none;}
+
+/* ---------- Footer ---------- */
+footer{border-top:1px solid rgba(255,255,255,0.08);}
+footer a{color:var(--accent);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+/* ---------- Scrollbar ---------- */
+*::-webkit-scrollbar{width:11px;height:11px;}
+*::-webkit-scrollbar-thumb{background:linear-gradient(var(--accent),var(--accent-3));border-radius:999px;border:3px solid transparent;background-clip:padding-box;}
+*::-webkit-scrollbar-track{background:transparent;}
+
+/* ---------- Mobile niceties ---------- */
+@media(max-width:768px){
+  .navbar{top:8px;width:calc(100% - 16px);padding:.7rem 1rem;}
+  .topics-grid{gap:16px!important;}
+}
+</style>
+<style id="nav-tweaks">.nav-links{gap:1.3rem;}.nav-links a{font-size:.78rem;white-space:nowrap;}.nav-links a.active{color:var(--accent);}@media(max-width:1120px){.navbar{padding:.75rem 1rem;}.nav-links{gap:.9rem;}}</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    
+    <style id="neumorph-theme">
+:root{
+  --bg:#1A1714;--fg:#3D4852;--muted:#6B7280;--accent:#C9A24B;--accent-light:#E3C77A;--accent-2:#A9823A;
+  --ex:9px 9px 16px rgba(0,0,0,0.6),-9px -9px 16px rgba(255,255,255,0.05);
+  --ex-hover:12px 12px 20px rgba(0,0,0,0.7),-12px -12px 20px rgba(255,255,255,0.05);
+  --ex-sm:5px 5px 10px rgba(0,0,0,0.6),-5px -5px 10px rgba(255,255,255,0.05);
+  --in:inset 6px 6px 10px rgba(0,0,0,0.6),inset -6px -6px 10px rgba(255,255,255,0.05);
+  --in-deep:inset 10px 10px 20px rgba(0,0,0,0.7),inset -10px -10px 20px rgba(255,255,255,0.05);
+  --in-sm:inset 3px 3px 6px rgba(0,0,0,0.6),inset -3px -3px 6px rgba(255,255,255,0.05);
+}
+html,body{background:#1A1714 !important;color:var(--fg) !important;font-family:'DM Sans',system-ui,sans-serif !important;scroll-behavior:smooth;scroll-padding-top:96px;}
+h1,h2,h3,h4,h5,.logo,.font-display{font-family:'Plus Jakarta Sans','DM Sans',sans-serif !important;letter-spacing:-0.02em;color:var(--fg) !important;}
+a{text-decoration:none;}
+::selection{background:rgba(201,162,75,.25);}
+/* decorative floating tiles instead of colour orbs */
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{display:none !important;}
+.bg-orbs::before,.bg-orbs::after{content:"";position:absolute;border-radius:50%;background:#1A1714;box-shadow:var(--ex);opacity:.55;animation:nfloat 7s ease-in-out infinite;}
+.bg-orbs::before{width:200px;height:200px;top:16%;left:5%;}
+.bg-orbs::after{width:130px;height:130px;bottom:14%;right:7%;animation-delay:2.5s;}
+@keyframes nfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-24px)}}
+/* NAVBAR */
+.navbar{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:auto !important;transform:none !important;z-index:1000;display:flex !important;flex-direction:row !important;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1.6rem !important;margin:0 !important;width:auto !important;max-width:none !important;border-radius:0 !important;background:#1A1714 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border:none !important;box-shadow:0 8px 18px rgba(0,0,0,0.55) !important;}
+.navbar.scrolled{box-shadow:0 10px 24px rgba(0,0,0,0.72) !important;}
+.logo{font-weight:800 !important;font-size:1.25rem !important;color:var(--fg) !important;background:none !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links{display:flex !important;align-items:center;gap:1rem !important;}
+.nav-links a{color:var(--fg) !important;font-weight:600 !important;font-size:.8rem !important;padding:.4rem .25rem;white-space:nowrap;transition:color .3s ease,transform .3s ease;background:none !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links a:hover{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;transform:translateY(-1px);}
+.nav-links a.active{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;}
+.lang-toggle{display:flex !important;align-items:center;gap:.45rem;padding:.4rem .75rem;border-radius:9999px;background:#1A1714;box-shadow:var(--in-sm);cursor:pointer;}
+.lang-toggle span{font-size:.72rem;font-weight:700;color:var(--muted);}
+.lang-toggle span.active{color:var(--accent);}
+.lang-toggle .divider{width:1px;height:12px;background:rgba(61,72,82,.25);}
+.nav-burger{display:none;width:44px;height:44px;border:none;border-radius:14px;background:#1A1714;box-shadow:var(--ex-sm);cursor:pointer;position:relative;flex:0 0 auto;}
+.nav-burger span,.nav-burger::before,.nav-burger::after{content:"";position:absolute;left:11px;right:11px;height:2px;background:var(--fg);border-radius:2px;transition:.3s;}
+.nav-burger span{top:21px;}
+.nav-burger::before{top:15px;}
+.nav-burger::after{top:27px;}
+#authButton{display:flex;align-items:center;}
+#authButton a,#authButton button{color:var(--accent) !important;font-weight:700 !important;}
+@media(max-width:900px){
+  .nav-burger{display:block;}
+  .nav-links{position:absolute;top:62px;left:1rem;right:1rem;flex-direction:column !important;align-items:stretch;gap:.3rem;padding:0 1rem;background:#1A1714;border-radius:24px;box-shadow:var(--ex);max-height:0;overflow:hidden;opacity:0;pointer-events:none;transition:max-height .35s ease,opacity .3s ease,padding .3s ease;}
+  .nav-links.open{max-height:85vh;opacity:1;pointer-events:auto;padding:1rem;}
+  .nav-links a{padding:.7rem .4rem;font-size:.95rem !important;}
+  .lang-toggle{justify-content:center;margin-top:.4rem;}
+}
+/* HERO */
+.hero,.page-hero{background:#1A1714 !important;color:var(--fg) !important;position:relative;overflow:hidden;}
+.hero::before,.page-hero::before,.hero::after{display:none !important;background:none !important;}
+.page-hero{padding:9rem 1.5rem 4rem !important;text-align:center;}
+.page-hero::after{display:block !important;content:"" !important;position:absolute;width:240px;height:240px;border-radius:50%;right:-70px;top:18%;background:#1A1714;box-shadow:var(--ex);opacity:.5;animation:nfloat 8s ease-in-out infinite;pointer-events:none;}
+.page-hero h1,.hero h1{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;background:none !important;font-weight:800 !important;}
+.page-hero p,.hero p,.hero-subtitle,.subtitle{color:var(--muted) !important;}
+.hero-content,.page-hero>*{position:relative;z-index:3;}
+/* CONTAINERS */
+.container{position:relative;z-index:1;max-width:1120px;margin:0 auto;}
+section{position:relative;z-index:1;}
+/* CARDS */
+.topic-card,.feature-card,.stat-card,.challenge-card,.daily-challenge,.concept-section,.interactive-demo,.vs-card,.vs-card.classic,.vs-card.quantum,.journal-card,.callout-box,.progress-item,.progress-section,.profile-header,.fact,.cmp-wrap,.blockchain-box,.card,.info-card,.benefit-card,.demo-card{background:#1A1714 !important;border:none !important;border-radius:28px !important;box-shadow:var(--ex) !important;color:var(--fg) !important;}
+.topic-card:hover,.feature-card:hover,.journal-card:hover,.fact:hover,.stat-card:hover,.challenge-card:hover,.card:hover{transform:translateY(-3px);box-shadow:var(--ex-hover) !important;}
+.vs-card.quantum .muted,.vs-card .muted{color:var(--muted) !important;}
+.vs-card li{border-bottom:1px solid rgba(0,0,0,.4) !important;}
+.vs-mid{color:var(--accent) !important;}
+.section-tag,.eyebrow,.badge-label{color:var(--accent) !important;}
+.lead,.note,.muted,.dim{color:var(--muted) !important;}
+/* dark display screens (code + svg graphics) kept as raised dark tiles */
+.math,.gfx{background:#2a2f3a !important;border:none !important;border-radius:20px !important;box-shadow:var(--ex) !important;color:#e8ebf2 !important;}
+.math .c{color:#9aa0ad !important;}
+.gfx .cap{color:#aeb6c4 !important;}
+.flow .step{background:#1A1714 !important;box-shadow:var(--ex-sm) !important;border:none !important;border-radius:14px !important;color:var(--fg) !important;}
+.flow .step.dark{background:var(--accent) !important;color:#fff !important;}
+.flow .arrow{color:var(--accent) !important;}
+/* output wells */
+.demo-result,.hash-out,.formula-box,.formula-display,.card-formula,.formula{background:#1A1714 !important;color:var(--fg) !important;box-shadow:var(--in) !important;border:none !important;border-radius:16px !important;}
+/* BUTTONS */
+.btn,.btn-primary,.btn-outline,.btn-secondary,.demo-btn,.quick-btn,.filter-btn,.btn-logout,.cta-button,.start-btn,.check-btn,.submit-btn{font-family:'Plus Jakarta Sans',sans-serif !important;border:none !important;border-radius:16px !important;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease,background .3s ease;background:#1A1714 !important;color:var(--fg) !important;box-shadow:var(--ex) !important;}
+.btn:hover,.btn-primary:hover,.btn-outline:hover,.btn-secondary:hover,.demo-btn:hover,.quick-btn:hover,.filter-btn:hover,.btn-logout:hover,.cta-button:hover,.start-btn:hover,.check-btn:hover,.submit-btn:hover{transform:translateY(-1px);box-shadow:var(--ex-hover) !important;}
+.btn:active,.btn-primary:active,.btn-outline:active,.demo-btn:active,.quick-btn:active,.filter-btn:active,.btn-logout:active,.cta-button:active,.check-btn:active,.submit-btn:active{transform:translateY(.5px);box-shadow:var(--in-sm) !important;}
+.btn-primary,.demo-btn,.cta-button,.start-btn,.check-btn,.submit-btn,.filter-btn.active{background:var(--accent) !important;color:#fff !important;}
+.btn-primary:active,.demo-btn:active,.cta-button:active,.filter-btn.active:active{box-shadow:inset 4px 4px 8px rgba(201,162,75,.45),inset -4px -4px 8px rgba(255,255,255,0.05) !important;}
+.quick-btn,.filter-btn{font-size:.78rem !important;padding:.5rem 1.05rem !important;border-radius:9999px !important;box-shadow:var(--ex-sm) !important;}
+/* INPUTS */
+.demo-input,#aiChatInput,input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{background:#1A1714 !important;border:none !important;border-radius:16px !important;color:var(--fg) !important;box-shadow:var(--in) !important;padding:.85rem 1rem !important;font-family:'DM Sans',sans-serif !important;}
+.demo-input:focus,#aiChatInput:focus,input:focus,select:focus,textarea:focus{outline:none !important;box-shadow:var(--in-deep) !important;}
+::placeholder{color:#A0AEC0 !important;}
+.demo-input-group{gap:.8rem !important;}
+/* PROGRESS / XP */
+.progress-bar,.xp-bar .progress-bar,.xp-track,.progress-track{background:#1A1714 !important;box-shadow:var(--in-sm) !important;border-radius:9999px !important;overflow:hidden;border:none !important;}
+.progress-fill,#xpFill,.xp-fill{background:linear-gradient(90deg,var(--accent),var(--accent-light)) !important;}
+.profile-avatar{border:none !important;box-shadow:var(--ex) !important;background:#1A1714 !important;color:var(--accent) !important;}
+.stat-card .num,.fact .num,.stat-number,.stat-value,.big-number{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;background:none !important;}
+.concept-section{background:none !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:0 0 4.5rem 0 !important;}
+.concept-header{display:flex !important;align-items:center;gap:1.4rem;margin-bottom:1.8rem !important;}
+.concept-number{font-family:'Plus Jakarta Sans',sans-serif !important;font-size:1.5rem !important;font-weight:800 !important;line-height:1 !important;background:var(--accent) !important;color:#fff !important;-webkit-text-fill-color:#fff !important;box-shadow:var(--ex-sm) !important;border:none !important;padding:.7rem 1rem !important;border-radius:16px !important;min-width:3.4rem;text-align:center;flex:0 0 auto;}
+.concept-title{display:flex;flex-direction:column;justify-content:center;}
+.concept-title h2{font-size:1.9rem !important;font-weight:800 !important;margin:0 0 .25rem 0 !important;color:var(--fg) !important;line-height:1.15;}
+.concept-title p,.concept-sub{color:var(--muted) !important;font-size:.78rem !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:.12em;margin:0 !important;}
+.concept-content{background:#1A1714 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border:none !important;border-radius:28px !important;box-shadow:var(--ex) !important;padding:2.4rem !important;margin-bottom:1.6rem !important;color:var(--fg) !important;}
+.concept-content:hover{transform:none !important;box-shadow:var(--ex) !important;}
+/* TABLES */
+table.cmp,.cmp{background:#1A1714 !important;border-radius:18px;overflow:hidden;}
+table.cmp th{background:var(--accent) !important;color:#fff !important;}
+table.cmp td{border-bottom:1px solid rgba(0,0,0,.35) !important;color:var(--fg) !important;}
+.tag-broken{color:#c0392b !important;font-weight:700;}
+.tag-safe{color:#1e7a46 !important;font-weight:700;}
+.pill,.jtag{background:#1A1714 !important;box-shadow:var(--in-sm) !important;color:var(--accent) !important;border:none !important;}
+/* BARS CHART */
+.bar-track{background:#1A1714 !important;box-shadow:var(--in) !important;border:none !important;}
+.bar-fill.warm{background:linear-gradient(90deg,var(--accent),var(--accent-light)) !important;}
+.bar-fill.cool{background:linear-gradient(90deg,var(--accent-2),#E3C77A) !important;}
+.bar-fill.dark{background:linear-gradient(90deg,#6B7280,#9aa4b2) !important;}
+/* TIMELINE */
+.timeline::before{background:linear-gradient(var(--accent),var(--accent-2)) !important;}
+.tl::before{background:var(--accent) !important;box-shadow:0 0 0 4px rgba(201,162,75,.18) !important;}
+.tl .yr,.timeline .yr{color:var(--accent) !important;}
+.journal-meta{color:var(--muted) !important;}
+.journal-card details summary{color:var(--accent) !important;cursor:pointer;}
+/* FOOTER */
+footer{background:#1A1714 !important;color:var(--muted) !important;border:none !important;box-shadow:0 -8px 18px rgba(0,0,0,.4) !important;}
+footer a{color:var(--accent) !important;}
+/* CURSOR */
+.cursor{background:rgba(201,162,75,.22) !important;mix-blend-mode:normal !important;border:2px solid var(--accent) !important;}
+.cursor.hover,.cursor.active{background:rgba(201,162,75,.12) !important;}
+@media(max-width:900px){.cursor{display:none !important;}}
+/* CHATBOT */
+#aiChatToggle,.ai-chat-toggle{background:var(--accent) !important;color:#fff !important;box-shadow:var(--ex) !important;border:none !important;}
+#aiChatWindow,.ai-chat-window{background:#1A1714 !important;box-shadow:var(--ex-hover) !important;border:none !important;border-radius:28px !important;}
+.ai-chat-header,#aiChatWindow .ai-chat-header{background:var(--accent) !important;color:#fff !important;border:none !important;}
+#aiChatMessages>*{border-radius:16px !important;}
+#aiSendBtn,.ai-send-btn{background:var(--accent) !important;color:#fff !important;box-shadow:var(--ex-sm) !important;border:none !important;border-radius:14px !important;}
+#aiQuickQuestions{display:flex;flex-wrap:wrap;gap:.5rem;}
+/* focus accessibility */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,.lang-toggle:focus-visible{outline:2px solid var(--accent) !important;outline-offset:2px;}
+/* reduce motion pref */
+body.reduce-motion *{animation:none !important;}
+</style>
+<style id="learn-extras">
+.learn-intro{display:flex;gap:1.1rem;align-items:flex-start;background:#1A1714;box-shadow:var(--ex);border-radius:24px;padding:1.6rem 1.8rem;margin:0 0 3rem 0;}
+.learn-intro .li-emoji{font-size:2rem;line-height:1;flex-shrink:0;}
+.learn-intro h3{margin:.1rem 0 .4rem 0;font-size:1.25rem;color:var(--fg);font-family:'Plus Jakarta Sans',sans-serif;}
+.learn-intro p{margin:0;color:var(--muted);font-size:.98rem;line-height:1.6;}
+.fun-fact{background:#1A1714;box-shadow:var(--in);border-radius:18px;padding:1.1rem 1.3rem;margin:0 0 1.6rem 0;color:var(--fg);font-size:.97rem;line-height:1.55;border-left:5px solid var(--accent);}
+.video-card h3,.quiz-title{font-size:1.3rem;font-family:'Plus Jakarta Sans',sans-serif;color:var(--fg);margin:0 0 1.1rem 0;display:flex;align-items:center;gap:.5rem;}
+.video-wrap{position:relative;width:100%;padding-bottom:56.25%;height:0;border-radius:18px;overflow:hidden;box-shadow:var(--in-deep);background:#cfd5de;}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+.video-cap{margin:.9rem 0 0 0;font-size:.82rem;color:var(--muted);text-align:center;}
+.quiz-box{margin-top:.3rem;}
+.quiz-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.7rem;}
+.quiz-step{font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.quiz-diff{font-size:.72rem;font-weight:800;padding:.32rem .8rem;border-radius:9999px;color:#fff;text-transform:uppercase;letter-spacing:.05em;}
+.diff-easy{background:#A9823A;}
+.diff-medium{background:var(--accent);}
+.diff-hard{background:#E3C77A;}
+.quiz-bar{height:8px;border-radius:9999px;background:#1A1714;box-shadow:var(--in-sm);overflow:hidden;margin-bottom:1.3rem;}
+.quiz-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#E3C77A);border-radius:9999px;transition:width .4s ease;}
+.quiz-q{font-size:1.18rem;font-weight:700;color:var(--fg);line-height:1.45;margin-bottom:1.2rem;font-family:'Plus Jakarta Sans',sans-serif;}
+.quiz-opts{display:grid;gap:.75rem;}
+.quiz-opt{text-align:left;background:#1A1714;color:var(--fg);box-shadow:var(--ex-sm);border:none;border-radius:16px;padding:.95rem 1.2rem;font-size:.98rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:transform .15s ease,box-shadow .2s ease;display:flex;align-items:center;gap:.7rem;}
+.quiz-opt:hover:not(:disabled){transform:translateY(-2px);box-shadow:var(--ex);}
+.quiz-opt:disabled{cursor:default;}
+.quiz-opt::before{content:attr(data-letter);display:inline-flex;align-items:center;justify-content:center;width:1.8rem;height:1.8rem;flex-shrink:0;border-radius:50%;background:#1A1714;box-shadow:var(--in-sm);font-weight:800;font-size:.82rem;color:var(--accent);}
+.quiz-opt.correct{box-shadow:inset 0 0 0 2px #A9823A,var(--in-sm);color:#2c7a75;font-weight:700;}
+.quiz-opt.correct::before{background:#A9823A;color:#fff;box-shadow:none;}
+.quiz-opt.wrong{box-shadow:inset 0 0 0 2px #E08A8A,var(--in-sm);color:#b15555;}
+.quiz-opt.wrong::before{background:#E08A8A;color:#fff;box-shadow:none;}
+.quiz-feedback{margin-top:1.1rem;padding:1rem 1.2rem;border-radius:14px;font-size:.95rem;line-height:1.55;background:#1A1714;box-shadow:var(--in-sm);}
+.quiz-feedback.good{border-left:5px solid #A9823A;}
+.quiz-feedback.bad{border-left:5px solid #E08A8A;}
+.quiz-actions{margin-top:1.2rem;text-align:right;}
+.quiz-next{background:var(--accent);color:#fff;border:none;border-radius:14px;padding:.8rem 1.6rem;font-size:.95rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;box-shadow:var(--ex-sm);transition:transform .15s ease,box-shadow .2s ease;}
+.quiz-next:hover{transform:translateY(-2px);box-shadow:var(--ex);}
+.quiz-score{text-align:center;padding:1rem .5rem;}
+.quiz-score-emoji{font-size:3.2rem;line-height:1;margin-bottom:.5rem;}
+.quiz-score-num{font-size:2rem;font-weight:800;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif;}
+.quiz-score p{color:var(--muted);margin:.6rem auto 1.3rem;max-width:32ch;line-height:1.55;}
+@media(max-width:600px){.learn-intro{flex-direction:column;}.video-card h3,.quiz-title{font-size:1.15rem;}}
+</style>
+<style id="calc-css">
+.calc-card{max-width:560px;margin-left:auto;margin-right:auto;}
+.calc-hint{color:var(--muted);font-size:.9rem;line-height:1.5;margin:.2rem 0 1.2rem;}
+.calc-display{background:#1A1714;box-shadow:var(--in-deep);border-radius:18px;padding:1.1rem 1.3rem;margin-bottom:1.2rem;text-align:right;min-height:88px;display:flex;flex-direction:column;justify-content:center;gap:.35rem;outline:none;transition:box-shadow .2s;cursor:text;}
+.calc-display:focus{box-shadow:var(--in-deep),0 0 0 2px var(--accent);}
+.calc-expr{color:var(--muted);font-size:1rem;min-height:1.2em;word-break:break-all;font-family:'DM Sans',sans-serif;}
+.calc-result{color:var(--fg);font-size:1.9rem;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;word-break:break-all;line-height:1.1;}
+.calc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;}
+.calc-btn{border:none;background:#1A1714;color:var(--fg);box-shadow:var(--ex-sm);border-radius:14px;padding:.95rem 0;font-size:1.05rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:transform .12s ease,box-shadow .2s ease;}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:var(--ex);}
+.calc-btn:active{box-shadow:var(--in-sm);transform:translateY(0);}
+.calc-btn.fn{color:var(--accent);font-size:.98rem;}
+.calc-btn.op{color:var(--accent-2);}
+.calc-btn.mode{color:#fff;background:var(--accent-2);font-size:.82rem;letter-spacing:.05em;}
+.calc-btn.danger{color:#fff;background:#E08A8A;}
+.calc-btn.eq{color:#fff;background:var(--accent);}
+@media(max-width:600px){.calc-btn{padding:.8rem 0;font-size:.95rem;}.calc-result{font-size:1.5rem;}.calc-grid{gap:.45rem;}}
+</style>
+
+<style id="gamify-css">
+.gmf-chip{position:fixed;left:18px;bottom:18px;z-index:9990;display:flex;align-items:center;gap:.55rem;padding:.6rem .95rem;border-radius:999px;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,6px 6px 12px #bec3c9,-6px -6px 12px #fff);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--fg,#3D4852);border:none;transition:transform .2s,box-shadow .2s;user-select:none;}
+.gmf-chip:hover{transform:translateY(-2px);}
+.gmf-chip:active{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.gmf-chip .gmf-fire{font-size:1.05rem;}
+.gmf-chip .gmf-sep{width:1px;height:16px;background:rgba(0,0,0,.12);}
+.gmf-chip .gmf-lv{color:var(--accent,#C9A24B);}
+@media(max-width:600px){.gmf-chip{left:12px;bottom:12px;padding:.5rem .8rem;font-size:.85rem;}}
+.gmf-overlay{position:fixed;inset:0;background:rgba(30,34,40,.35);backdrop-filter:blur(3px);z-index:9995;opacity:0;pointer-events:none;transition:opacity .25s;}
+.gmf-overlay.open{opacity:1;pointer-events:auto;}
+.gmf-panel{position:fixed;z-index:9996;top:50%;left:50%;transform:translate(-50%,-46%) scale(.96);width:min(440px,92vw);max-height:88vh;overflow-y:auto;background:var(--bg,#1A1714);border-radius:30px;box-shadow:10px 10px 30px #b8bcc2,-10px -10px 30px #fff;padding:1.6rem 1.5rem 1.8rem;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;font-family:'DM Sans',sans-serif;color:var(--fg,#3D4852);}
+.gmf-panel.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+.gmf-panel h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;margin:0 0 .15rem;text-align:center;}
+.gmf-panel .gmf-cta{text-align:center;color:var(--muted,#6B7280);font-size:.82rem;margin:.1rem 0 .2rem;}
+.gmf-close{position:absolute;top:14px;right:16px;width:34px;height:34px;border:none;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,5px 5px 10px #bec3c9,-5px -5px 10px #fff);cursor:pointer;color:var(--fg,#3D4852);font-size:1rem;}
+.gmf-close:active{box-shadow:var(--in-sm,inset 3px 3px 6px #bec3c9,inset -3px -3px 6px #fff);}
+.gmf-ring{width:130px;height:130px;border-radius:50%;margin:.9rem auto 1rem;display:flex;align-items:center;justify-content:center;box-shadow:9px 9px 18px #bec3c9,-9px -9px 18px #fff;}
+.gmf-ring-inner{width:98px;height:98px;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--in,inset 5px 5px 10px #bec3c9,inset -5px -5px 10px #fff);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.gmf-lvnum{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.9rem;font-weight:800;color:var(--accent,#C9A24B);line-height:1;}
+.gmf-lvlbl{font-size:.66rem;color:var(--muted,#6B7280);text-transform:uppercase;letter-spacing:.08em;}
+.gmf-stat-row{display:flex;gap:.7rem;margin:.2rem 0 1rem;}
+.gmf-stat{flex:1;text-align:center;padding:.8rem .3rem;border-radius:18px;background:var(--bg,#1A1714);box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.gmf-stat b{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;color:var(--fg,#3D4852);}
+.gmf-stat span{font-size:.66rem;color:var(--muted,#6B7280);}
+.gmf-barlbl{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted,#6B7280);margin:.2rem 0 .35rem;}
+.gmf-track{height:14px;border-radius:999px;background:var(--bg,#1A1714);box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);overflow:hidden;}
+.gmf-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#C9A24B,#E3C77A);transition:width .5s;width:0;}
+.gmf-fill.goal{background:linear-gradient(90deg,#A9823A,#C9A24B);}
+.gmf-sec-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;margin:1.3rem 0 .7rem;font-size:1rem;}
+.gmf-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:.7rem;}
+.gmf-badge{text-align:center;padding:.7rem .15rem;border-radius:18px;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,5px 5px 10px #bec3c9,-5px -5px 10px #fff);}
+.gmf-badge .gmf-be{font-size:1.5rem;filter:grayscale(1);opacity:.3;}
+.gmf-badge.un .gmf-be{filter:none;opacity:1;}
+.gmf-badge small{display:block;margin-top:.25rem;font-size:.58rem;color:var(--muted,#6B7280);line-height:1.2;}
+.gmf-toasts{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:10000;display:flex;flex-direction:column;gap:.5rem;align-items:center;pointer-events:none;}
+.gmf-toast{background:var(--bg,#1A1714);box-shadow:6px 6px 14px #bec3c9,-6px -6px 14px #fff;border-radius:16px;padding:.7rem 1.1rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--fg,#3D4852);display:flex;align-items:center;gap:.5rem;opacity:0;transform:translateY(-12px);transition:opacity .3s,transform .3s;font-size:.9rem;}
+.gmf-toast.show{opacity:1;transform:none;}
+.gmf-toast .gmf-tx{color:var(--accent,#C9A24B);}
+.gmf-toast .gmf-be{font-size:1.3rem;}
+</style>
+<style id="edu-css">
+.edu-skip{position:fixed;top:-60px;left:12px;z-index:10070;background:var(--accent,#C9A24B);color:#fff;padding:.7rem 1.1rem;border-radius:0 0 14px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;text-decoration:none;transition:top .2s;}
+.edu-skip:focus{top:0;outline:3px solid #fff;}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent,#C9A24B)!important;outline-offset:2px!important;border-radius:6px;}
+.edu-fab{position:fixed;left:18px;bottom:74px;z-index:9985;width:48px;height:48px;border:none;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,6px 6px 12px #bec3c9,-6px -6px 12px #fff);color:var(--fg,#3D4852);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;}
+.edu-fab:hover{transform:translateY(-2px);}
+.edu-fab:active{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.edu-top{position:fixed;right:20px;bottom:92px;z-index:9985;width:46px;height:46px;border:none;border-radius:50%;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,6px 6px 12px #bec3c9,-6px -6px 12px #fff);color:var(--accent,#C9A24B);font-size:1.3rem;font-weight:800;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s,transform .25s;}
+.edu-top.show{opacity:1;pointer-events:auto;transform:none;}
+.edu-top:active{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.edu-ov{position:fixed;inset:0;background:rgba(30,34,40,.4);backdrop-filter:blur(4px);z-index:10060;display:flex;align-items:flex-start;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;padding-top:12vh;}
+.edu-ov.open{opacity:1;pointer-events:auto;}
+.edu-search{width:min(560px,92vw);background:var(--bg,#1A1714);border-radius:24px;box-shadow:10px 10px 30px #b3b8be,-10px -10px 30px #fff;padding:1rem;font-family:'DM Sans',sans-serif;transform:translateY(-12px) scale(.98);transition:transform .2s;}
+.edu-ov.open .edu-search{transform:none;}
+.edu-shead{margin-bottom:.7rem;}
+.edu-sinput{width:100%;box-sizing:border-box;border:none;border-radius:16px;padding:.95rem 1.1rem;font-size:1.05rem;font-family:'DM Sans',sans-serif;background:var(--bg,#1A1714);color:var(--fg,#3D4852);box-shadow:var(--in,inset 5px 5px 10px #bec3c9,inset -5px -5px 10px #fff);}
+.edu-sinput::placeholder{color:var(--muted,#6B7280);}
+.edu-slist{max-height:46vh;overflow-y:auto;display:flex;flex-direction:column;gap:.45rem;}
+.edu-sitem{display:flex;align-items:center;gap:.8rem;width:100%;text-align:start;border:none;cursor:pointer;border-radius:16px;padding:.7rem .85rem;background:var(--bg,#1A1714);box-shadow:var(--ex-sm,5px 5px 10px #bec3c9,-5px -5px 10px #fff);color:var(--fg,#3D4852);font-family:'DM Sans',sans-serif;transition:box-shadow .15s;}
+.edu-sitem.sel{box-shadow:var(--in-sm,inset 4px 4px 8px #bec3c9,inset -4px -4px 8px #fff);}
+.edu-sic{font-size:1.3rem;flex:0 0 auto;width:30px;text-align:center;}
+.edu-stext{display:flex;flex-direction:column;line-height:1.25;flex:1;}
+.edu-stext b{font-family:'Plus Jakarta Sans',sans-serif;font-size:.98rem;}
+.edu-stext small{color:var(--muted,#6B7280);font-size:.78rem;}
+.edu-skind{font-size:.68rem;color:var(--accent,#C9A24B);font-weight:700;text-transform:uppercase;letter-spacing:.05em;flex:0 0 auto;}
+.edu-empty{text-align:center;color:var(--muted,#6B7280);padding:1.4rem;font-size:.92rem;}
+.edu-shint{margin-top:.7rem;text-align:center;color:var(--muted,#6B7280);font-size:.72rem;}
+@media(max-width:600px){.edu-fab{left:12px;bottom:66px;width:44px;height:44px;}.edu-top{right:14px;bottom:84px;}.edu-shint{display:none;}}
+</style>
+<style id="topbar-skin">
+.navbar{background:transparent !important;box-shadow:none !important;border-radius:0 !important;padding:14px 20px !important;gap:14px;}
+.navbar.scrolled{box-shadow:none !important;}
+.logo{display:flex !important;align-items:center;gap:.55rem;padding:.45rem .95rem .45rem .5rem;border-radius:9999px;background:var(--bg,#1A1714) !important;box-shadow:var(--ex-sm) !important;transition:transform .3s ease;}
+.logo:hover{transform:translateY(-1px);}
+.logo-mark{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:transparent;box-shadow:none;flex:0 0 auto;}
+.logo-text{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;letter-spacing:-.02em;}
+.nav-actions{display:flex;align-items:center;gap:.55rem;flex:0 0 auto;}
+.nav-login,.nav-cta{display:inline-flex;align-items:center;justify-content:center;border-radius:9999px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.82rem;text-decoration:none;transition:transform .3s ease,box-shadow .3s ease,filter .3s ease;cursor:pointer;}
+.nav-login{padding:.62rem 1.05rem;color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;background:var(--bg,#1A1714);box-shadow:var(--ex-sm);}
+.nav-login:hover{transform:translateY(-1px);box-shadow:var(--ex);}
+.nav-login:active{transform:translateY(1px);box-shadow:var(--in-sm);}
+.nav-cta{padding:.64rem 1.2rem;color:#fff !important;-webkit-text-fill-color:#fff !important;background:linear-gradient(135deg,var(--accent-light,#E3C77A),var(--accent,#C9A24B));box-shadow:5px 5px 12px rgba(201,162,75,.4),-4px -4px 10px rgba(255,255,255,0.05);}
+.nav-cta:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:7px 7px 16px rgba(201,162,75,.5),-5px -5px 12px rgba(255,255,255,0.05);}
+.nav-cta:active{transform:translateY(1px);box-shadow:inset 4px 4px 8px rgba(201,162,75,.55),inset -4px -4px 8px rgba(201,162,75,.4);}
+#authButton{display:flex;align-items:center;gap:.5rem;}
+.nav-user{display:flex;align-items:center;gap:.5rem;padding:.38rem .85rem .38rem .42rem;border-radius:9999px;background:var(--bg,#1A1714);box-shadow:var(--ex-sm);text-decoration:none;color:var(--fg) !important;font-weight:700;font-size:.8rem;}
+.nav-user-img{width:28px;height:28px;border-radius:50%;object-fit:cover;}
+.nav-logout{padding:.5rem .8rem;border-radius:9999px;border:none;cursor:pointer;background:var(--bg,#1A1714);box-shadow:var(--ex-sm);color:var(--accent,#C9A24B) !important;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.76rem;transition:transform .3s ease,box-shadow .3s ease;}
+.nav-logout:hover{transform:translateY(-1px);}
+.nav-logout:active{box-shadow:var(--in-sm);}
+.nav-menu-auth{display:none;}
+@media(min-width:901px){
+  .nav-links{background:var(--bg,#1A1714) !important;box-shadow:var(--ex-sm) !important;border-radius:9999px !important;padding:.4rem .5rem !important;gap:.1rem !important;}
+  .nav-links a{border-radius:9999px;padding:.5rem .8rem !important;font-size:.8rem !important;font-weight:600 !important;transition:color .25s ease,box-shadow .25s ease !important;}
+  .nav-links a:hover{transform:none !important;color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;box-shadow:var(--in-sm);}
+  .nav-links a.active{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;box-shadow:var(--in-sm) !important;}
+  .lang-toggle{box-shadow:var(--in-sm) !important;margin-left:.25rem;}
+}
+@media(max-width:900px){
+  .navbar{padding:10px 12px !important;}
+  .nav-actions{display:none !important;}
+  .nav-menu-auth{display:block;text-align:center;margin-top:.4rem;border-radius:16px;padding:.75rem !important;font-weight:700;text-decoration:none;}
+  .nav-menu-login{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;box-shadow:var(--ex-sm);}
+  .nav-menu-cta{color:#fff !important;-webkit-text-fill-color:#fff !important;background:linear-gradient(135deg,var(--accent-light,#E3C77A),var(--accent,#C9A24B));}
+}
+@media(max-width:520px){.logo-text{display:none;}}
+</style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%2248%22%20height%3D%2248%22%20role%3D%22img%22%20aria-label%3D%22CryptoMath%20icon%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22badgeGrad%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%234F46E5%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2306B6D4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%22104%22%20height%3D%22104%22%20rx%3D%2230%22%20fill%3D%22url%28%23badgeGrad%29%22%2F%3E%3Cpath%20d%3D%22M44%2060%20V52%20a16%2016%200%200%201%2032%200%20V60%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%229%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2234%22%20y%3D%2258%22%20width%3D%2252%22%20height%3D%2242%22%20rx%3D%2210%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Cpath%20d%3D%22M70%2067%20L50%2067%20L61%2079%20L50%2091%20L70%2091%22%20fill%3D%22none%22%20stroke%3D%22%234F46E5%22%20stroke-width%3D%226%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<style id="logo-spin-css">
+.logo-mark{transition:transform .8s cubic-bezier(.34,1.56,.64,1);transform-style:preserve-3d;}
+.logo:hover .logo-mark{transform:rotateY(360deg);}
+@media (prefers-reduced-motion:reduce){.logo:hover .logo-mark{transform:none;}}
+body.reduce-motion .logo:hover .logo-mark{transform:none;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<style id="editorial-theme">
+:root{
+  --bg:#131009;--surface:#1B1712;--surface-2:#0F0C07;--fg:#ECE5D6;--muted:#A39A8C;
+  --accent:#C9A24B;--accent-light:#E3C77A;--accent-2:#C9A24B;--line:rgba(236,229,214,.12);
+  --ex:0 1px 0 rgba(236,229,214,.04),0 18px 40px -12px rgba(0,0,0,.7);
+  --ex-hover:0 1px 0 rgba(236,229,214,.06),0 28px 60px -14px rgba(0,0,0,.78);
+  --ex-sm:0 1px 0 rgba(236,229,214,.04),0 10px 22px -10px rgba(0,0,0,.6);
+  --in:inset 0 0 0 1px rgba(236,229,214,.12);
+  --in-deep:inset 0 0 0 1px rgba(201,162,75,.55);
+  --in-sm:inset 0 0 0 1px rgba(236,229,214,.08);
+}
+html,body{background:var(--bg) !important;color:var(--fg) !important;-webkit-font-smoothing:antialiased;}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 80% at 50% -10%,rgba(201,162,75,.07),transparent 55%),radial-gradient(100% 90% at 50% 120%,rgba(0,0,0,.55),transparent 60%);}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.045;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='2'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");}
+/* TYPOGRAPHY: editorial serif display + sans body */
+h1,h2,.hero h1,.page-hero h1,.logo-text,.font-display,.section-header h2,.concept-title h2,.stat-card .num,.fact .num,.stat-number,.stat-value,.big-number,.concept-number{font-family:'Fraunces','Plus Jakarta Sans',Georgia,serif !important;}
+h1,h2,.section-header h2,.concept-title h2{font-weight:600 !important;letter-spacing:-.015em !important;color:var(--fg) !important;}
+.hero h1,.page-hero h1{font-weight:600 !important;letter-spacing:-.025em !important;line-height:1.03 !important;font-size:clamp(2.7rem,7vw,5.4rem) !important;}
+.section-header h2,h2{font-size:clamp(1.9rem,3.6vw,2.9rem) !important;}
+.logo-text{font-weight:600 !important;letter-spacing:0 !important;color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;}
+.hero-label,.section-tag,.eyebrow,.badge-label,.concept-sub,.concept-title p{font-family:'DM Sans',sans-serif !important;text-transform:uppercase !important;letter-spacing:.28em !important;font-size:.7rem !important;font-weight:700 !important;color:var(--accent) !important;}
+.hero h1 .accent{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;font-style:italic;}
+.hero h1 .outline{color:transparent !important;-webkit-text-fill-color:transparent !important;-webkit-text-stroke:1px var(--fg);}
+p,li,td{color:var(--fg);}
+.muted,.dim,.lead,.note,.hero p,.page-hero p,.hero-description,.subtitle,.hero-subtitle,.journal-meta{color:var(--muted) !important;}
+::selection{background:rgba(201,162,75,.3);color:#16120A;}
+/* SURFACES */
+.topic-card,.feature-card,.stat-card,.challenge-card,.daily-challenge,.interactive-demo,.vs-card,.vs-card.classic,.vs-card.quantum,.journal-card,.callout-box,.progress-item,.progress-section,.profile-header,.fact,.cmp-wrap,.blockchain-box,.card,.info-card,.benefit-card,.demo-card,.concept-content{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:var(--ex) !important;border-radius:20px !important;color:var(--fg) !important;}
+.topic-card:hover,.feature-card:hover,.journal-card:hover,.fact:hover,.stat-card:hover,.challenge-card:hover,.card:hover{box-shadow:var(--ex-hover) !important;}
+.math,.gfx{background:#15120D !important;border:1px solid var(--line) !important;box-shadow:var(--ex) !important;}
+.demo-result,.hash-out,.formula-box,.formula-display,.card-formula,.formula{background:var(--surface-2) !important;border:1px solid var(--line) !important;box-shadow:inset 0 0 0 1px var(--line) !important;color:var(--fg) !important;}
+/* NAV */
+.navbar{background:transparent !important;}
+.logo,.nav-login,.nav-user,.nav-logout,.nav-burger,.lang-toggle{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:var(--ex-sm) !important;}
+.nav-login{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links a{color:var(--fg) !important;-webkit-text-fill-color:var(--fg) !important;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;}
+.nav-burger span,.nav-burger::before,.nav-burger::after{background:var(--fg) !important;}
+.lang-toggle .divider{background:var(--line) !important;}
+.lang-toggle span{color:var(--muted) !important;}
+.lang-toggle span.active{color:var(--accent) !important;}
+@media(min-width:901px){.nav-links{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:var(--ex-sm) !important;}}
+.nav-cta,.nav-menu-cta{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;color:#16120A !important;-webkit-text-fill-color:#16120A !important;border:none !important;box-shadow:0 12px 26px -10px rgba(201,162,75,.5) !important;}
+.nav-cta:hover{filter:brightness(1.05);}
+/* BUTTONS */
+.btn,.btn-outline,.btn-secondary,.quick-btn,.filter-btn,.btn-logout{background:var(--surface) !important;color:var(--fg) !important;border:1px solid var(--line) !important;box-shadow:var(--ex-sm) !important;}
+.btn-primary,.demo-btn,.cta-button,.start-btn,.check-btn,.submit-btn,.filter-btn.active,.flow .step.dark{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;color:#16120A !important;-webkit-text-fill-color:#16120A !important;border:none !important;box-shadow:0 12px 26px -10px rgba(201,162,75,.5) !important;}
+.btn-primary:hover,.demo-btn:hover,.cta-button:hover,.start-btn:hover,.check-btn:hover,.submit-btn:hover{filter:brightness(1.05);}
+.btn-primary:active,.demo-btn:active,.cta-button:active,.filter-btn.active:active{box-shadow:inset 0 0 0 1px rgba(0,0,0,.3) !important;}
+/* INPUTS */
+.demo-input,#aiChatInput,input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{background:var(--surface-2) !important;color:var(--fg) !important;border:1px solid var(--line) !important;box-shadow:none !important;}
+.demo-input:focus,#aiChatInput:focus,input:focus,select:focus,textarea:focus{box-shadow:var(--in-deep) !important;border-color:rgba(201,162,75,.55) !important;}
+::placeholder{color:#7C7568 !important;}
+/* ACCENTS */
+.section-tag,.eyebrow,.badge-label,.vs-mid,.flow .arrow,.tl .yr,.timeline .yr,.pill,.jtag,footer a,.journal-card details summary{color:var(--accent) !important;}
+.pill,.jtag{background:var(--surface) !important;border:1px solid var(--line) !important;box-shadow:none !important;}
+.stat-card .num,.fact .num,.stat-number,.stat-value,.big-number{color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;font-weight:500 !important;}
+.concept-number{background:transparent !important;color:var(--accent) !important;-webkit-text-fill-color:var(--accent) !important;font-weight:500 !important;font-size:2rem !important;box-shadow:none !important;border:1px solid var(--line) !important;border-radius:12px !important;}
+.progress-bar,.xp-bar .progress-bar,.xp-track,.progress-track,.bar-track{background:var(--surface-2) !important;border:1px solid var(--line) !important;box-shadow:none !important;}
+.progress-fill,#xpFill,.xp-fill,.bar-fill.warm,.bar-fill.cool{background:linear-gradient(90deg,var(--accent),var(--accent-light)) !important;}
+.bar-fill.dark{background:linear-gradient(90deg,#6B6256,#9a8f7e) !important;}
+.profile-avatar{background:var(--surface) !important;border:1px solid var(--line) !important;color:var(--accent) !important;}
+.vs-card li{border-bottom:1px solid var(--line) !important;}
+table.cmp,.cmp{background:var(--surface) !important;border:1px solid var(--line) !important;}
+table.cmp th{background:var(--accent) !important;color:#16120A !important;}
+table.cmp td{border-bottom:1px solid var(--line) !important;color:var(--fg) !important;}
+.tag-broken{color:#E58B7F !important;}
+.tag-safe{color:#79C99A !important;}
+.tl::before{box-shadow:0 0 0 4px rgba(201,162,75,.18) !important;}
+.cursor{background:rgba(201,162,75,.16) !important;border:2px solid var(--accent) !important;}
+.cursor.hover,.cursor.active{background:rgba(201,162,75,.1) !important;}
+/* FOOTER */
+footer{background:var(--surface) !important;border-top:1px solid var(--line) !important;box-shadow:none !important;color:var(--muted) !important;}
+/* CHATBOT */
+#aiChatToggle,.ai-chat-toggle,.ai-chat-header,#aiChatWindow .ai-chat-header,#aiSendBtn,.ai-send-btn{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;color:#16120A !important;border:none !important;}
+#aiChatWindow,.ai-chat-window{background:var(--surface) !important;border:1px solid var(--line) !important;}
+/* SPINNING COIN */
+.coin3d__face{background:var(--surface) !important;border:1px solid var(--line);box-shadow:0 18px 40px -12px rgba(0,0,0,.7) !important;}
+.coin3d__sigma{background:linear-gradient(135deg,var(--accent-light),var(--accent)) !important;-webkit-background-clip:text !important;background-clip:text !important;color:transparent !important;}
+/* FOCUS (a11y) */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,.lang-toggle:focus-visible,.nav-links a:focus-visible{outline:2px solid var(--accent) !important;outline-offset:3px;}
+/* MOBILE: designed, not shrunk */
+@media(max-width:600px){
+  .hero h1,.page-hero h1{font-size:clamp(2.1rem,11vw,3.1rem) !important;line-height:1.06 !important;}
+  .section-header h2,h2{font-size:clamp(1.6rem,7vw,2.1rem) !important;}
+  .concept-number{font-size:1.5rem !important;}
+  .coin3d{width:90px !important;height:90px !important;}
+}
+</style>
+<style id="trionn-css">
+/* ---- masked text reveal (trionn signature) ---- */
+.tr-line{display:block;overflow:hidden;}
+.tr-line-i{display:block;will-change:transform;}
+.tr-mask .tr-line-i{transform:translateY(118%);}
+.tr-mask.tr-in .tr-line-i{transform:translateY(0);transition:transform 1.05s cubic-bezier(.16,.84,.44,1);}
+/* ---- scroll progress ---- */
+.tr-progress{position:fixed;top:0;left:0;width:100%;height:3px;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,var(--accent,#C9A24B),var(--accent-light,#E3C77A));z-index:100001;pointer-events:none;}
+/* ---- one-time load reveal ---- */
+.tr-intro{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:#0F0C07;pointer-events:none;}
+.tr-intro-logo{display:flex;align-items:center;gap:.7rem;font-family:'Fraunces','Plus Jakarta Sans',serif;font-weight:600;font-size:clamp(1.6rem,5vw,2.7rem);color:var(--fg,#ECE5D6);opacity:0;letter-spacing:-.02em;}
+.tr-intro-logo .tr-sig{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border-radius:16px;background:linear-gradient(135deg,#4F46E5,#06B6D4);color:#fff;font-size:.95em;}
+.tr-intro--play{display:flex;animation:trIntroOut 1.15s .35s cubic-bezier(.76,0,.24,1) forwards;}
+.tr-intro--play .tr-intro-logo{animation:trIntroLogo .55s .05s ease forwards;}
+@keyframes trIntroOut{0%,52%{transform:translateY(0);}100%{transform:translateY(-101%);}}
+@keyframes trIntroLogo{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+/* ---- magnetic buttons easing ---- */
+.btn-primary,.nav-cta,.cta-button,.btn-outline,.start-btn,.nav-menu-cta{transition:transform .25s cubic-bezier(.16,.84,.44,1),filter .25s,box-shadow .25s;}
+/* ---- animated nav underline ---- */
+.nav-links a{position:relative;}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:1px;background:var(--accent,#C9A24B);transform:scaleX(0);transform-origin:0 50%;transition:transform .4s cubic-bezier(.16,.84,.44,1);}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);}
+/* ---- refined card lift ---- */
+.topic-card,.feature-card,.journal-card,.fact,.card,.info-card,.benefit-card{transition:transform .5s cubic-bezier(.16,.84,.44,1),box-shadow .5s,border-color .5s;}
+.topic-card:hover,.feature-card:hover,.journal-card:hover,.fact:hover{transform:translateY(-6px);}
+/* ---- trailing cursor grow ---- */
+.cursor{transition:width .25s,height .25s,background .25s,border-color .25s;}
+.cursor.hover{width:54px;height:54px;}
+.scroll-indicator{transition:opacity .3s;}
+@media(max-width:900px){.tr-progress{height:2px;}}
+/* ---- reduced motion ---- */
+body.reduce-motion .tr-mask .tr-line-i{transform:none !important;}
+body.reduce-motion .tr-intro{display:none !important;}
+body.reduce-motion .tr-progress{display:none !important;}
+@media(prefers-reduced-motion: reduce){
+  .tr-mask .tr-line-i{transform:none !important;}
+  .tr-intro{display:none !important;}
+  .nav-links a::after{transition:none !important;}
+}
+</style>
+<style id="cinematic-skin">
+@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@1,500&display=swap');
+:root{
+  --bg:#050505 !important;
+  --background:#050505 !important;
+  --surface:#0e0b07 !important;
+  --surface-2:#15110a !important;
+  --card:#0e0b07 !important;
+  --fg:#f3ece0 !important;
+  --text:#f3ece0 !important;
+  --muted:#a99c88 !important;
+  --accent:#c9a24b !important;
+  --accent-light:#e3c77a !important;
+  --accent-2:#e3c77a !important;
+  --border:rgba(201,162,75,0.18) !important;
+}
+html,body{
+  background-color:#050505 !important;
+  color:#f3ece0 !important;
+  font-family:'Outfit',sans-serif !important;
+  -ms-overflow-style:none; scrollbar-width:none;
+}
+::-webkit-scrollbar{ width:0; height:0; display:none; }
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(201,162,75,0.16), transparent 42%),
+    radial-gradient(circle at 82% 88%, rgba(40,72,128,0.20), transparent 46%),
+    linear-gradient(135deg, #150d05 0%, #060509 55%, #03040a 100%);
+  background-size:160% 160%, 160% 160%, 100% 100%;
+  animation:cmWave 26s ease-in-out infinite alternate;
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(circle at 50% 42%, transparent 55%, rgba(0,0,0,0.55) 100%);
+}
+@keyframes cmWave{
+  0%{ background-position:0% 0%, 100% 100%, 0 0; }
+  100%{ background-position:100% 100%, 0% 0%, 0 0; }
+}
+h1,h2,h3,.hero-title,.page-title,.section-title,.logo-text,.display{
+  font-family:'Italiana',serif !important;
+  letter-spacing:0.5px !important;
+}
+.brand { font-size: 14px; font-weight: 600; letter-spacing: 5px; text-transform: uppercase; color:#fff; text-decoration:none; }
+.hero-title,h1{ color:#fff6ed !important; }
+a{ color:var(--accent-light) !important; }
+.navbar,.nav,header.navbar{
+  background:rgba(8,6,3,0.72) !important;
+  border-bottom:1px solid rgba(201,162,75,0.16) !important;
+  backdrop-filter:blur(14px) saturate(120%) !important;
+}
+.btn-primary,.cta,.primary,button.primary,.nav-cta,#navCta{
+  background:linear-gradient(135deg,#c9a24b,#e3c77a) !important;
+  color:#16120a !important;
+  border:none !important;
+}
+.card,.panel,.tile,.surface,.box,.feature,.feature-card{
+  background:rgba(20,16,10,0.66) !important;
+  border:1px solid rgba(201,162,75,0.16) !important;
+  backdrop-filter:blur(8px) !important;
+}
+@media (pointer:fine){
+  html,body{ cursor:none; }
+  a,button,input,textarea,select,label,.btn,[role="button"]{ cursor:none !important; }
+}
+.cm-cursor-inner{
+  position:fixed; top:0; left:0; width:6px; height:6px;
+  border:2px solid rgba(255,255,255,0.95); border-radius:50%;
+  transform:translate(-50%,-50%); pointer-events:none; z-index:99999;
+}
+.cm-cursor-outer{
+  position:fixed; top:0; left:0; width:40px; height:40px;
+  border:1.5px solid rgba(201,162,75,0.7); border-radius:50%;
+  transform:translate(-50%,-50%); pointer-events:none; z-index:99998;
+  transition:width .3s, height .3s, background .3s, border-color .3s;
+}
+@media (prefers-reduced-motion: reduce){
+  body::before{ animation:none !important; }
+}
+</style>
+<style id="storm-bg-css">
+  /* CryptoMath shared 3D storm background — reveal the fixed canvas behind content */
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  .bg-orbs { display: none !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+</style>
+    <link rel="stylesheet" href="cm-enhance.css">
+</head>
+<body>
+<div class="tr-intro" aria-hidden="true"><div class="tr-intro-logo"><span class="tr-sig">&#931;</span><span>CryptoMath</span></div></div><div class="tr-progress" aria-hidden="true"></div>
+    <!-- Added animated background orbs -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="brand">CryptoMath</a>
+        <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Menu"><span></span></button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a href="concepts.html" class="active" data-en="Learn" data-ar="تعلم">Learn</a>
+            <a href="path.html" data-en="Path" data-ar="المسار">Path</a>
+            <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+            <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+            <a href="quantum.html" data-en="Quantum" data-ar="الكم">Quantum</a>
+            <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+            <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+            <a href="about.html" data-en="About" data-ar="عن">About</a>
+            <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+            <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+            <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+            <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0">
+                <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+            </div>
+            <a href="login.html" class="nav-menu-auth nav-menu-login" data-en="Log In" data-ar="تسجيل الدخول">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta" data-en="Get Started" data-ar="ابدأ الآن">Get Started</a></div><div class="nav-actions"><a href="login.html" id="navLogin" class="nav-login" data-en="Log In" data-ar="تسجيل الدخول">Log In</a><a href="signup.html" id="navCta" class="nav-cta" data-en="Get Started" data-ar="ابدأ الآن">Get Started</a><div id="authButton"></div></div></nav>
+
+    <section class="page-hero">
+        <h1>Learn the Math</h1>
+        <p>Deep dive into the four fundamental mathematical concepts that power modern cryptography and blockchain technology.</p>
+    </section>
+
+    <div class="container">
+<div class="learn-intro reveal">
+<div class="li-emoji">🧭</div>
+<div>
+<h3 data-en="Learn by doing 🚀" data-ar="تعلّم بالممارسة 🚀">Learn by doing 🚀</h3>
+<p data-en="Each topic below comes with a clear explanation, a hands-on calculator, a short video to go deeper, and a quiz that gets trickier as you go. Take your time, experiment, and don’t worry about mistakes — that’s how you learn!" data-ar="كل موضوع أدناه يأتي مع شرح واضح، وآلة حاسبة تفاعلية، وفيديو قصير، واختبار يزداد صعوبة. جرّب ولا تقلق من الأخطاء!">Each topic below comes with a clear explanation, a hands-on calculator, a short video to go deeper, and a quiz that gets trickier as you go. Take your time, experiment, and don’t worry about mistakes — that’s how you learn!</p>
+</div>
+</div>
+        <!-- Modular Arithmetic -->
+<!-- CALC-START -->
+        <div class="concept-content calc-card reveal" id="sci-calc">
+            <div class="quiz-title">🧮 <span data-en="Scientific Calculator" data-ar="آلة حاسبة علمية">Scientific Calculator</span></div>
+            <p class="calc-hint" data-en="Crunch the numbers as you learn — supports sin, cos, tan, log, ln, √, powers, π, factorials, % and more. Tip: click the screen to use your keyboard too." data-ar="احسب أثناء التعلّم — يدعم جيب وجتا وظل ولوغارتم وجذر وأسّ وπ ومضروب و%. انقر الشاشة لاستخدام لوحة المفاتيح.">Crunch the numbers as you learn — supports sin, cos, tan, log, ln, √, powers, π, factorials, % and more. Tip: click the screen to use your keyboard too.</p>
+            <div class="calc-display" id="calcDisplay">
+                <div class="calc-expr" id="calcExpr"></div>
+                <div class="calc-result" id="calcResult">0</div>
+            </div>
+            <div class="calc-grid">
+                <button type="button" class="calc-btn mode" id="calcMode" onclick="calcToggleMode()">DEG</button>
+                <button type="button" class="calc-btn danger" onclick="calcClear()">C</button>
+                <button type="button" class="calc-btn fn" onclick="calcDelete()">⌫</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('(')">(</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns(')')">)</button>
+
+                <button type="button" class="calc-btn fn" onclick="calcIns('sin(')">sin</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('cos(')">cos</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('tan(')">tan</button>
+                <button type="button" class="calc-btn op" onclick="calcIns('^')">x^y</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('√(')">√</button>
+
+                <button type="button" class="calc-btn fn" onclick="calcIns('ln(')">ln</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('log(')">log</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('π')">π</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('e')">e</button>
+                <button type="button" class="calc-btn op" onclick="calcIns('!')">x!</button>
+
+                <button type="button" class="calc-btn" onclick="calcIns('7')">7</button>
+                <button type="button" class="calc-btn" onclick="calcIns('8')">8</button>
+                <button type="button" class="calc-btn" onclick="calcIns('9')">9</button>
+                <button type="button" class="calc-btn op" onclick="calcIns('÷')">÷</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('^2')">x²</button>
+
+                <button type="button" class="calc-btn" onclick="calcIns('4')">4</button>
+                <button type="button" class="calc-btn" onclick="calcIns('5')">5</button>
+                <button type="button" class="calc-btn" onclick="calcIns('6')">6</button>
+                <button type="button" class="calc-btn op" onclick="calcIns('×')">×</button>
+                <button type="button" class="calc-btn op" onclick="calcIns('%')">%</button>
+
+                <button type="button" class="calc-btn" onclick="calcIns('1')">1</button>
+                <button type="button" class="calc-btn" onclick="calcIns('2')">2</button>
+                <button type="button" class="calc-btn" onclick="calcIns('3')">3</button>
+                <button type="button" class="calc-btn op" onclick="calcIns('−')">−</button>
+                <button type="button" class="calc-btn fn" onclick="calcIns('Ans')">Ans</button>
+
+                <button type="button" class="calc-btn" onclick="calcIns('0')">0</button>
+                <button type="button" class="calc-btn" onclick="calcIns('.')">.</button>
+                <button type="button" class="calc-btn op" onclick="calcIns('+')">+</button>
+                <button type="button" class="calc-btn eq" style="grid-column:span 2" onclick="calcEquals()">=</button>
+            </div>
+        </div>
+<!-- CALC-END -->
+
+        <section id="modular" class="concept-section reveal">
+            <div class="concept-header">
+                <div class="concept-number">01</div>
+                <div class="concept-title">
+                    <h2>Modular Arithmetic</h2>
+                    <p>The foundation of modern cryptography</p>
+                </div>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">?</span> What is Modular Arithmetic?</h3>
+                <p>Modular arithmetic is like clock math. When the hour hand goes past 12, it wraps back to 1. In math terms, we're working with remainders after division. This simple concept is the foundation of nearly all modern encryption.</p>
+                <div class="formula-box">a mod n = remainder when a is divided by n</div>
+                <p>For example: 17 mod 5 = 2 (because 17 ÷ 5 = 3 remainder 2)</p>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">★</span> Key Properties</h3>
+                <ul>
+                    <li><strong>Addition:</strong> (a + b) mod n = ((a mod n) + (b mod n)) mod n</li>
+                    <li><strong>Multiplication:</strong> (a × b) mod n = ((a mod n) × (b mod n)) mod n</li>
+                    <li><strong>Exponentiation:</strong> Used in RSA encryption for secure key generation</li>
+                    <li><strong>One-way function:</strong> Easy to compute forward, nearly impossible to reverse</li>
+                </ul>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">▶</span> Try It Yourself</h3>
+                <div class="interactive-demo">
+                    <h4>Modular Arithmetic Calculator</h4>
+                    <div class="demo-input-group">
+                        <div class="demo-input">
+                            <label>Number (a)</label>
+                            <input type="number" id="mod-a" value="17" oninput="calculateMod()">
+                        </div>
+                        <div class="demo-input">
+                            <label>Modulus (n)</label>
+                            <input type="number" id="mod-n" value="5" oninput="calculateMod()">
+                        </div>
+                    </div>
+                    <div class="demo-result" id="mod-result">17 mod 5 = 2</div>
+                </div>
+
+                <div class="blockchain-box">
+                    <h4>Blockchain Application</h4>
+                    <p>In Bitcoin, modular arithmetic is used in ECDSA (Elliptic Curve Digital Signature Algorithm) to create and verify digital signatures. Every transaction you make is secured by these calculations.</p>
+                </div>
+            </div>
+        
+            <div class="fun-fact reveal">💡 <strong data-en="Did you know?" data-ar="هل تعلم؟">Did you know?</strong> <span data-en="Every time you send a text or open a website, modular arithmetic scrambles your data behind the scenes — billions of times a day." data-ar="في كل مرة ترسل رسالة أو تفتح موقعًا، يعمل الحساب المعياري على تشفير بياناتك ملايين المرات يومياً.">Every time you send a text or open a website, modular arithmetic scrambles your data behind the scenes — billions of times a day.</span></div>
+            <div class="concept-content video-card reveal">
+                <h3>🎬 <span data-en="Watch &amp; Learn" data-ar="شاهد وتعلّم">Watch &amp; Learn</span></h3>
+                <div class="video-wrap"><iframe src="https://www.youtube.com/embed/5OjZWSdxlU0" title="Tom Rocks Maths · How does Modular Arithmetic work?" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+                <p class="video-cap">Tom Rocks Maths · How does Modular Arithmetic work?</p>
+            </div>
+            <div class="concept-content quiz-card reveal">
+                <div class="quiz-title">🧠 <span data-en="Test Yourself" data-ar="اختبر نفسك">Test Yourself</span></div>
+                <div class="quiz-box" data-quiz="modular"></div>
+            </div>
+        </section>
+
+        <!-- Prime Numbers -->
+        <section id="primes" class="concept-section reveal">
+            <div class="concept-header">
+                <div class="concept-number">02</div>
+                <div class="concept-title">
+                    <h2>Prime Numbers</h2>
+                    <p>The atoms of mathematics</p>
+                </div>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">?</span> What are Prime Numbers?</h3>
+                <p>A prime number is a natural number greater than 1 that can only be divided evenly by 1 and itself. These seemingly simple numbers are the building blocks of all integers and form the foundation of cryptographic security.</p>
+                <div class="formula-box">2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31...</div>
+                <p>The beauty of primes: every integer greater than 1 can be uniquely expressed as a product of prime numbers (Fundamental Theorem of Arithmetic).</p>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">★</span> Why Primes Matter in Cryptography</h3>
+                <ul>
+                    <li><strong>RSA Encryption:</strong> Uses the product of two large primes (1024+ bits each)</li>
+                    <li><strong>One-way trap:</strong> Multiplying primes is easy; factoring their product is extremely hard</li>
+                    <li><strong>Key generation:</strong> Your private keys depend on prime number properties</li>
+                    <li><strong>Security guarantee:</strong> No known efficient algorithm can factor large semiprimes</li>
+                </ul>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">▶</span> Try It Yourself</h3>
+                <div class="interactive-demo">
+                    <h4>Prime Number Checker</h4>
+                    <div class="demo-input-group">
+                        <div class="demo-input" style="flex: 2;">
+                            <label>Enter a number</label>
+                            <input type="number" id="prime-check" value="97" oninput="checkPrime()">
+                        </div>
+                    </div>
+                    <div class="demo-result" id="prime-result">97 is PRIME</div>
+                </div>
+
+                <div class="blockchain-box">
+                    <h4>Blockchain Application</h4>
+                    <p>While Bitcoin uses elliptic curves (not RSA), prime numbers are still crucial. The secp256k1 curve used by Bitcoin is defined over a prime field with a 256-bit prime number.</p>
+                </div>
+            </div>
+        
+            <div class="fun-fact reveal">💡 <strong data-en="Did you know?" data-ar="هل تعلم؟">Did you know?</strong> <span data-en="There are infinitely many primes — Euclid proved it over 2,000 years ago, and we still rely on that fact to keep secrets today." data-ar="الأعداد الأولية لا نهاية لها — أثبت إقليدس ذلك قبل أكثر من ألفي عام، وما زلنا نستخدمها.">There are infinitely many primes — Euclid proved it over 2,000 years ago, and we still rely on that fact to keep secrets today.</span></div>
+            <div class="concept-content video-card reveal">
+                <h3>🎬 <span data-en="Watch &amp; Learn" data-ar="شاهد وتعلّم">Watch &amp; Learn</span></h3>
+                <div class="video-wrap"><iframe src="https://www.youtube.com/embed/f_Qan-eNT-g" title="TED-Ed · How Prime Numbers Keep the Internet Secure" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+                <p class="video-cap">TED-Ed · How Prime Numbers Keep the Internet Secure</p>
+            </div>
+            <div class="concept-content quiz-card reveal">
+                <div class="quiz-title">🧠 <span data-en="Test Yourself" data-ar="اختبر نفسك">Test Yourself</span></div>
+                <div class="quiz-box" data-quiz="primes"></div>
+            </div>
+        </section>
+
+        <!-- Discrete Logarithms -->
+        <section id="discrete" class="concept-section reveal">
+            <div class="concept-header">
+                <div class="concept-number">03</div>
+                <div class="concept-title">
+                    <h2>Discrete Logarithms</h2>
+                    <p>The one-way function</p>
+                </div>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">?</span> What are Discrete Logarithms?</h3>
+                <p>A discrete logarithm is the inverse of modular exponentiation. If g^x mod p = h, then x is the discrete logarithm of h to the base g, modulo p. The magic: computing g^x mod p is easy, but finding x from the result is incredibly hard.</p>
+                <div class="formula-box">Given g, p, and h: find x where g^x mod p = h</div>
+                <p>This asymmetry (easy one way, hard the other) is what makes public-key cryptography possible.</p>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">★</span> The Diffie-Hellman Key Exchange</h3>
+                <ul>
+                    <li><strong>Step 1:</strong> Alice and Bob agree on public values g and p</li>
+                    <li><strong>Step 2:</strong> Alice picks secret a, sends g^a mod p to Bob</li>
+                    <li><strong>Step 3:</strong> Bob picks secret b, sends g^b mod p to Alice</li>
+                    <li><strong>Step 4:</strong> Both compute (g^ab mod p) - the shared secret!</li>
+                </ul>
+                <p style="margin-top: 1rem;">Even if an attacker sees all public communication, they cannot compute the shared secret without solving the discrete log problem.</p>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">▶</span> Try It Yourself</h3>
+                <div class="interactive-demo">
+                    <h4>Modular Exponentiation Calculator</h4>
+                    <div class="demo-input-group">
+                        <div class="demo-input">
+                            <label>Base (g)</label>
+                            <input type="number" id="dlog-g" value="5" oninput="calculateDLog()">
+                        </div>
+                        <div class="demo-input">
+                            <label>Exponent (x)</label>
+                            <input type="number" id="dlog-x" value="3" oninput="calculateDLog()">
+                        </div>
+                        <div class="demo-input">
+                            <label>Modulus (p)</label>
+                            <input type="number" id="dlog-p" value="23" oninput="calculateDLog()">
+                        </div>
+                    </div>
+                    <div class="demo-result" id="dlog-result">5^3 mod 23 = 10</div>
+                </div>
+
+                <div class="blockchain-box">
+                    <h4>Blockchain Application</h4>
+                    <p>The discrete log problem on elliptic curves (ECDLP) is what secures your Bitcoin wallet. Your private key is essentially a secret exponent, and your public key is the result of elliptic curve multiplication - easy to compute, impossible to reverse.</p>
+                </div>
+            </div>
+        
+            <div class="fun-fact reveal">💡 <strong data-en="Did you know?" data-ar="هل تعلم؟">Did you know?</strong> <span data-en="Two strangers can agree on a secret key out in the open, while everyone watching still can’t figure it out. That’s the magic of discrete logarithms!" data-ar="يمكن لشخصين غريبين الاتفاق على مفتاح سري أمام الجميع دون أن يعرفه أحد. هذا سحر اللوغارتم المتقطع!">Two strangers can agree on a secret key out in the open, while everyone watching still can’t figure it out. That’s the magic of discrete logarithms!</span></div>
+            <div class="concept-content video-card reveal">
+                <h3>🎬 <span data-en="Watch &amp; Learn" data-ar="شاهد وتعلّم">Watch &amp; Learn</span></h3>
+                <div class="video-wrap"><iframe src="https://www.youtube.com/embed/SL7J8hPKEWY" title="Khan Academy · The Discrete Logarithm Problem" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+                <p class="video-cap">Khan Academy · The Discrete Logarithm Problem</p>
+            </div>
+            <div class="concept-content quiz-card reveal">
+                <div class="quiz-title">🧠 <span data-en="Test Yourself" data-ar="اختبر نفسك">Test Yourself</span></div>
+                <div class="quiz-box" data-quiz="dlog"></div>
+            </div>
+        </section>
+
+        <!-- Elliptic Curves -->
+        <section id="elliptic" class="concept-section reveal">
+            <div class="concept-header">
+                <div class="concept-number">04</div>
+                <div class="concept-title">
+                    <h2>Elliptic Curves</h2>
+                    <p>The modern standard</p>
+                </div>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">?</span> What are Elliptic Curves?</h3>
+                <p>An elliptic curve is a special type of curve defined by the equation y² = x³ + ax + b. When we combine this with modular arithmetic over a prime field, we get Elliptic Curve Cryptography (ECC) - the backbone of Bitcoin and Ethereum.</p>
+                <div class="formula-box">y² = x³ + ax + b (mod p)</div>
+                <p>ECC provides the same security as RSA with much smaller key sizes: a 256-bit ECC key ≈ 3072-bit RSA key.</p>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">★</span> Point Operations on Curves</h3>
+                <ul>
+                    <li><strong>Point Addition:</strong> Given two points P and Q, we can compute P + Q geometrically</li>
+                    <li><strong>Point Doubling:</strong> Computing P + P = 2P using the tangent line</li>
+                    <li><strong>Scalar Multiplication:</strong> Computing kP by repeated doubling and adding</li>
+                    <li><strong>ECDLP:</strong> Given P and Q = kP, finding k is computationally infeasible</li>
+                </ul>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">⛓</span> secp256k1: Bitcoin's Curve</h3>
+                <p>Bitcoin uses a specific elliptic curve called secp256k1, defined by:</p>
+                <div class="formula-box">y² = x³ + 7 (mod p)</div>
+                <p>Where p is a massive 256-bit prime. Your Bitcoin private key is a random 256-bit number k, and your public key is the point K = k × G, where G is the generator point.</p>
+
+                <div class="blockchain-box">
+                    <h4>Blockchain Application</h4>
+                    <p>Every Bitcoin address is derived from an elliptic curve public key. When you sign a transaction, you prove ownership of the private key without revealing it - this is the magic of ECDSA (Elliptic Curve Digital Signature Algorithm).</p>
+                </div>
+            </div>
+        
+            <div class="fun-fact reveal">💡 <strong data-en="Did you know?" data-ar="هل تعلم؟">Did you know?</strong> <span data-en="The same elliptic-curve math that protects Bitcoin also secures the little padlock 🔒 in your browser’s address bar." data-ar="نفس رياضيات المنحنى الإهليلجي التي تحمي بيتكوين تؤمّن القفل 🔒 في متصفحك.">The same elliptic-curve math that protects Bitcoin also secures the little padlock 🔒 in your browser’s address bar.</span></div>
+            <div class="concept-content video-card reveal">
+                <h3>🎬 <span data-en="Watch &amp; Learn" data-ar="شاهد وتعلّم">Watch &amp; Learn</span></h3>
+                <div class="video-wrap"><iframe src="https://www.youtube.com/embed/NF1pwjL9-DE" title="Computerphile · Elliptic Curves (Dr Mike Pound)" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+                <p class="video-cap">Computerphile · Elliptic Curves (Dr Mike Pound)</p>
+            </div>
+            <div class="concept-content quiz-card reveal">
+                <div class="quiz-title">🧠 <span data-en="Test Yourself" data-ar="اختبر نفسك">Test Yourself</span></div>
+                <div class="quiz-box" data-quiz="elliptic"></div>
+            </div>
+        
+        </section>
+
+        <section id="pqc" class="concept-section reveal">
+            <div class="concept-header">
+                <div class="concept-number">05</div>
+                <div class="concept-title">
+                    <h2 data-en="Post-Quantum Cryptographic Math" data-ar="رياضيات تشفير ما بعد الكم">Post-Quantum Cryptographic Math</h2>
+                    <p data-en="The math built to survive quantum computers" data-ar="الرياضيات المصممة لتصمد أمام الحواسيب الكمية">The math built to survive quantum computers</p>
+                </div>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">⚛</span> <span data-en="Why today’s encryption is in danger" data-ar="لماذا تشفير اليوم في خطر">Why today’s encryption is in danger</span></h3>
+                <p data-en="RSA and elliptic curves are safe today because reversing them (factoring huge numbers or solving discrete logs) would take normal computers billions of years. But a large quantum computer running Shor’s algorithm could do it in hours. That is the whole reason post-quantum cryptography exists." data-ar="تعتبر RSA والمنحنيات الإهليلجية آمنة اليوم لأن عكسها يستغرق ملايين السنين، لكن حاسوبًا كميًا يشغل خوارزمية شور قد يفعلها في ساعات.">RSA and elliptic curves are safe today because reversing them (factoring huge numbers or solving discrete logs) would take normal computers billions of years. But a large quantum computer running Shor’s algorithm could do it in hours. That is the whole reason post-quantum cryptography exists.</p>
+                <div class="formula-box">RSA &amp; ECC &nbsp;⟶&nbsp; broken by Shor’s algorithm on a quantum computer</div>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">▦</span> <span data-en="Lattices: hard problems in a grid of dots" data-ar="الشبكات: مسائل صعبة في شبكة نقاط">Lattices: hard problems in a grid of dots</span></h3>
+                <p data-en="Most post-quantum schemes are built on lattices — endless grids of points made by adding and subtracting a few vectors. The security comes from problems that are easy to state but brutally hard to solve, even for quantum computers." data-ar="تعتمد معظم أنظمة ما بعد الكم على الشبكات — شبكات لا نهائية من النقاط. أمانها يأتي من مسائل صعبة جداً حتى على الحواسيب الكمية.">Most post-quantum schemes are built on lattices — endless grids of points made by adding and subtracting a few vectors. The security comes from problems that are easy to state but brutally hard to solve, even for quantum computers.</p>
+                <ul>
+                    <li><strong>Shortest Vector Problem (SVP):</strong> <span data-en="in a huge grid of points, find the point closest to the origin. Easy to picture, incredibly hard to compute." data-ar="في شبكة ضخمة، أوجد أقرب نقطة للأصل — سهل التخيل، صعب الحساب.">in a huge grid of points, find the point closest to the origin. Easy to picture, incredibly hard to compute.</span></li>
+                    <li><strong>Learning With Errors (LWE):</strong> <span data-en="hide a secret inside many equations, then sprinkle in tiny random noise so the equations can’t be solved." data-ar="أخف سرًا داخل معادلات كثيرة، ثم أضف ضوضاء عشوائية صغيرة حتى يستحيل حلّها.">hide a secret inside many equations, then sprinkle in tiny random noise so the equations can’t be solved.</span></li>
+                </ul>
+                <div class="formula-box">b = A·s + e (mod q) &nbsp;—&nbsp; find secret s, hidden by tiny error e</div>
+            </div>
+
+            <div class="concept-content reveal">
+                <h3><span class="icon">🛡</span> <span data-en="The new standards" data-ar="المعايير الجديدة">The new standards</span></h3>
+                <p data-en="In 2024, the US standards body NIST published the first official post-quantum algorithms. These are already rolling out in browsers and messaging apps right now." data-ar="في 2024، نشرت هيئة المعايير الأمريكية NIST أول خوارزميات رسمية لما بعد الكم، وهي تنتشر بالفعل في المتصفحات وتطبيقات المراسلة.">In 2024, the US standards body NIST published the first official post-quantum algorithms. These are already rolling out in browsers and messaging apps right now.</p>
+                <ul>
+                    <li><strong>Kyber (ML-KEM):</strong> <span data-en="a lattice-based key exchange — how two devices agree on a secret quantum-safely." data-ar="تبادل مفاتيح قائم على الشبكات.">a lattice-based key exchange — how two devices agree on a secret quantum-safely.</span></li>
+                    <li><strong>Dilithium (ML-DSA):</strong> <span data-en="lattice-based digital signatures that prove who sent a message." data-ar="توقيعات رقمية قائمة على الشبكات.">lattice-based digital signatures that prove who sent a message.</span></li>
+                    <li><strong>SPHINCS+ (SLH-DSA):</strong> <span data-en="signatures built only from hash functions — a totally different backup approach." data-ar="توقيعات مبنية من دوال التجزئة فقط.">signatures built only from hash functions — a totally different backup approach.</span></li>
+                </ul>
+            </div>
+
+            <div class="fun-fact reveal">💡 <strong data-en="Did you know?" data-ar="هل تعلم؟">Did you know?</strong> <span data-en="Hackers are already storing today’s encrypted data, hoping to crack it with future quantum computers — a strategy called “harvest now, decrypt later.”" data-ar="يخزّن المخترقون بيانات اليوم المشفرة على أمل فكّها بحواسيب كمية مستقبلاً — تسمّى “احصد الآن وفك التشفير لاحقاً”.">Hackers are already storing today’s encrypted data, hoping to crack it with future quantum computers — a strategy called “harvest now, decrypt later.”</span></div>
+            <div class="concept-content video-card reveal">
+                <h3>🎬 <span data-en="Watch &amp; Learn" data-ar="شاهد وتعلّم">Watch &amp; Learn</span></h3>
+                <div class="video-wrap"><iframe src="https://www.youtube.com/embed/QDdOoYdb748" title="Chalk Talk · Lattice-Based Cryptography: The Tricky Math of Dots" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+                <p class="video-cap">Chalk Talk · Lattice-Based Cryptography: The Tricky Math of Dots</p>
+            </div>
+            <div class="concept-content quiz-card reveal">
+                <div class="quiz-title">🧠 <span data-en="Test Yourself" data-ar="اختبر نفسك">Test Yourself</span></div>
+                <div class="quiz-box" data-quiz="pqc"></div>
+            </div>
+                </section>
+
+    </div>
+
+    <footer>
+        <p>© 2025 CryptoMath Academy — <a href="mailto:feedback@cryptomath.com">feedback@cryptomath.com</a></p>
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyANsJMtnMV2YsMNKUOPMJTYxyYy1JT8-Y4",
+            authDomain: "cryptomath-8acd5.firebaseapp.com",
+            projectId: "cryptomath-8acd5",
+            storageBucket: "cryptomath-8acd5.firebasestorage.app",
+            messagingSenderId: "266698901424",
+            appId: "1:266698901424:web:3d6d0192b16ccdf4f8b875",
+            measurementId: "G-SYZCXWRZ1K"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // Interactive calculators
+        function calculateMod() {
+            const a = parseInt(document.getElementById('mod-a').value) || 0;
+            const n = parseInt(document.getElementById('mod-n').value) || 1;
+            if (n === 0) {
+                document.getElementById('mod-result').textContent = 'Cannot divide by 0';
+                return;
+            }
+            const result = ((a % n) + n) % n;
+            document.getElementById('mod-result').textContent = `${a} mod ${n} = ${result}`;
+        }
+
+        function checkPrime() {
+            const num = parseInt(document.getElementById('prime-check').value) || 0;
+            if (num < 2) {
+                document.getElementById('prime-result').textContent = `${num} is NOT prime`;
+                return;
+            }
+            let isPrime = true;
+            for (let i = 2; i <= Math.sqrt(num); i++) {
+                if (num % i === 0) {
+                    isPrime = false;
+                    break;
+                }
+            }
+            document.getElementById('prime-result').textContent = isPrime ? 
+                `${num} is PRIME ✓` : `${num} is NOT prime (divisible by ${findSmallestFactor(num)})`;
+        }
+
+        function findSmallestFactor(n) {
+            for (let i = 2; i <= Math.sqrt(n); i++) {
+                if (n % i === 0) return i;
+            }
+            return n;
+        }
+
+        function calculateDLog() {
+            const g = parseInt(document.getElementById('dlog-g').value) || 1;
+            const x = parseInt(document.getElementById('dlog-x').value) || 1;
+            const p = parseInt(document.getElementById('dlog-p').value) || 1;
+            
+            let result = 1;
+            let base = g % p;
+            let exp = x;
+            while (exp > 0) {
+                if (exp % 2 === 1) result = (result * base) % p;
+                exp = Math.floor(exp / 2);
+                base = (base * base) % p;
+            }
+            
+            document.getElementById('dlog-result').textContent = `${g}^${x} mod ${p} = ${result}`;
+        }
+
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            const windowHeight = window.innerHeight;
+            
+            reveals.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const revealPoint = 150;
+                
+                if (elementTop < windowHeight - revealPoint) {
+                    element.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll();
+
+        calculateMod();
+        checkPrime();
+        calculateDLog();
+    </script>
+
+
+<script id="ui-universal">
+(function(){
+  window.toggleMobileNav=function(){var n=document.getElementById("navLinks");if(n)n.classList.toggle("open");};
+  if(typeof window.toggleLanguage!=="function"){
+    window.currentLang=localStorage.getItem("cryptomath_lang")||"en";
+    window.applyLanguage=window.applyLanguage||function(){var l=window.currentLang;document.documentElement.dir=l==="ar"?"rtl":"ltr";document.documentElement.lang=l;var en=document.getElementById("lang-en"),ar=document.getElementById("lang-ar");if(en&&ar){en.classList.toggle("active",l==="en");ar.classList.toggle("active",l==="ar");}document.querySelectorAll("[data-en][data-ar]").forEach(function(el){var t=el.getAttribute("data-"+l);if(t)el.innerHTML=t;});};
+    window.toggleLanguage=function(){window.currentLang=window.currentLang==="en"?"ar":"en";localStorage.setItem("cryptomath_lang",window.currentLang);window.applyLanguage();};
+    window.addEventListener("load",window.applyLanguage);
+  }
+  if(localStorage.getItem("cryptomath_reduce_motion")==="1"){document.addEventListener("DOMContentLoaded",function(){document.body.classList.add("reduce-motion");});}
+  document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest(".nav-links a");if(a){var n=document.getElementById("navLinks");if(n)n.classList.remove("open");}});
+  window.addEventListener("scroll",function(){var nb=document.getElementById("navbar");if(nb)nb.classList.toggle("scrolled",window.scrollY>20);});
+})();
+</script>
+<script id="learn-quiz">
+(function(){
+  var UI = {
+    qof:{en:'Question',ar:'\u0633\u0624\u0627\u0644'},
+    diff:{Easy:{en:'Easy',ar:'\u0633\u0647\u0644'},Medium:{en:'Medium',ar:'\u0645\u062a\u0648\u0633\u0637'},Hard:{en:'Hard',ar:'\u0635\u0639\u0628'}},
+    correct:{en:'Correct! \ud83c\udf89',ar:'\u0635\u062d\u064a\u062d! \ud83c\udf89'},
+    wrong:{en:'Not quite \u2014',ar:'\u0644\u064a\u0633 \u062a\u0645\u0627\u0645\u0627\u064b \u2014'},
+    next:{en:'Next \u2192',ar:'\u0627\u0644\u062a\u0627\u0644\u064a \u2192'},
+    finish:{en:'See results',ar:'\u0627\u0644\u0646\u062a\u064a\u062c\u0629'},
+    retry:{en:'Try again \ud83d\udd04',ar:'\u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u0627\u064b \ud83d\udd04'},
+    perfect:{en:'Perfect score \u2014 you\u2019ve truly mastered this topic!',ar:'\u0639\u0644\u0627\u0645\u0629 \u0643\u0627\u0645\u0644\u0629 \u2014 \u0644\u0642\u062f \u0623\u062a\u0642\u0646\u062a \u0627\u0644\u0645\u0648\u0636\u0648\u0639!'},
+    good:{en:'Nice work! Review the ones you missed and try again.',ar:'\u0639\u0645\u0644 \u062c\u064a\u062f! \u0631\u0627\u062c\u0639 \u0645\u0627 \u0641\u0627\u062a\u0643 \u0648\u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u0627\u064b.'},
+    keep:{en:'Keep going \u2014 rewatch the video above and give it another shot!',ar:'\u0627\u0633\u062a\u0645\u0631 \u2014 \u0623\u0639\u062f \u0645\u0634\u0627\u0647\u062f\u0629 \u0627\u0644\u0641\u064a\u062f\u064a\u0648 \u0648\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649!'}
+  };
+  function L(o){ var lang=(window.currentLang||'en'); return (o && typeof o==='object') ? (o[lang]||o.en) : o; }
+  var DATA = {
+    modular:[
+      {d:'Easy',q:'What is 14 mod 12?',o:['2','14','26','1'],c:0,e:'14 = 1\u00d712 + 2, so the remainder is 2.'},
+      {d:'Easy',q:'Modular arithmetic is most often compared to\u2026',o:['A clock','A ruler','A thermometer','A camera'],c:0,e:'Numbers wrap around like the hours on a clock.'},
+      {d:'Medium',q:'What is 17 mod 5?',o:['2','3','1','4'],c:0,e:'17 = 3\u00d75 + 2.'},
+      {d:'Medium',q:'Which property makes modular exponentiation great for encryption?',o:['Easy forward, hard to reverse','It is always even','It deletes remainders','It only works on primes'],c:0,e:'One-way (trapdoor) behaviour is the heart of public-key crypto.'},
+      {d:'Hard',q:'Compute (7 \u00d7 8) mod 9.',o:['2','5','1','8'],c:0,e:'56 = 6\u00d79 + 2.'}
+    ],
+    primes:[
+      {d:'Easy',q:'Which of these is a prime number?',o:['7','9','15','21'],c:0,e:'7 is divisible only by 1 and itself.'},
+      {d:'Easy',q:'A prime number has exactly how many positive divisors?',o:['2','1','3','4'],c:0,e:'Exactly two: 1 and the number itself.'},
+      {d:'Medium',q:'Why are primes the backbone of RSA?',o:['Multiplying is easy but factoring the product is hard','They are always odd','They make numbers bigger','They cannot be encrypted'],c:0,e:'RSA relies on the difficulty of factoring large semiprimes.'},
+      {d:'Medium',q:'A number that is the product of exactly two primes is called\u2026',o:['A semiprime','A perfect number','A composite root','A modulus'],c:0,e:'RSA uses a semiprime n = p \u00d7 q.'},
+      {d:'Hard',q:'Which of these is NOT prime?',o:['91','89','83','97'],c:0,e:'91 = 7 \u00d7 13, so it is composite.'}
+    ],
+    dlog:[
+      {d:'Easy',q:'Diffie\u2013Hellman lets two people create a shared\u2026',o:['Secret key','Public website','Password list','Prime number'],c:0,e:'A shared secret, created right out in the open.'},
+      {d:'Easy',q:'The discrete log problem is hard in which direction?',o:['Finding the exponent','Computing the power','Adding numbers','Multiplying numbers'],c:0,e:'Computing g^x is easy; finding x from the result is hard.'},
+      {d:'Medium',q:'Compute 5^3 mod 23.',o:['10','15','8','2'],c:0,e:'5^3 = 125 = 5\u00d723 + 10.'},
+      {d:'Medium',q:'Modular exponentiation behaves like which kind of function?',o:['A one-way (trapdoor) function','A linear function','A random function','A fully reversible function'],c:0,e:'Easy one way, hard to invert \u2014 a trapdoor.'},
+      {d:'Hard',q:'Which algorithm breaks discrete logs on a quantum computer?',o:['Shor\u2019s algorithm','Grover\u2019s algorithm','Euclid\u2019s algorithm','Dijkstra\u2019s algorithm'],c:0,e:'Shor\u2019s algorithm solves both discrete logs and factoring efficiently.'}
+    ],
+    elliptic:[
+      {d:'Easy',q:'Elliptic curve cryptography helps secure\u2026',o:['Bitcoin transactions','Email spam','Only image files','Nothing real'],c:0,e:'ECDSA secures Bitcoin, TLS and much more.'},
+      {d:'Easy',q:'A typical elliptic curve equation looks like\u2026',o:['y\u00b2 = x\u00b3 + ax + b','y = mx + c','x\u00b2 + y\u00b2 = r\u00b2','y = x\u00b2'],c:0,e:'That is the Weierstrass form used in crypto.'},
+      {d:'Medium',q:'Compared with RSA, ECC reaches the same security with\u2026',o:['Smaller keys','Bigger keys','No keys at all','Only symmetric keys'],c:0,e:'256-bit ECC \u2248 3072-bit RSA.'},
+      {d:'Medium',q:'The core operation on an elliptic curve is\u2026',o:['Point addition','Long division','Matrix inversion','Bubble sort'],c:0,e:'Points are \u201cadded\u201d using a geometric rule.'},
+      {d:'Hard',q:'Which curve does Bitcoin use for its signatures?',o:['secp256k1','Curve25519','P-521','Edwards448'],c:0,e:'Bitcoin uses the secp256k1 curve.'}
+    ],
+    pqc:[
+      {d:'Easy',q:'Post-quantum cryptography is designed to resist\u2026',o:['Quantum computers','Power cuts','Slow internet','Spam email'],c:0,e:'It stays secure even against future quantum attacks.'},
+      {d:'Easy',q:'Lattice-based cryptography is built on patterns of\u2026',o:['Dots/points in space','Sound waves','Colours','Letters'],c:0,e:'A lattice is a grid of points generated by vectors.'},
+      {d:'Medium',q:'Which hard problem underlies many lattice schemes?',o:['Shortest Vector Problem','Travelling Salesman','Bubble Sort','Graph colouring'],c:0,e:'SVP and LWE are believed hard even for quantum computers.'},
+      {d:'Medium',q:'\u201cLearning With Errors\u201d (LWE) hides a secret by adding\u2026',o:['Small random noise','Extra zeros','More primes','Bigger fonts'],c:0,e:'The tiny noise is what makes the equations unsolvable.'},
+      {d:'Hard',q:'Which NIST-standardised algorithm is a lattice-based key exchange?',o:['Kyber (ML-KEM)','RSA-2048','ECDSA','AES-256'],c:0,e:'CRYSTALS-Kyber (ML-KEM) is the NIST post-quantum KEM standard.'}
+    ]
+  };
+  var LETTERS=['A','B','C','D','E'];
+  function initQuiz(box){
+    var qs=DATA[box.getAttribute('data-quiz')];
+    if(!qs){return;}
+    var state={i:0,score:0};
+    function drawQuestion(){
+      box.dataset.locked='';
+      var q=qs[state.i];
+      box.innerHTML='';
+      var head=document.createElement('div'); head.className='quiz-head';
+      head.innerHTML='<span class="quiz-step">'+L(UI.qof)+' '+(state.i+1)+' / '+qs.length+'</span><span class="quiz-diff diff-'+q.d.toLowerCase()+'">'+L(UI.diff[q.d])+'</span>';
+      box.appendChild(head);
+      var bar=document.createElement('div'); bar.className='quiz-bar';
+      var fill=document.createElement('div'); fill.className='quiz-bar-fill'; fill.style.width=(state.i/qs.length*100)+'%';
+      bar.appendChild(fill); box.appendChild(bar);
+      var qd=document.createElement('div'); qd.className='quiz-q'; qd.textContent=q.q; box.appendChild(qd);
+      var opts=document.createElement('div'); opts.className='quiz-opts';
+      q.o.forEach(function(text,idx){
+        var b=document.createElement('button'); b.type='button'; b.className='quiz-opt';
+        b.setAttribute('data-letter',LETTERS[idx]); b.textContent=text;
+        b.addEventListener('click',function(){ onAnswer(idx,q,opts); });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      var fb=document.createElement('div'); fb.className='quiz-feedback'; fb.style.display='none'; box.appendChild(fb);
+      var act=document.createElement('div'); act.className='quiz-actions'; act.style.display='none';
+      var nb=document.createElement('button'); nb.type='button'; nb.className='quiz-next';
+      nb.textContent=(state.i===qs.length-1)?L(UI.finish):L(UI.next);
+      nb.addEventListener('click',function(){ state.i++; if(state.i>=qs.length){drawScore();}else{drawQuestion();} });
+      act.appendChild(nb); box.appendChild(act);
+    }
+    function onAnswer(idx,q,opts){
+      if(box.dataset.locked==='1'){return;} box.dataset.locked='1';
+      var ok=(idx===q.c); if(ok){state.score++;}
+      Array.prototype.forEach.call(opts.children,function(b,bi){
+        b.disabled=true;
+        if(bi===q.c){b.classList.add('correct');}
+        if(bi===idx && !ok){b.classList.add('wrong');}
+      });
+      var fb=box.querySelector('.quiz-feedback'); fb.style.display='block';
+      fb.className='quiz-feedback '+(ok?'good':'bad');
+      fb.innerHTML='<strong>'+(ok?L(UI.correct):L(UI.wrong))+'<\/strong> '+q.e;
+      box.querySelector('.quiz-actions').style.display='block';
+    }
+    function drawScore(){
+      var pct=state.score/qs.length;
+      try{if(window.Gamify)window.Gamify.quizDone(box.getAttribute("data-quiz"),state.score,qs.length);}catch(e){}
+      var emo=(pct===1)?'\ud83c\udfc6':(pct>=0.6?'\ud83c\udf89':'\ud83d\udcaa');
+      var msg=(pct===1)?L(UI.perfect):(pct>=0.6?L(UI.good):L(UI.keep));
+      box.innerHTML='';
+      var wrap=document.createElement('div'); wrap.className='quiz-score';
+      wrap.innerHTML='<div class="quiz-score-emoji">'+emo+'</div><div class="quiz-score-num">'+state.score+' / '+qs.length+'</div><p>'+msg+'</p>';
+      var rb=document.createElement('button'); rb.type='button'; rb.className='quiz-next'; rb.textContent=L(UI.retry);
+      rb.addEventListener('click',function(){ state.i=0; state.score=0; drawQuestion(); });
+      wrap.appendChild(rb); box.appendChild(wrap);
+    }
+    drawQuestion();
+  }
+  function initAll(){ document.querySelectorAll('.quiz-box').forEach(initQuiz); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',initAll); } else { initAll(); }
+})();
+</script>
+<script id="calc-js">
+(function(){
+  var calcBuf='', calcLastEq=false, calcDeg=true;
+  window.calcAns=0;
+  function el(id){return document.getElementById(id);}
+  function render(){var e=el('calcExpr'); if(e){e.textContent=calcBuf;}}
+  window.calcToggleMode=function(){calcDeg=!calcDeg; var m=el('calcMode'); if(m){m.textContent=calcDeg?'DEG':'RAD';}};
+  window.calcClear=function(){calcBuf=''; calcLastEq=false; var r=el('calcResult'); if(r){r.textContent='0';} render();};
+  window.calcDelete=function(){if(calcLastEq){calcClear();return;} calcBuf=calcBuf.slice(0,-1); render();};
+  window.calcIns=function(tok){
+    if(calcLastEq){
+      var fresh=/^[0-9.]/.test(tok)||tok.slice(-1)==='('||tok==='\u03c0'||tok==='e'||tok==='Ans';
+      if(fresh){calcBuf='';}
+      calcLastEq=false;
+    }
+    calcBuf+=tok; render();
+  };
+  function fact(n){ if(n<0||n!==Math.floor(n)){throw 'fact';} if(n>170){return Infinity;} var r=1; for(var i=2;i<=n;i++){r*=i;} return r; }
+  function fn(name,x){
+    switch(name){
+      case 'sin': return Math.sin(calcDeg?x*Math.PI/180:x);
+      case 'cos': return Math.cos(calcDeg?x*Math.PI/180:x);
+      case 'tan': return Math.tan(calcDeg?x*Math.PI/180:x);
+      case 'asin': return calcDeg?Math.asin(x)*180/Math.PI:Math.asin(x);
+      case 'acos': return calcDeg?Math.acos(x)*180/Math.PI:Math.acos(x);
+      case 'atan': return calcDeg?Math.atan(x)*180/Math.PI:Math.atan(x);
+      case 'ln': return Math.log(x);
+      case 'log': return Math.log(x)/Math.LN10;
+      case 'sqrt': return Math.sqrt(x);
+      case 'abs': return Math.abs(x);
+      case 'exp': return Math.exp(x);
+      default: throw 'fn';
+    }
+  }
+  function tokenize(s){
+    var t=[],i=0,n=s.length;
+    function dig(c){return c>='0'&&c<='9';}
+    function let_(c){return /[a-zA-Z]/.test(c);}
+    while(i<n){
+      var c=s[i];
+      if(c===' '){i++;continue;}
+      if(dig(c)||c==='.'){var num='';while(i<n&&(dig(s[i])||s[i]==='.')){num+=s[i++];} t.push({t:'num',v:parseFloat(num)});continue;}
+      if(let_(c)){var id='';while(i<n&&let_(s[i])){id+=s[i++];} var low=id.toLowerCase();
+        if(low==='pi'){t.push({t:'val',v:Math.PI});}
+        else if(low==='e'){t.push({t:'val',v:Math.E});}
+        else{t.push({t:'func',v:low});}
+        continue;}
+      if('+-*/%^'.indexOf(c)>=0){t.push({t:'op',v:c});i++;continue;}
+      if(c==='('){t.push({t:'lp'});i++;continue;}
+      if(c===')'){t.push({t:'rp'});i++;continue;}
+      if(c==='!'){t.push({t:'fact'});i++;continue;}
+      throw 'char';
+    }
+    return t;
+  }
+  function prep(tokens){
+    var out=[];
+    for(var i=0;i<tokens.length;i++){
+      var tk=tokens[i], prev=out[out.length-1];
+      if(tk.t==='op'&&tk.v==='-'&&(!prev||prev.t==='op'||prev.t==='lp')){out.push({t:'op',v:'u-'});continue;}
+      if(tk.t==='op'&&tk.v==='+'&&(!prev||prev.t==='op'||prev.t==='lp')){continue;}
+      if(prev&&(prev.t==='num'||prev.t==='val'||prev.t==='rp'||prev.t==='fact')&&(tk.t==='num'||tk.t==='val'||tk.t==='func'||tk.t==='lp')){out.push({t:'op',v:'*'});}
+      out.push(tk);
+    }
+    return out;
+  }
+  var PREC={'u-':5,'^':4,'*':3,'/':3,'%':3,'+':2,'-':2};
+  var RIGHT={'^':true,'u-':true};
+  function toRPN(tokens){
+    var out=[],st=[];
+    for(var i=0;i<tokens.length;i++){
+      var tk=tokens[i];
+      if(tk.t==='num'||tk.t==='val'){out.push(tk);}
+      else if(tk.t==='func'){st.push(tk);}
+      else if(tk.t==='fact'){out.push(tk);}
+      else if(tk.t==='op'){
+        while(st.length){var top=st[st.length-1];
+          if(top.t==='op'&&(RIGHT[tk.v]?PREC[top.v]>PREC[tk.v]:PREC[top.v]>=PREC[tk.v])){out.push(st.pop());}
+          else{break;}
+        }
+        st.push(tk);
+      }
+      else if(tk.t==='lp'){st.push(tk);}
+      else if(tk.t==='rp'){
+        while(st.length&&st[st.length-1].t!=='lp'){out.push(st.pop());}
+        if(!st.length){throw 'paren';}
+        st.pop();
+        if(st.length&&st[st.length-1].t==='func'){out.push(st.pop());}
+      }
+    }
+    while(st.length){var x=st.pop(); if(x.t==='lp'){throw 'paren';} out.push(x);}
+    return out;
+  }
+  function evalRPN(out){
+    var st=[];
+    for(var i=0;i<out.length;i++){
+      var tk=out[i];
+      if(tk.t==='num'||tk.t==='val'){st.push(tk.v);}
+      else if(tk.t==='fact'){st.push(fact(st.pop()));}
+      else if(tk.t==='func'){st.push(fn(tk.v,st.pop()));}
+      else if(tk.t==='op'){
+        if(tk.v==='u-'){st.push(-st.pop());}
+        else{var b=st.pop(),a=st.pop();
+          st.push(tk.v==='+'?a+b:tk.v==='-'?a-b:tk.v==='*'?a*b:tk.v==='/'?a/b:tk.v==='%'?a%b:tk.v==='^'?Math.pow(a,b):NaN);}
+      }
+    }
+    if(st.length!==1){throw 'bad';}
+    return st[0];
+  }
+  function compute(expr){
+    var s=expr
+      .replace(/Ans/gi,'('+(window.calcAns||0)+')')
+      .replace(/\u00d7/g,'*').replace(/\u00f7/g,'/').replace(/\u2212/g,'-')
+      .replace(/\u221a/g,'sqrt').replace(/\u03c0/g,'PI');
+    return evalRPN(toRPN(prep(tokenize(s))));
+  }
+  function fmt(r){
+    if(r===null||r===undefined||!isFinite(r)){throw 'inf';}
+    var v=parseFloat(r.toPrecision(12));
+    return String(v);
+  }
+  window.calcEquals=function(){
+    try{if(window.Gamify&&window.Gamify.markCalc)window.Gamify.markCalc();}catch(e){}
+    var lang=(window.currentLang||'en');
+    try{
+      var r=compute(calcBuf||'0');
+      var s=fmt(r);
+      el('calcResult').textContent=s;
+      window.calcAns=r;
+      calcBuf=s; calcLastEq=true; render();
+    }catch(err){
+      el('calcResult').textContent=(lang==='ar'?'\u062e\u0637\u0623':'Error');
+    }
+  };
+  function init(){
+    var d=el('calcDisplay'); if(!d){return;}
+    d.setAttribute('tabindex','0');
+    d.addEventListener('keydown',function(e){
+      var k=e.key;
+      if(/^[0-9.]$/.test(k)){calcIns(k);}
+      else if(k==='+'){calcIns('+');}
+      else if(k==='-'){calcIns('\u2212');}
+      else if(k==='*'){calcIns('\u00d7');}
+      else if(k==='/'){calcIns('\u00f7');}
+      else if(k==='^'){calcIns('^');}
+      else if(k==='%'){calcIns('%');}
+      else if(k==='!'){calcIns('!');}
+      else if(k==='('||k===')'){calcIns(k);}
+      else if(k==='Enter'||k==='='){calcEquals();}
+      else if(k==='Backspace'){calcDelete();}
+      else if(k==='Escape'){calcClear();}
+      else{return;}
+      e.preventDefault();
+    });
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+
+<script id="gamify-js">
+(function(){
+  if(window.__gmfInit) return; window.__gmfInit=true;
+  var KEY='cryptomath_user', GOAL=100, TOPICS_TOTAL=5;
+  var BADGES=[
+    {id:'starter',e:'\u{1F331}',en:'First Steps',ar:'\u0627\u0644\u0628\u062F\u0627\u064A\u0629'},
+    {id:'streak3',e:'\u{1F525}',en:'3-Day Streak',ar:'\u0633\u0644\u0633\u0644\u0629 3 \u0623\u064A\u0627\u0645'},
+    {id:'streak7',e:'\u26A1',en:'7-Day Streak',ar:'\u0633\u0644\u0633\u0644\u0629 7 \u0623\u064A\u0627\u0645'},
+    {id:'streak30',e:'\u{1F3C6}',en:'30-Day Streak',ar:'\u0633\u0644\u0633\u0644\u0629 30 \u064A\u0648\u0645'},
+    {id:'lvl5',e:'\u2B50',en:'Level 5',ar:'\u0627\u0644\u0645\u0633\u062A\u0648\u0649 5'},
+    {id:'lvl10',e:'\u{1F31F}',en:'Level 10',ar:'\u0627\u0644\u0645\u0633\u062A\u0648\u0649 10'},
+    {id:'quiz',e:'\u{1F9E0}',en:'Quiz Ace',ar:'\u0628\u0637\u0644 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631'},
+    {id:'scholar',e:'\u{1F393}',en:'All Topics',ar:'\u0643\u0644 \u0627\u0644\u0645\u0648\u0627\u0636\u064A\u0639'},
+    {id:'calc',e:'\u{1F9EE}',en:'Calculator',ar:'\u0627\u0644\u0622\u0644\u0629 \u0627\u0644\u062D\u0627\u0633\u0628\u0629'},
+    {id:'grind',e:'\u{1F4AA}',en:'10 Challenges',ar:'10 \u062A\u062D\u062F\u064A\u0627\u062A'}
+  ];
+  function lang(){return window.currentLang||localStorage.getItem('cryptomath_lang')||'en';}
+  function GL(en,ar){return lang()==='ar'?ar:en;}
+  function today(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+  function ymd(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+  function load(){try{var s=localStorage.getItem(KEY);var u=s?JSON.parse(s):{};if(!u||typeof u!=='object')u={};return u;}catch(e){return {};}}
+  function save(u){try{localStorage.setItem(KEY,JSON.stringify(u));}catch(e){}}
+  function lvl(xp){return Math.floor((xp||0)/500)+1;}
+  function norm(u){u.xp=u.xp||0;u.level=lvl(u.xp);u.streak=u.streak||0;u.bestStreak=u.bestStreak||0;u.badges=u.badges||[];u.topics=u.topics||[];u.quizScores=u.quizScores||{};u.flags=u.flags||{};u.challengesCompleted=u.challengesCompleted||0;return u;}
+
+  function boot(){
+    var u=norm(load());var t=today();
+    if(u.lastActive!==t){
+      var y=new Date();y.setDate(y.getDate()-1);
+      if(u.lastActive===ymd(y)){u.streak=(u.streak||0)+1;}else{u.streak=1;}
+      if(u.streak>u.bestStreak)u.bestStreak=u.streak;
+      u.lastActive=t;save(u);
+    }
+    if(u.dailyVisitDate!==t){u.dailyVisitDate=t;save(u);addXP(10,GL('Daily visit','\u0632\u064A\u0627\u0631\u0629 \u064A\u0648\u0645\u064A\u0629'));}
+    checkBadges(u);
+  }
+
+  function addXP(n,reason){
+    var u=norm(load());var t=today();
+    if(u.dailyDate!==t){u.dailyXP=0;u.dailyDate=t;}
+    var old=lvl(u.xp);
+    u.xp=(u.xp||0)+n;u.dailyXP=(u.dailyXP||0)+n;u.level=lvl(u.xp);
+    save(u);
+    toastXP(n,reason);
+    if(u.level>old)setTimeout(function(){toast('\u{1F389}',GL('Level '+u.level+'!','\u0627\u0644\u0645\u0633\u062A\u0648\u0649 '+u.level+'!'),'');},450);
+    checkBadges(u);render();
+  }
+  function completeTopic(id){if(!id)return;var u=norm(load());if(u.topics.indexOf(id)<0){u.topics.push(id);save(u);addXP(40,GL('Topic complete','\u0627\u0643\u062A\u0645\u0644 \u0627\u0644\u0645\u0648\u0636\u0648\u0639'));}}
+  function quizDone(topic,score,total){if(topic&&total>0){var uu=norm(load());var pc=Math.round(score/total*100);if(!(uu.quizScores[topic]>=pc)){uu.quizScores[topic]=pc;save(uu);}}if(score>0)addXP(score*20,GL('Quiz +'+(score*20),'\u0627\u062E\u062A\u0628\u0627\u0631 +'+(score*20)));if(score===total){var u=norm(load());u.flags.pquiz=true;save(u);checkBadges(u);}completeTopic(topic);}
+  function markCalc(){var u=norm(load());if(!u.flags.calc){u.flags.calc=true;save(u);addXP(10,GL('Calculator used','\u062A\u0645 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0627\u0644\u0622\u0644\u0629'));}}
+
+  function unlocked(u,id){
+    var b=u.bestStreak||0,L=u.level||1;
+    switch(id){
+      case 'starter':return (u.xp||0)>0;
+      case 'streak3':return b>=3; case 'streak7':return b>=7; case 'streak30':return b>=30;
+      case 'lvl5':return L>=5; case 'lvl10':return L>=10;
+      case 'quiz':return !!(u.flags&&u.flags.pquiz);
+      case 'scholar':return (u.topics||[]).length>=TOPICS_TOTAL;
+      case 'calc':return !!(u.flags&&u.flags.calc);
+      case 'grind':return (u.challengesCompleted||0)>=10;
+    }
+    return false;
+  }
+  function checkBadges(u){u=norm(u||load());var changed=false;for(var i=0;i<BADGES.length;i++){var bd=BADGES[i];if(unlocked(u,bd.id)&&u.badges.indexOf(bd.id)<0){u.badges.push(bd.id);changed=true;setTimeout((function(b){return function(){toast(b.e,GL('Badge: '+b.en,'\u0648\u0633\u0627\u0645: '+b.ar),'badge');};})(bd),300);}}if(changed)save(u);return u;}
+
+  var chip,overlay,panel,toasts;
+  function build(){
+    toasts=document.createElement('div');toasts.className='gmf-toasts';document.body.appendChild(toasts);
+    chip=document.createElement('button');chip.className='gmf-chip';chip.type='button';chip.setAttribute('aria-label','Progress');
+    chip.innerHTML='<span class="gmf-fire">\u{1F525}</span><span id="gmfStreak">0</span><span class="gmf-sep"></span><span class="gmf-lv" id="gmfLv">Lv 1</span>';
+    chip.addEventListener('click',open);document.body.appendChild(chip);
+    overlay=document.createElement('div');overlay.className='gmf-overlay';overlay.addEventListener('click',close);document.body.appendChild(overlay);
+    panel=document.createElement('div');panel.className='gmf-panel';panel.setAttribute('role','dialog');document.body.appendChild(panel);
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  }
+  function open(){render();overlay.classList.add('open');panel.classList.add('open');}
+  function close(){overlay.classList.remove('open');panel.classList.remove('open');}
+
+  function render(){
+    try{
+      var u=norm(load());
+      var into=(u.xp||0)-(u.level-1)*500;var pct=Math.max(0,Math.min(100,into/500*100));
+      if(chip){var st=document.getElementById('gmfStreak');if(st)st.textContent=u.streak||0;var lv=document.getElementById('gmfLv');if(lv)lv.textContent=GL('Lv ','\u0645 ')+u.level;}
+      if(!panel)return;
+      var dxp=(u.dailyDate===today())?(u.dailyXP||0):0;var dpct=Math.max(0,Math.min(100,dxp/GOAL*100));
+      var deg=pct/100*360;
+      var bh='';for(var i=0;i<BADGES.length;i++){var bd=BADGES[i];var on=u.badges.indexOf(bd.id)>=0;bh+='<div class="gmf-badge'+(on?' un':'')+'"><div class="gmf-be">'+bd.e+'</div><small>'+GL(bd.en,bd.ar)+'</small></div>';}
+      panel.innerHTML='<button class="gmf-close" type="button" aria-label="Close">\u2715</button>'
+        +'<h3>'+GL('Your Progress','\u062A\u0642\u062F\u0645\u0643')+'</h3>'
+        +'<p class="gmf-cta">'+GL('Keep your streak alive \u2014 finish a quiz or daily challenge!','\u062D\u0627\u0641\u0638 \u0639\u0644\u0649 \u0633\u0644\u0633\u0644\u062A\u0643 \u2014 \u0623\u0643\u0645\u0644 \u0627\u062E\u062A\u0628\u0627\u0631\u064B\u0627 \u0623\u0648 \u062A\u062D\u062F\u064A\u064B\u0627 \u064A\u0648\u0645\u064A\u064B\u0627!')+'</p>'
+        +'<div class="gmf-ring" style="background:conic-gradient(#C9A24B '+deg+'deg,#2A2520 '+deg+'deg)"><div class="gmf-ring-inner"><span class="gmf-lvnum">'+u.level+'</span><span class="gmf-lvlbl">'+GL('Level','\u0627\u0644\u0645\u0633\u062A\u0648\u0649')+'</span></div></div>'
+        +'<div class="gmf-stat-row"><div class="gmf-stat"><b>\u{1F525} '+(u.streak||0)+'</b><span>'+GL('Streak','\u0627\u0644\u0633\u0644\u0633\u0644\u0629')+'</span></div><div class="gmf-stat"><b>'+(u.bestStreak||0)+'</b><span>'+GL('Best','\u0627\u0644\u0623\u0641\u0636\u0644')+'</span></div><div class="gmf-stat"><b>'+(u.xp||0)+'</b><span>'+GL('Total XP','\u0625\u062C\u0645\u0627\u0644\u064A XP')+'</span></div></div>'
+        +'<div class="gmf-barlbl"><span>'+GL('Level progress','\u062A\u0642\u062F\u0645 \u0627\u0644\u0645\u0633\u062A\u0648\u0649')+'</span><span>'+into+' / 500 XP</span></div><div class="gmf-track"><div class="gmf-fill" style="width:'+pct+'%"></div></div>'
+        +'<div class="gmf-barlbl" style="margin-top:.9rem"><span>'+GL('Daily goal','\u0627\u0644\u0647\u062F\u0641 \u0627\u0644\u064A\u0648\u0645\u064A')+'</span><span>'+dxp+' / '+GOAL+' XP</span></div><div class="gmf-track"><div class="gmf-fill goal" style="width:'+dpct+'%"></div></div>'
+        +'<div class="gmf-sec-title">'+GL('Achievements','\u0627\u0644\u0625\u0646\u062C\u0627\u0632\u0627\u062A')+' ('+u.badges.length+'/'+BADGES.length+')</div>'
+        +'<div class="gmf-badges">'+bh+'</div>';
+      var cb=panel.querySelector('.gmf-close');if(cb)cb.addEventListener('click',close);
+    }catch(e){}
+  }
+
+  function toast(emoji,text,cls){
+    if(!toasts)return;var d=document.createElement('div');d.className='gmf-toast'+(cls?' '+cls:'');
+    d.innerHTML=(emoji?'<span class="gmf-be">'+emoji+'</span>':'')+'<span>'+text+'</span>';
+    toasts.appendChild(d);requestAnimationFrame(function(){d.classList.add('show');});
+    setTimeout(function(){d.classList.remove('show');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},350);},2400);
+  }
+  function toastXP(n,reason){toast('\u2B50','+'+n+' XP'+(reason?'  \u00B7  '+reason:''),'');}
+
+  function wrapLegacy(){
+    if(typeof window.addXP==='function' && !window.addXP.__gmf){
+      var orig=window.addXP;
+      var w=function(n){try{orig(n);}catch(e){}try{toastXP(n,GL('Challenge','\u062A\u062D\u062F\u064A'));checkBadges();render();}catch(e){}};
+      w.__gmf=true;window.addXP=w;
+    }
+  }
+
+  window.Gamify={addXP:addXP,completeTopic:completeTopic,quizDone:quizDone,markCalc:markCalc,checkBadges:checkBadges,refresh:render,toastXP:toastXP,open:open};
+
+  function init(){build();wrapLegacy();boot();render();}
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+<script id="edu-js">
+(function(){
+  if(window.__eduInit) return; window.__eduInit=true;
+  function lang(){return window.currentLang||localStorage.getItem('cryptomath_lang')||'en';}
+  function L(en,ar){return lang()==='ar'?ar:en;}
+
+  var PAGES=[
+    {en:'Home',ar:'الرئيسية',de:'Start exploring cryptography',da:'ابدأ استكشاف التشفير',u:'index.html',ic:'🏠'},
+    {en:'Learn',ar:'تعلم',de:'Lessons, videos & quizzes',da:'دروس وفيديوهات واختبارات',u:'concepts.html',ic:'📘'},
+    {en:'Challenges',ar:'التحديات',de:'Daily challenge & practice',da:'التحدي اليومي والتمارين',u:'challenges.html',ic:'🧩'},
+    {en:'Simulator',ar:'المحاكي',de:'Hands-on blockchain demo',da:'محاكاة البلوكشين العملية',u:'blockchain.html',ic:'⛓️'},
+    {en:'Quantum',ar:'الكم',de:'Quantum vs classical crypto',da:'التشفير الكمي مقابل الكلاسيكي',u:'quantum.html',ic:'⚛️'},
+    {en:'Cryptocurrency',ar:'العملات',de:'How crypto links to coins',da:'كيف يرتبط التشفير بالعملات',u:'cryptocurrency.html',ic:'🪙'},
+    {en:'Journal',ar:'المجلة',de:'Articles on PQC impact',da:'مقالات عن أثر التشفير ما بعد الكمي',u:'journal.html',ic:'📰'},
+    {en:'Profile',ar:'الملف',de:'Your XP, streak & badges',da:'نقاطك وسلسلتك وأوسمتك',u:'profile.html',ic:'👤'},
+    {en:'Settings',ar:'الإعدادات',de:'Language, sound & motion',da:'اللغة والصوت والحركة',u:'settings.html',ic:'⚙️'}
+  ];
+  var TOPICS=[
+    {en:'Modular Arithmetic',ar:'الحساب المعياري',u:'concepts.html#modular',ic:'➗'},
+    {en:'Prime Numbers',ar:'الأعداد الأولية',u:'concepts.html#primes',ic:'🔢'},
+    {en:'Discrete Logarithms',ar:'اللوغاريتمات المتقطعة',u:'concepts.html#discrete',ic:'📈'},
+    {en:'Elliptic Curves',ar:'المنحنيات الإهليلجية',u:'concepts.html#elliptic',ic:'🪐'},
+    {en:'Post-Quantum Cryptography',ar:'التشفير ما بعد الكمي',u:'concepts.html#pqc',ic:'🛡️'},
+    {en:'Scientific Calculator',ar:'الآلة الحاسبة العلمية',u:'concepts.html#sci-calc',ic:'🧮'}
+  ];
+  var INDEX=[];
+  PAGES.forEach(function(p){INDEX.push({te:p.en,ta:p.ar,de:p.de,da:p.da,url:p.u,ic:p.ic,kind:'page'});});
+  TOPICS.forEach(function(t){INDEX.push({te:t.en,ta:t.ar,de:'Learn topic',da:'موضوع تعليمي',url:t.u,ic:t.ic,kind:'topic'});});
+
+  function a11y(){
+    if(!document.querySelector('.edu-skip')){
+      var sk=document.createElement('a');sk.className='edu-skip';sk.href='#';sk.textContent=L('Skip to main content','تخطَّ إلى المحتوى');
+      sk.addEventListener('click',function(e){e.preventDefault();var m=document.querySelector('main, .container, section, h1');if(m){if(!m.id)m.id='eduMain';m.setAttribute('tabindex','-1');try{m.focus();}catch(x){}m.scrollIntoView();}});
+      document.body.insertBefore(sk,document.body.firstChild);
+    }
+    var burger=document.getElementById('navBurger');if(burger&&!burger.getAttribute('aria-label'))burger.setAttribute('aria-label',L('Menu','القائمة'));
+    var en=document.getElementById('lang-en');if(en&&!en.getAttribute('aria-label'))en.setAttribute('aria-label','English');
+    var ar=document.getElementById('lang-ar');if(ar&&!ar.getAttribute('aria-label'))ar.setAttribute('aria-label','العربية');
+    var nav=document.getElementById('navbar');if(nav&&!nav.getAttribute('role'))nav.setAttribute('role','navigation');
+  }
+
+  var overlay,box,input,list,sel=-1,results=[];
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function subseq(q,t){var i=0;for(var j=0;j<t.length&&i<q.length;j++){if(t.charAt(j)===q.charAt(i))i++;}return i===q.length;}
+  function filter(q){
+    q=(q||'').trim().toLowerCase();
+    if(!q)return INDEX.slice();
+    var key=lang()==='ar'?'ta':'te';var out=[];
+    INDEX.forEach(function(it){
+      var blob=(it.te+' '+it.ta+' '+it.de+' '+it.da).toLowerCase();
+      if(blob.indexOf(q)>=0||subseq(q,(it[key]||'').toLowerCase()))out.push(it);
+    });
+    return out;
+  }
+  function render(q){
+    results=filter(q);sel=results.length?0:-1;
+    var kt=lang()==='ar'?'ta':'te';var kd=lang()==='ar'?'da':'de';
+    if(!results.length){list.innerHTML='<div class="edu-empty">'+L('No matches found','لا توجد نتائج')+'</div>';return;}
+    var h='';
+    results.forEach(function(it,i){
+      h+='<button type="button" class="edu-sitem'+(i===0?' sel':'')+'" data-i="'+i+'"><span class="edu-sic">'+it.ic+'</span><span class="edu-stext"><b>'+esc(it[kt])+'</b><small>'+esc(it[kd])+'</small></span><span class="edu-skind">'+(it.kind==='topic'?L('Topic','موضوع'):L('Page','صفحة'))+'</span></button>';
+    });
+    list.innerHTML=h;
+    Array.prototype.forEach.call(list.querySelectorAll('.edu-sitem'),function(el){
+      el.addEventListener('click',function(){go(parseInt(el.getAttribute('data-i'),10));});
+      el.addEventListener('mousemove',function(){setSel(parseInt(el.getAttribute('data-i'),10));});
+    });
+  }
+  function setSel(i){sel=i;Array.prototype.forEach.call(list.querySelectorAll('.edu-sitem'),function(el,j){el.classList.toggle('sel',j===i);});}
+  function scrollSel(){var els=list.querySelectorAll('.edu-sitem');if(els[sel]&&els[sel].scrollIntoView)els[sel].scrollIntoView({block:'nearest'});}
+  function go(i){var it=results[i];if(it){closeS();window.location.href=it.url;}}
+  function onKey(e){
+    if(e.key==='ArrowDown'){e.preventDefault();if(results.length){setSel((sel+1)%results.length);scrollSel();}}
+    else if(e.key==='ArrowUp'){e.preventDefault();if(results.length){setSel((sel-1+results.length)%results.length);scrollSel();}}
+    else if(e.key==='Enter'){e.preventDefault();if(sel>=0)go(sel);}
+    else if(e.key==='Escape'){e.preventDefault();closeS();}
+  }
+  function build(){
+    var fab=document.createElement('button');fab.type='button';fab.className='edu-fab';fab.setAttribute('aria-label',L('Search the site','ابحث في الموقع'));fab.title=L('Search (Ctrl/Cmd+K)','بحث');fab.innerHTML='🔍';fab.addEventListener('click',openS);document.body.appendChild(fab);
+    overlay=document.createElement('div');overlay.className='edu-ov';overlay.addEventListener('click',function(e){if(e.target===overlay)closeS();});
+    box=document.createElement('div');box.className='edu-search';box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label',L('Quick search','بحث سريع'));
+    var head=document.createElement('div');head.className='edu-shead';
+    input=document.createElement('input');input.className='edu-sinput';input.type='text';input.setAttribute('aria-label',L('Search topics and pages','ابحث في المواضيع والصفحات'));input.placeholder=L('Search topics & pages…','ابحث في المواضيع والصفحات…');
+    head.appendChild(input);
+    list=document.createElement('div');list.className='edu-slist';
+    var hint=document.createElement('div');hint.className='edu-shint';hint.innerHTML=L('Up/Down to navigate · Enter to open · Esc to close','للتنقل ↑↓ · Enter للفتح · Esc للإغلاق');
+    box.appendChild(head);box.appendChild(list);box.appendChild(hint);overlay.appendChild(box);document.body.appendChild(overlay);
+    input.addEventListener('input',function(){render(input.value);});
+    input.addEventListener('keydown',onKey);
+  }
+  function openS(){if(!overlay)return;render('');overlay.classList.add('open');setTimeout(function(){input.value='';input.focus();},30);}
+  function closeS(){if(overlay)overlay.classList.remove('open');}
+
+  function buildTop(){
+    var top=document.createElement('button');top.type='button';top.className='edu-top';top.setAttribute('aria-label',L('Back to top','العودة إلى الأعلى'));top.innerHTML='↑';
+    top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});document.body.appendChild(top);
+    window.addEventListener('scroll',function(){if(window.pageYOffset>500)top.classList.add('show');else top.classList.remove('show');});
+  }
+
+  document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();openS();return;}
+    if(e.key==='/'){
+      var a=document.activeElement;
+      if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable))return;
+      if(a&&a.closest&&a.closest('.calc-display,#sci-calc,#aiChatWidget'))return;
+      e.preventDefault();openS();
+    }
+  });
+
+  window.EduSearch={open:openS};
+  function init(){a11y();build();buildTop();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script id="nav-auth">
+(function(){
+  function ar(){return (window.currentLang||localStorage.getItem('cryptomath_lang')||'en')==='ar';}
+  function refreshNavAuth(){
+    var login=document.getElementById('navLogin');
+    var cta=document.getElementById('navCta');
+    var ab=document.getElementById('authButton');
+    var menu=document.querySelectorAll('.nav-menu-auth');
+    var u=null;try{u=JSON.parse(localStorage.getItem('cryptomath_user'));}catch(e){u=null;}
+    var on=!!(u&&(u.name||u.email));
+    if(login)login.style.display=on?'none':'';
+    if(cta)cta.style.display=on?'none':'';
+    Array.prototype.forEach.call(menu,function(el){el.style.display=on?'none':'';});
+    if(ab){
+      if(on){
+        ab.innerHTML='';
+        var a=document.createElement('a');a.href='profile.html';a.className='nav-user';
+        if(u.picture){var img=document.createElement('img');img.className='nav-user-img';img.alt='';img.src=u.picture;a.appendChild(img);}
+        var sp=document.createElement('span');sp.textContent=(u.name||u.email);a.appendChild(sp);
+        var lo=document.createElement('button');lo.type='button';lo.className='nav-logout';lo.textContent=ar()?'خروج':'Log out';lo.setAttribute('aria-label',ar()?'تسجيل الخروج':'Log out');
+        lo.addEventListener('click',function(){try{localStorage.removeItem('cryptomath_user');}catch(e){}try{if(window.firebase&&firebase.auth)firebase.auth().signOut();}catch(e){}refreshNavAuth();});
+        ab.appendChild(a);ab.appendChild(lo);
+      } else { ab.innerHTML=''; }
+    }
+  }
+  window.refreshNavAuth=refreshNavAuth;
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refreshNavAuth);else refreshNavAuth();
+  window.addEventListener('storage',function(e){if(!e.key||e.key==='cryptomath_user'||e.key==='cryptomath_lang')refreshNavAuth();});
+  document.addEventListener('click',function(e){var t=e.target;if(t&&t.closest&&t.closest('.lang-toggle'))setTimeout(refreshNavAuth,60);});
+})();
+</script>
+<script id="trionn-js">
+(function(){
+  "use strict";
+  function ready(fn){ if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);} }
+  var RM=(document.body&&document.body.classList.contains("reduce-motion"))
+    ||(function(){try{return localStorage.getItem("cryptomath_reduce_motion")==="1";}catch(e){return false;}})()
+    ||(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var fine=(!window.matchMedia)||window.matchMedia("(pointer: fine)").matches;
+
+  function intro(){
+    var el=document.querySelector(".tr-intro"); if(!el) return;
+    if(RM){ el.style.display="none"; return; }
+    var shown=false; try{shown=sessionStorage.getItem("tr_introShown")==="1";}catch(e){}
+    if(shown){ el.style.display="none"; return; }
+    try{sessionStorage.setItem("tr_introShown","1");}catch(e){}
+    el.classList.add("tr-intro--play");
+  }
+  function progress(){
+    var bar=document.querySelector(".tr-progress"); if(!bar) return;
+    function upd(){ var h=document.documentElement; var mx=(h.scrollHeight-h.clientHeight)||1; var p=Math.min(1,Math.max(0,(window.scrollY||h.scrollTop||0)/mx)); bar.style.transform="scaleX("+p+")"; }
+    upd(); window.addEventListener("scroll",upd,{passive:true}); window.addEventListener("resize",upd);
+  }
+  function headings(){
+    var sel=".hero h1, .page-hero h1, .section-header h2, .cta-section h2";
+    var nodes=document.querySelectorAll(sel); var list=[];
+    for(var i=0;i<nodes.length;i++){
+      var el=nodes[i];
+      if(el.closest && el.closest(".navbar,.marquee,.tr-intro,footer,.edu-ov")) continue;
+      if(el.getAttribute("data-tr")) continue;
+      el.setAttribute("data-tr","1");
+      el.innerHTML="<span class=\"tr-line\"><span class=\"tr-line-i\">"+el.innerHTML+"</span></span>";
+      el.classList.add("tr-mask"); list.push(el);
+    }
+    function reveal(el){ el.classList.add("tr-in"); }
+    if("IntersectionObserver" in window){
+      var io=new IntersectionObserver(function(ents){ ents.forEach(function(en){ if(en.isIntersecting){ reveal(en.target); io.unobserve(en.target); } }); },{rootMargin:"0px 0px -8% 0px",threshold:0.05});
+      list.forEach(function(el){ io.observe(el); });
+    } else { list.forEach(reveal); }
+    setTimeout(function(){ list.forEach(reveal); },2600);
+  }
+  function magnetic(){
+    var els=document.querySelectorAll(".btn-primary,.nav-cta,.cta-button,.btn-outline,.start-btn,.nav-menu-cta");
+    for(var i=0;i<els.length;i++){ (function(el){
+      var raf=null,tx=0,ty=0,cx=0,cy=0;
+      function loop(){ cx+=(tx-cx)*0.18; cy+=(ty-cy)*0.18; el.style.transform="translate("+cx.toFixed(2)+"px,"+cy.toFixed(2)+"px)"; if(Math.abs(tx-cx)>0.1||Math.abs(ty-cy)>0.1){ raf=requestAnimationFrame(loop); } else { raf=null; el.style.transform=""; } }
+      el.addEventListener("pointermove",function(e){ var r=el.getBoundingClientRect(); tx=(e.clientX-(r.left+r.width/2))*0.25; ty=(e.clientY-(r.top+r.height/2))*0.4; if(!raf) raf=requestAnimationFrame(loop); });
+      el.addEventListener("pointerleave",function(){ tx=0; ty=0; if(!raf) raf=requestAnimationFrame(loop); });
+    })(els[i]); }
+  }
+  function cursorHover(){
+    var cur=document.querySelector(".cursor"); if(!cur) return;
+    var sel="a,button,.topic-card,.feature-card,.btn,.lang-toggle,.journal-card,summary,[role=button]";
+    document.addEventListener("pointerover",function(e){ if(e.target.closest&&e.target.closest(sel)) cur.classList.add("hover"); });
+    document.addEventListener("pointerout",function(e){ if(e.target.closest&&e.target.closest(sel)) cur.classList.remove("hover"); });
+  }
+  function parallax(){
+    var si=document.querySelector(".scroll-indicator");
+    function upd(){ var y=window.scrollY||0; if(si){ si.style.opacity=Math.max(0,1-y/300); } }
+    upd(); window.addEventListener("scroll",upd,{passive:true});
+  }
+  function smoothScroll(){
+    if(window.__trSmooth) return; window.__trSmooth=true;
+    var current=window.scrollY||0, target=current, animating=false;
+    function mx(){ var h=document.documentElement; return (h.scrollHeight-h.clientHeight); }
+    function clamp(v){ return Math.max(0,Math.min(mx(),v)); }
+    function canInside(node,dy){
+      while(node&&node!==document.body&&node!==document.documentElement){
+        if(node.nodeType===1){ var st=getComputedStyle(node); var oy=st.overflowY;
+          if((oy==="auto"||oy==="scroll")&&node.scrollHeight>node.clientHeight+2){
+            if(dy<0&&node.scrollTop>0) return true;
+            if(dy>0&&node.scrollTop+node.clientHeight<node.scrollHeight-1) return true;
+          } }
+        node=node.parentNode;
+      } return false;
+    }
+    function loop(){ current+=(target-current)*0.14; if(Math.abs(target-current)<0.4){ current=target; animating=false; } window.scrollTo(0,current); if(animating) requestAnimationFrame(loop); }
+    window.addEventListener("wheel",function(e){ if(e.ctrlKey) return; var dy=e.deltaY; if(e.deltaMode===1) dy*=16; else if(e.deltaMode===2) dy*=window.innerHeight; if(canInside(e.target,dy)) return; e.preventDefault(); target=clamp(target+dy); if(!animating){ animating=true; requestAnimationFrame(loop); } },{passive:false});
+    window.addEventListener("scroll",function(){ if(animating) return; var sy=window.scrollY||0; if(Math.abs(sy-current)>2){ current=target=sy; } },{passive:true});
+    window.addEventListener("resize",function(){ target=clamp(target); });
+  }
+  function init(){
+    try{ intro(); }catch(e){}
+    try{ progress(); }catch(e){}
+    try{ if(!RM) headings(); }catch(e){}
+    try{ if(!RM&&fine) magnetic(); }catch(e){}
+    try{ if(!RM&&fine) cursorHover(); }catch(e){}
+    try{ if(!RM&&fine&&window.innerWidth>900) smoothScroll(); }catch(e){}
+    try{ if(!RM) parallax(); }catch(e){}
+  }
+  ready(function(){ setTimeout(init,60); });
+})();
+</script>
+<script id="cinematic-skin-js">
+(function(){
+  try{
+    var fine = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
+    if(!fine) return;
+    var rmStored = false;
+    try{ rmStored = localStorage.getItem('cryptomath_reduce_motion') === '1'; }catch(e){}
+    var inner = document.createElement('div'); inner.className = 'cm-cursor-inner';
+    var outer = document.createElement('div'); outer.className = 'cm-cursor-outer';
+    document.body.appendChild(inner); document.body.appendChild(outer);
+    var cx = window.innerWidth/2, cy = window.innerHeight/2;
+    var ox = cx, oy = cy;
+    window.addEventListener('mousemove', function(e){
+      cx = e.clientX; cy = e.clientY;
+      inner.style.left = cx + 'px'; inner.style.top = cy + 'px';
+      if(rmStored){ outer.style.left = cx + 'px'; outer.style.top = cy + 'px'; }
+    });
+    function loop(){
+      ox += (cx - ox) * 0.2; oy += (cy - oy) * 0.2;
+      outer.style.left = ox + 'px'; outer.style.top = oy + 'px';
+      requestAnimationFrame(loop);
+    }
+    if(!rmStored) requestAnimationFrame(loop);
+    document.addEventListener('pointerover', function(e){
+      if(e.target.closest && e.target.closest('a,button,input,textarea,select,[role="button"]')){
+        outer.style.width = '60px'; outer.style.height = '60px';
+        outer.style.background = 'rgba(201,162,75,0.10)';
+        outer.style.borderColor = 'rgba(227,199,122,0.9)';
+      }
+    });
+    document.addEventListener('pointerout', function(e){
+      if(e.target.closest && e.target.closest('a,button,input,textarea,select,[role="button"]')){
+        outer.style.width = '40px'; outer.style.height = '40px';
+        outer.style.background = 'transparent';
+        outer.style.borderColor = 'rgba(201,162,75,0.7)';
+      }
+    });
+  }catch(err){ /* fail silently, keep native cursor */ }
+})();
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.143.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+<script src="cm-cloud.js" defer></script>
+</body>
+</html>

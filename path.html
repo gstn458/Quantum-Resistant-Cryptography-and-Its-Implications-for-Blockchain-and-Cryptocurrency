@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Path — CryptoMath Academy</title>
+<meta name="description" content="A sequenced path through the mathematics of cryptography: Foundations → Modular Arithmetic → Primes &amp; RSA → Discrete Logs → Elliptic Curves → Post-Quantum. Each stage lists prerequisites, learning objectives, estimated time and difficulty.">
+<meta name="theme-color" content="#1A1714">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Learning Path — CryptoMath Academy">
+<meta property="og:description" content="Start here. A clear, sequenced curriculum from foundations to post-quantum cryptography.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cm-pages.css">
+<link rel="stylesheet" href="cm-enhance.css">
+<style id="storm-bg-css">
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+</style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="brand">CryptoMath</a>
+  <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Open menu"><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+    <a href="concepts.html" data-en="Learn" data-ar="تعلم">Learn</a>
+    <a href="path.html" class="active" data-en="Path" data-ar="المسار">Path</a>
+    <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+    <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+    <a href="quantum.html" data-en="Quantum" data-ar="الكم">Quantum</a>
+    <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+    <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+    <a href="about.html" data-en="About" data-ar="عن">About</a>
+    <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+    <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+    <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+    <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0" aria-label="Switch language">
+      <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+    </div>
+    <a href="login.html" class="nav-menu-auth nav-menu-login">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta">Get Started</a>
+  </div>
+  <div class="nav-actions"><a href="login.html" class="nav-login">Log In</a><a href="signup.html" class="nav-cta">Get Started</a></div>
+</nav>
+
+<header class="page-hero">
+  <div class="eyebrow">Learning Path</div>
+  <h1>Your route from zero to post-quantum</h1>
+  <p>Six stages, each building on the last. Every stage states what you'll be able to do, what you need first, and how long it takes. Your progress is saved automatically.</p>
+  <div class="cm-btn-row" style="justify-content:center">
+    <a class="cm-btn" id="startBtn" href="#foundations">Start learning →</a>
+    <a class="cm-btn ghost" href="#sample">See a sample lesson</a>
+  </div>
+</header>
+
+<main class="cm-container">
+  <div id="overallWrap" class="cm-card" style="margin-bottom:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <strong>Overall progress</strong><span class="cm-muted" id="overallText">0 of 6 stages started</span>
+    </div>
+    <div class="cm-stage-bar" style="margin-top:10px"><i id="overallBar"></i></div>
+  </div>
+
+  <!-- STAGE 1 -->
+  <section class="cm-stage" id="foundations">
+    <div class="cm-stage-h"><div class="cm-stage-num">1</div><h3>Foundations</h3></div>
+    <p class="cm-prereq">Prerequisites: <strong>none</strong> — this is the place to start.</p>
+    <div class="cm-objectives"><h4>By the end you'll be able to…</h4><ul>
+      <li>Explain what a cryptographic “one-way” function is and why it matters.</li>
+      <li>Read the basic notation used throughout the path (mod, gcd, exponents).</li>
+      <li>Use the on-site calculators with confidence.</li>
+    </ul></div>
+    <div class="cm-meta-row"><span class="cm-pill">⏱ <b>25 min</b></span><span class="cm-pill cm-diff-1">◆ Beginner</span><span class="cm-pill">🧩 2 lessons</span></div>
+    <ul class="cm-lessons" data-stage="foundations">
+      <li data-lesson="f1"><span class="cm-check">✓</span><a href="concepts.html">What is cryptographic math?</a></li>
+      <li data-lesson="f2"><span class="cm-check">✓</span><a href="concepts.html#sci-calc">Notation &amp; the calculator tour</a></li>
+    </ul>
+    <div class="cm-stage-bar"><i data-bar="foundations"></i></div>
+  </section>
+
+  <!-- STAGE 2 -->
+  <section class="cm-stage" id="modular">
+    <div class="cm-stage-h"><div class="cm-stage-num">2</div><h3>Modular Arithmetic</h3></div>
+    <p class="cm-prereq">Prerequisites: <a href="#foundations">Foundations</a>.</p>
+    <div class="cm-objectives"><h4>By the end you'll be able to…</h4><ul>
+      <li>Compute with clock (modular) arithmetic and reduce large numbers mod n.</li>
+      <li>Perform fast modular exponentiation by squaring.</li>
+      <li>See why modular math gives us reversible-yet-hard operations.</li>
+    </ul></div>
+    <div class="cm-meta-row"><span class="cm-pill">⏱ <b>35 min</b></span><span class="cm-pill cm-diff-1">◆ Beginner</span><span class="cm-pill">🧩 3 lessons</span></div>
+    <ul class="cm-lessons" data-stage="modular">
+      <li data-lesson="m1"><span class="cm-check">✓</span><a href="concepts.html">Clock arithmetic &amp; congruence</a></li>
+      <li data-lesson="m2"><span class="cm-check">✓</span><a href="#sample">Modular exponentiation (worked example)</a></li>
+      <li data-lesson="m3"><span class="cm-check">✓</span><a href="challenges.html">Practice: modular challenges</a></li>
+    </ul>
+    <div class="cm-stage-bar"><i data-bar="modular"></i></div>
+  </section>
+
+  <!-- STAGE 3 -->
+  <section class="cm-stage" id="primes">
+    <div class="cm-stage-h"><div class="cm-stage-num">3</div><h3>Primes &amp; RSA</h3></div>
+    <p class="cm-prereq">Prerequisites: <a href="#modular">Modular Arithmetic</a>.</p>
+    <div class="cm-objectives"><h4>By the end you'll be able to…</h4><ul>
+      <li>Test whether a number is prime and explain why primes are “atoms.”</li>
+      <li>Walk through RSA key generation, encryption and decryption.</li>
+      <li>Articulate why factoring large semiprimes is hard.</li>
+    </ul></div>
+    <div class="cm-meta-row"><span class="cm-pill">⏱ <b>45 min</b></span><span class="cm-pill cm-diff-2">◆◆ Intermediate</span><span class="cm-pill">🧩 3 lessons</span></div>
+    <ul class="cm-lessons" data-stage="primes">
+      <li data-lesson="p1"><span class="cm-check">✓</span><a href="concepts.html">Primes &amp; primality testing</a></li>
+      <li data-lesson="p2"><span class="cm-check">✓</span><a href="concepts.html">How RSA works</a></li>
+      <li data-lesson="p3"><span class="cm-check">✓</span><a href="challenges.html">Practice: RSA challenges</a></li>
+    </ul>
+    <div class="cm-stage-bar"><i data-bar="primes"></i></div>
+  </section>
+
+  <!-- STAGE 4 -->
+  <section class="cm-stage" id="discrete-logs">
+    <div class="cm-stage-h"><div class="cm-stage-num">4</div><h3>Discrete Logarithms</h3></div>
+    <p class="cm-prereq">Prerequisites: <a href="#primes">Primes &amp; RSA</a>.</p>
+    <div class="cm-objectives"><h4>By the end you'll be able to…</h4><ul>
+      <li>Define the discrete logarithm problem and why it's one-way.</li>
+      <li>Walk through Diffie–Hellman key exchange step by step.</li>
+    </ul></div>
+    <div class="cm-meta-row"><span class="cm-pill">⏱ <b>40 min</b></span><span class="cm-pill cm-diff-2">◆◆ Intermediate</span><span class="cm-pill">🧩 2 lessons</span></div>
+    <ul class="cm-lessons" data-stage="discrete-logs">
+      <li data-lesson="d1"><span class="cm-check">✓</span><a href="concepts.html">The discrete log problem</a></li>
+      <li data-lesson="d2"><span class="cm-check">✓</span><a href="concepts.html">Diffie–Hellman key exchange</a></li>
+    </ul>
+    <div class="cm-stage-bar"><i data-bar="discrete-logs"></i></div>
+  </section>
+
+  <!-- STAGE 5 -->
+  <section class="cm-stage" id="elliptic-curves">
+    <div class="cm-stage-h"><div class="cm-stage-num">5</div><h3>Elliptic Curves</h3></div>
+    <p class="cm-prereq">Prerequisites: <a href="#discrete-logs">Discrete Logarithms</a>.</p>
+    <div class="cm-objectives"><h4>By the end you'll be able to…</h4><ul>
+      <li>Add points on an elliptic curve geometrically and algebraically.</li>
+      <li>Explain why ECC gives the same security as RSA with smaller keys.</li>
+      <li>Connect curves to real signatures (Bitcoin, Ethereum).</li>
+    </ul></div>
+    <div class="cm-meta-row"><span class="cm-pill">⏱ <b>50 min</b></span><span class="cm-pill cm-diff-3">◆◆◆ Advanced</span><span class="cm-pill">🧩 3 lessons</span></div>
+    <ul class="cm-lessons" data-stage="elliptic-curves">
+      <li data-lesson="e1"><span class="cm-check">✓</span><a href="concepts.html">Curves &amp; point addition</a></li>
+      <li data-lesson="e2"><span class="cm-check">✓</span><a href="cryptocurrency.html">ECDSA &amp; signing transactions</a></li>
+      <li data-lesson="e3"><span class="cm-check">✓</span><a href="blockchain.html">Simulator: hashing &amp; blocks</a></li>
+    </ul>
+    <div class="cm-stage-bar"><i data-bar="elliptic-curves"></i></div>
+  </section>
+
+  <!-- STAGE 6 -->
+  <section class="cm-stage" id="post-quantum">
+    <div class="cm-stage-h"><div class="cm-stage-num">6</div><h3>Post-Quantum</h3></div>
+    <p class="cm-prereq">Prerequisites: <a href="#elliptic-curves">Elliptic Curves</a>.</p>
+    <div class="cm-objectives"><h4>By the end you'll be able to…</h4><ul>
+      <li>Explain how Shor's algorithm threatens RSA and ECC.</li>
+      <li>Describe lattice-based cryptography at a high level.</li>
+      <li>Name the NIST post-quantum standards and why they matter.</li>
+    </ul></div>
+    <div class="cm-meta-row"><span class="cm-pill">⏱ <b>45 min</b></span><span class="cm-pill cm-diff-3">◆◆◆ Advanced</span><span class="cm-pill">🧩 2 lessons</span></div>
+    <ul class="cm-lessons" data-stage="post-quantum">
+      <li data-lesson="q1"><span class="cm-check">✓</span><a href="quantum.html">The quantum threat &amp; Shor's algorithm</a></li>
+      <li data-lesson="q2"><span class="cm-check">✓</span><a href="quantum.html">Lattices &amp; post-quantum standards</a></li>
+    </ul>
+    <div class="cm-stage-bar"><i data-bar="post-quantum"></i></div>
+  </section>
+
+  <!-- SAMPLE LESSON: shows the bite-sized + worked-example + check pattern -->
+  <section id="sample">
+    <h2 class="cm-h">Sample lesson — Modular exponentiation</h2>
+    <p class="cm-lede">This is the lesson pattern used across the path: short steps, a worked example you can reveal, then a quick check.</p>
+
+    <div class="cm-step"><span class="cm-step-n">Step 1</span>
+      <h4>The problem</h4>
+      <p>We want <code>7^13 mod 11</code>. Computing <code>7^13</code> directly is huge — but we never need the giant number, only its remainder.</p>
+    </div>
+    <div class="cm-step"><span class="cm-step-n">Step 2</span>
+      <h4>Square and reduce</h4>
+      <p>Repeatedly square, reducing mod 11 each time so numbers stay small.</p>
+      <button class="cm-reveal-btn" data-reveal="r1">Reveal the worked steps ↓</button>
+      <div class="cm-reveal-body" id="r1">
+        <p><code>7^1 = 7</code></p>
+        <p><code>7^2 = 49 ≡ 5 (mod 11)</code></p>
+        <p><code>7^4 = 5^2 = 25 ≡ 3 (mod 11)</code></p>
+        <p><code>7^8 = 3^2 = 9 (mod 11)</code></p>
+        <p>Now <code>13 = 8 + 4 + 1</code>, so <code>7^13 = 7^8 · 7^4 · 7^1 ≡ 9 · 3 · 7 = 189 ≡ 2 (mod 11)</code>.</p>
+        <p><strong>Answer: 2.</strong> Only small multiplications — that's why your phone can do this for 600-digit numbers.</p>
+      </div>
+    </div>
+
+    <div class="cm-cfu" data-cfu>
+      <div class="cm-cfu-q">Check: what is <code>3^4 mod 5</code>?</div>
+      <button class="cm-cfu-opt" data-correct="0">4</button>
+      <button class="cm-cfu-opt" data-correct="1">1</button>
+      <button class="cm-cfu-opt" data-correct="0">81</button>
+      <div class="cm-cfu-fb"></div>
+    </div>
+
+    <div class="cm-card" style="margin-top:16px;text-align:center">
+      <strong>Next up:</strong> apply this in <a href="concepts.html">Primes &amp; RSA →</a>
+      <div class="cm-btn-row" style="justify-content:center;margin-top:12px">
+        <button class="cm-btn" id="completeSample">Mark sample complete (+20 XP)</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function toggleMobileNav(){var n=document.getElementById('navLinks');if(n)n.classList.toggle('open');}
+function toggleLanguage(){
+  var ar=document.documentElement.getAttribute('dir')==='rtl';var to=ar?'en':'ar';
+  document.documentElement.setAttribute('dir',to==='ar'?'rtl':'ltr');
+  document.documentElement.setAttribute('lang',to);
+  document.querySelectorAll('[data-en]').forEach(function(el){var t=el.getAttribute('data-'+to);if(t)el.textContent=t;});
+  var en=document.getElementById('lang-en'),arx=document.getElementById('lang-ar');
+  if(en&&arx){en.classList.toggle('active',to==='en');arx.classList.toggle('active',to==='ar');}
+  try{localStorage.setItem('cryptomath_lang',to);}catch(e){}
+}
+try{if(localStorage.getItem('cryptomath_lang')==='ar')toggleLanguage();}catch(e){}
+
+// reveal toggles
+document.querySelectorAll('.cm-reveal-btn').forEach(function(b){
+  b.addEventListener('click',function(){var t=document.getElementById(b.getAttribute('data-reveal'));if(t)t.classList.toggle('cm-open');});
+});
+// check-for-understanding
+document.querySelectorAll('[data-cfu]').forEach(function(box){
+  var fb=box.querySelector('.cm-cfu-fb');
+  box.querySelectorAll('.cm-cfu-opt').forEach(function(opt){
+    opt.addEventListener('click',function(){
+      var ok=opt.getAttribute('data-correct')==='1';
+      opt.classList.add(ok?'cm-correct':'cm-wrong');
+      fb.textContent=ok?'Correct — 3^2=9≡4, 3^4=4^2=16≡1 (mod 5). 🎉':'Not quite — reduce after each squaring and try again.';
+      if(ok&&window.CM){window.CM.completeLesson('sample-modexp',15);}
+    });
+  });
+});
+// progress rendering from saved state
+function renderProgress(){
+  if(!window.CM)return;var started=0,total=6;
+  document.querySelectorAll('.cm-lessons').forEach(function(ul){
+    var items=ul.querySelectorAll('li'),done=0;
+    items.forEach(function(li){
+      var id=li.getAttribute('data-lesson');
+      if(window.CM.isLessonDone(id)){li.querySelector('.cm-check').classList.add('done');done++;}
+    });
+    var stage=ul.getAttribute('data-stage');
+    var bar=document.querySelector('[data-bar="'+stage+'"]');
+    if(bar)bar.style.width=(items.length?Math.round(done/items.length*100):0)+'%';
+    if(done>0)started++;
+  });
+  var ob=document.getElementById('overallBar');if(ob)ob.style.width=Math.round(started/total*100)+'%';
+  var ot=document.getElementById('overallText');if(ot)ot.textContent=started+' of '+total+' stages started';
+}
+// clicking a lesson marks it started + records continue point
+document.querySelectorAll('.cm-lessons li a').forEach(function(a){
+  a.addEventListener('click',function(){
+    var li=a.closest('li');var id=li.getAttribute('data-lesson');
+    if(window.CM){window.CM.completeLesson(id,20);window.CM.setLast(a.getAttribute('href'),a.textContent,'Resume this lesson on the path.');}
+  });
+});
+var cs=document.getElementById('completeSample');
+if(cs)cs.addEventListener('click',function(){if(window.CM){window.CM.completeLesson('sample-modexp',20);window.CM.toast('Lesson complete — <b>+20 XP</b>! Keep the momentum going.',{icon:'🎉'});renderProgress();}});
+setTimeout(renderProgress,300);
+</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.143.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+</body>
+</html>

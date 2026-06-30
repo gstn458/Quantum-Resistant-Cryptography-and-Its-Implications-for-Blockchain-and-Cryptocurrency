@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — CryptoMath Academy</title>
+<meta name="description" content="How CryptoMath handles your data: what we store (progress, preferences), how authentication works, and your choices. Plain-language privacy policy.">
+<meta name="theme-color" content="#1A1714">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Privacy Policy — CryptoMath Academy">
+<meta property="og:description" content="How CryptoMath handles your data and your choices.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cm-pages.css">
+<link rel="stylesheet" href="cm-enhance.css">
+<style id="storm-bg-css">
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+</style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="brand">CryptoMath</a>
+  <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Open menu"><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+    <a href="concepts.html" data-en="Learn" data-ar="تعلم">Learn</a>
+    <a href="path.html" data-en="Path" data-ar="المسار">Path</a>
+    <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+    <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+    <a href="quantum.html" data-en="Quantum" data-ar="الكم">Quantum</a>
+    <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+    <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+    <a href="about.html" data-en="About" data-ar="عن">About</a>
+    <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+    <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+    <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+    <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0" aria-label="Switch language">
+      <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+    </div>
+    <a href="login.html" class="nav-menu-auth nav-menu-login">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta">Get Started</a>
+  </div>
+  <div class="nav-actions"><a href="login.html" class="nav-login">Log In</a><a href="signup.html" class="nav-cta">Get Started</a></div>
+</nav>
+
+<header class="page-hero">
+  <div class="eyebrow">Privacy</div>
+  <h1>Privacy Policy</h1>
+  <p class="cm-muted">Last updated: June 2026</p>
+</header>
+
+<main class="cm-container">
+  <div class="cm-card">
+    <p class="cm-muted" style="font-size:.85rem">This is a clear-language template. Review it (and ideally have it checked) before relying on it legally, and update the contact address to your own.</p>
+  </div>
+  <section><h2 class="cm-h">What we collect</h2>
+    <ul>
+      <li><strong>Learning progress &amp; preferences</strong> — XP, streaks, completed lessons, language and reduced-motion settings. These are stored in your browser (localStorage) and, if you sign in, optionally synced to your account.</li>
+      <li><strong>Account info</strong> — if you sign in with Google via Firebase Authentication, we receive your email address and a user ID. We do not see your Google password.</li>
+      <li><strong>No tracking ads.</strong> We do not sell your data or use advertising trackers.</li>
+    </ul>
+  </section>
+  <section><h2 class="cm-h">How we use it</h2>
+    <p>Only to run the product: save your progress, sync it across your devices, and remember your preferences. That's it.</p>
+  </section>
+  <section><h2 class="cm-h">Where it lives</h2>
+    <p>Progress is kept in your browser and, for signed-in users, in Google Firebase (Authentication and Firestore). Firebase is governed by Google's security and privacy terms.</p>
+  </section>
+  <section><h2 class="cm-h">Your choices</h2>
+    <ul>
+      <li>Clear local data anytime from your browser settings (this resets local progress).</li>
+      <li>Request account deletion by emailing <a href="mailto:feedback@cryptomath.org">feedback@cryptomath.org</a>.</li>
+      <li>Use the site signed-out — progress then stays only on your device.</li>
+    </ul>
+  </section>
+  <section><h2 class="cm-h">Children</h2>
+    <p>CryptoMath is an educational resource suitable for general audiences. If you are under the age required for consent in your country, please use it with a parent or teacher.</p>
+  </section>
+  <section><h2 class="cm-h">Contact</h2>
+    <p>Questions about privacy? Email <a href="mailto:feedback@cryptomath.org">feedback@cryptomath.org</a>. See also our <a href="terms.html">Terms of Use</a>.</p>
+  </section>
+</main>
+
+<script>
+function toggleMobileNav(){var n=document.getElementById('navLinks');if(n)n.classList.toggle('open');}
+function toggleLanguage(){var ar=document.documentElement.getAttribute('dir')==='rtl';var to=ar?'en':'ar';document.documentElement.setAttribute('dir',to==='ar'?'rtl':'ltr');document.documentElement.setAttribute('lang',to);document.querySelectorAll('[data-en]').forEach(function(el){var t=el.getAttribute('data-'+to);if(t)el.textContent=t;});var en=document.getElementById('lang-en'),arx=document.getElementById('lang-ar');if(en&&arx){en.classList.toggle('active',to==='en');arx.classList.toggle('active',to==='ar');}try{localStorage.setItem('cryptomath_lang',to);}catch(e){}}
+try{if(localStorage.getItem('cryptomath_lang')==='ar')toggleLanguage();}catch(e){}
+</script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.143.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/" } }
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+</body>
+</html>

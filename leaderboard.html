@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly League — CryptoMath Academy</title>
+<meta name="description" content="Climb the CryptoMath weekly league. Earn XP from lessons and challenges to rise through the ranks and compete with other learners.">
+<meta name="theme-color" content="#1A1714">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Weekly League — CryptoMath Academy">
+<meta property="og:description" content="Earn XP, climb the weekly league, and keep your learning streak alive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cm-pages.css">
+<link rel="stylesheet" href="cm-enhance.css">
+<style id="storm-bg-css">
+  html { background: radial-gradient(circle at 50% 35%, #1a0f06 0%, #000000 75%) !important; background-attachment: fixed !important; }
+  body { background: transparent !important; }
+  #storm-bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+  .lb-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-bottom:1px solid var(--line);}
+  .lb-row:last-child{border-bottom:0;}
+  .lb-rank{width:30px;text-align:center;font-family:'Syne',sans-serif;font-weight:800;color:var(--muted);}
+  .lb-row.me{background:rgba(227,199,122,.10);border-radius:12px;}
+  .lb-row.me .lb-name{color:var(--accent-light);font-weight:700;}
+  .lb-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#1a1206;background:linear-gradient(135deg,var(--accent),var(--accent-light));font-size:.8rem;}
+  .lb-name{flex:1;color:var(--ink);}
+  .lb-xp{font-family:'Space Mono',monospace;color:var(--accent);}
+  .lb-top3 .lb-rank{color:var(--accent);}
+  .promo{color:var(--good);}.demo{color:#ff9d6b;}
+</style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="brand">CryptoMath</a>
+  <button class="nav-burger" id="navBurger" onclick="toggleMobileNav()" aria-label="Open menu"><span></span></button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+    <a href="concepts.html" data-en="Learn" data-ar="تعلم">Learn</a>
+    <a href="path.html" data-en="Path" data-ar="المسار">Path</a>
+    <a href="challenges.html" data-en="Challenges" data-ar="التحديات">Challenges</a>
+    <a href="blockchain.html" data-en="Simulator" data-ar="المحاكي">Simulator</a>
+    <a href="quantum.html" data-en="Quantum" data-ar="الكم">Quantum</a>
+    <a href="cryptocurrency.html" data-en="Currency" data-ar="العملات">Currency</a>
+    <a href="journal.html" data-en="Journal" data-ar="المجلة">Journal</a>
+    <a href="about.html" data-en="About" data-ar="عن">About</a>
+    <a href="profile.html" data-en="Profile" data-ar="الملف">Profile</a>
+    <a href="settings.html" data-en="Settings" data-ar="الإعدادات">Settings</a>
+    <a href="aether.html" data-en="Aether" data-ar="أثير">Aether</a>
+    <div class="lang-toggle" onclick="toggleLanguage()" role="button" tabindex="0" aria-label="Switch language">
+      <span id="lang-en" class="active">EN</span><span class="divider"></span><span id="lang-ar">عر</span>
+    </div>
+    <a href="login.html" class="nav-menu-auth nav-menu-login">Log In</a><a href="signup.html" class="nav-menu-auth nav-menu-cta">Get Started</a>
+  </div>
+  <div class="nav-actions"><a href="login.html" class="nav-login">Log In</a><a href="signup.html" class="nav-cta">Get Started</a></div>
+</nav>
+
+<header class="page-hero">
+  <div class="eyebrow">Weekly League</div>
+  <h1>Climb the ranks</h1>
+  <p>Every lesson and challenge earns XP. The top learners are promoted each week — keep your streak alive to stay in the running.</p>
+</header>
+
+<main class="cm-container">
+  <div class="cm-card" style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div><strong>Bronze League</strong> <span class="cm-muted">· resets <span id="resetIn">in 7 days</span></span></div>
+    <div class="cm-muted"><span class="promo">▲ Top 5 promoted</span> · <span class="demo">▼ Bottom 5 demoted</span></div>
+  </div>
+  <div class="cm-card"><div id="lbList"></div></div>
+  <p class="cm-muted" style="font-size:.82rem;margin-top:14px">This league shows a friendly local field of learners alongside your real XP, so the experience works offline. Wire it to Firestore (see <code>cm-cloud.js</code>) to compete with real users across devices.</p>
+</main>
+
+<script>
+function toggleMobileNav(){var n=document.getElementById('navLinks');if(n)n.classList.toggle('open');}
+function toggleLanguage(){var ar=document.documentElement.getAttribute('dir')==='rtl';var to=ar?'en':'ar';document.documentElement.setAttribute('dir',to==='ar'?'rtl':'ltr');document.documentElement.setAttribute('lang',to);document.querySelectorAll('[data-en]').forEach(function(el){var t=el.getAttribute('data-'+to);if(t)el.textContent=t;});var en=document.getElementById('lang-en'),arx=document.getElementById('lang-ar');if(en&&arx){en.classList.toggle('active',to==='en');arx.classList.toggle('active',to==='ar');}try{localStorage.setItem('cryptomath_lang',to);}catch(e){}}
+try{if(localStorage.getItem('cryptomath_lang')==='ar')toggleLanguage();}catch(e){}
+
+function initials(n){return n.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();}
+var field=[
+  {n:'Nadia K.',xp:420},{n:'Omar R.',xp:360},{n:'Lena M.',xp:330},{n:'Yuki T.',xp:295},
+  {n:'Sam P.',xp:250},{n:'Priya S.',xp:210},{n:'Diego L.',xp:180},{n:'Aisha B.',xp:150},
+  {n:'Tom H.',xp:120},{n:'Mei W.',xp:90}
+];
+var myXp=0;try{if(window.CM)myXp=window.CM.get().xp||0;}catch(e){}
+// weekly XP approximation: use total xp capped for the demo field scale
+var me={n:'You',xp:myXp,me:true};
+var all=field.concat([me]).sort(function(a,b){return b.xp-a.xp;});
+var html='';
+all.forEach(function(p,i){
+  var cls='lb-row'+(p.me?' me':'')+(i<3?' lb-top3':'');
+  var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+  html+='<div class="'+cls+'"><div class="lb-rank">'+medal+'</div>'+
+    '<div class="lb-av">'+initials(p.n)+'</div>'+
+    '<div class="lb-name">'+p.n+'</div>'+
+    '<div class="lb-xp">'+p.xp+' XP</div></div>';
+});
+document.getElementById('lbList').innerHTML=html;
+</script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.143.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.143.0/examples/jsm/" } }
+</script>
+<script type="module" src="storm-bg.js"></script>
+<script src="cm-enhance.js" defer></script>
+</body>
+</html>

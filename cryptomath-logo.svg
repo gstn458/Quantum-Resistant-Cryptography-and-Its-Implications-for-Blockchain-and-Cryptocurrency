@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 48 48" fill="none" role="img" aria-label="CryptoMath logo">
+  <title>CryptoMath</title>
+  <defs>
+    <linearGradient id="cmShield" x1="24" y1="4" x2="24" y2="44.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#143b5c"/>
+      <stop offset="0.55" stop-color="#0b2238"/>
+      <stop offset="1" stop-color="#071726"/>
+    </linearGradient>
+    <linearGradient id="cmStroke" x1="7" y1="6" x2="41" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7df0ff"/>
+      <stop offset="1" stop-color="#1fb6e0"/>
+    </linearGradient>
+    <filter id="cmGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.1" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path d="M24 4L41 9.5V24C41 33.6 33.7 41.4 24 44.5C14.3 41.4 7 33.6 7 24V9.5Z" fill="none" stroke="#34e0ff" stroke-width="4" stroke-opacity="0.22" stroke-linejoin="round"/>
+  <path d="M24 4L41 9.5V24C41 33.6 33.7 41.4 24 44.5C14.3 41.4 7 33.6 7 24V9.5Z" fill="url(#cmShield)" stroke="url(#cmStroke)" stroke-width="2" stroke-linejoin="round" filter="url(#cmGlow)"/>
+  <path d="M24 9L36 12.8V24C36 31 31 36.7 24 39.2C17 36.7 12 31 12 24V12.8Z" fill="none" stroke="#34e0ff" stroke-width="1.1" stroke-opacity="0.6" stroke-linejoin="round"/>
+  <text x="24" y="29.5" text-anchor="middle" font-family="'Plus Jakarta Sans','Segoe UI',Arial,sans-serif" font-size="15" font-weight="800" fill="#7df0ff" filter="url(#cmGlow)">CM</text>
+</svg>
